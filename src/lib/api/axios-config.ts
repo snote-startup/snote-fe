@@ -3,7 +3,7 @@ import { getApiUrl } from './api-url';
 import { useAuthStore } from '@/stores/use-auth-store';
 const apiUrl = getApiUrl();
 
-// TODO: Cơ chế auto get refresh token khi access hết hạn, đợi tích hợp BE
+// TODO: Add auto get refresh token when access is not valid, implement when integrating with BE
 export class ApiError extends Error {
     status?: number;
     constructor(message: string, status?: number) {
