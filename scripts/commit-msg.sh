@@ -44,7 +44,7 @@ fi
 SUBJECT="$(echo "$MSG" | sed -E 's/^[^:]+: //')"
 
 if [[ "$SUBJECT" =~ ^[A-Z] ]]; then
-  echo "❌ Subject should start with lowercase."
+  echo "Subject should start with lowercase."
   echo "Example:"
   echo "  feat(auth): add refresh token"
   exit 1
