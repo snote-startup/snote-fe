@@ -1,8 +1,30 @@
 'use client';
 
+import { Toaster } from '@/components/ui/sonner';
+import { ThemeRoleSwitcher } from '@/components/snote/ThemeRoleSwitcher';
 import { QueryProvider } from '@/providers/query-provider';
-import { ReactNode } from 'react';
+import { AppProvider } from '@/providers/snote-app-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
+import type { ReactNode } from 'react';
 
 export function Providers({ children }: { children: ReactNode }) {
-    return <QueryProvider>{children}</QueryProvider>;
+    return (
+        <ThemeProvider
+            attribute="class"
+            themes={['light', 'dark']}
+            defaultTheme="system"
+            enableSystem
+            enableColorScheme
+            disableTransitionOnChange
+            storageKey="snote-theme"
+        >
+            <QueryProvider>
+                <AppProvider>
+                    {children}
+                    <ThemeRoleSwitcher />
+                </AppProvider>
+            </QueryProvider>
+            <Toaster richColors position="top-right" />
+        </ThemeProvider>
+    );
 }
