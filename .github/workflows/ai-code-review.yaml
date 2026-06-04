@@ -28,6 +28,7 @@ jobs:
             - name: AI Code Review
               env:
                   OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+                  OPENCODE_MODEL: ${{ vars.OPENCODE_MODEL || 'deepseek-v4-flash-free' }}
                   PR_TITLE: ${{ github.event.pull_request.title }}
               run: |
                   cat > /tmp/build_prompt.py << 'PYTHON_SCRIPT'
@@ -35,6 +36,7 @@ jobs:
 
                   diff = open("/tmp/pr_diff.txt").read()
                   files = open("/tmp/changed_files.txt").read()
+                  model = os.environ.get("OPENCODE_MODEL") or "deepseek-v4-flash-free"
                   pr_title = os.environ.get("PR_TITLE", "")
 
                   if len(diff) > 30000:
@@ -74,7 +76,7 @@ jobs:
                   Keep the review concise, actionable, and helpful. Use Vietnamese for the review content."""
 
                   payload = json.dumps({
-                      "model": "minimax-m2.5-free",
+                      "model": model,
                       "messages": [
                           {"role": "system", "content": "You are an expert frontend code reviewer. Focus on React/Vue/Next.js best practices, UI/UX performance, component reusability, and Bun ecosystem."},
                           {"role": "user", "content": prompt}
@@ -86,7 +88,7 @@ jobs:
                   with open("/tmp/payload.json", "w") as f:
                       f.write(payload)
 
-                  print("Payload built successfully")
+                  print(f"Payload built successfully for OpenCode model: {model}")
                   PYTHON_SCRIPT
 
                   python3 /tmp/build_prompt.py
@@ -117,9 +119,13 @@ jobs:
                   ' > /tmp/review.md
                   else
                     echo "API returned HTTP $HTTP_CODE" > /tmp/review.md
-                    echo "Response: $BODY" >> /tmp/review.md
+                    echo "" >> /tmp/review.md
+                    echo "Response preview:" >> /tmp/review.md
+                    printf '%s' "$BODY" | head -c 1000 >> /tmp/review.md
+                    echo "" >> /tmp/review.md
                     echo "API Error: HTTP $HTTP_CODE"
-                    echo "$BODY"
+                    printf '%s' "$BODY" | head -c 1000
+                    echo ""
                   fi
 
             - name: Post review comment

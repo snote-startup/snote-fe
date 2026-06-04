@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useApp } from '@/providers/snote-app-provider';
+import { useAuthStore } from '@/stores/use-auth-store';
 
 const trustMetrics = [
     { label: 'Realtime translation', value: '48 kHz' },
@@ -26,7 +27,10 @@ const trustMetrics = [
 
 export function Login() {
     const router = useRouter();
-    const { login, roleProfile } = useApp();
+    const { roleProfile } = useApp();
+    const login = useAuthStore((state) => state.login);
+    const authError = useAuthStore((state) => state.authError);
+    const clearAuthError = useAuthStore((state) => state.clearAuthError);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,10 +39,11 @@ export function Login() {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setSubmitError(null);
+        clearAuthError();
         setIsSubmitting(true);
 
         try {
-            await login(email, password);
+            await login({ email, password });
             router.push('/dashboard');
         } catch (error) {
             setSubmitError(
@@ -210,9 +215,9 @@ export function Login() {
                                 </div>
                             </div>
 
-                            {submitError && (
+                            {(submitError || authError) && (
                                 <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                                    {submitError}
+                                    {submitError ?? authError}
                                 </p>
                             )}
 
