@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import { Toaster } from 'sonner';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -15,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Snote Web',
-    description: 'A part of Snote ecosystem',
+    title: 'SNOTE - AI Meeting Assistant',
+    description:
+        'AI-powered meeting assistant for live transcription, meeting minutes, tasks, and calendar follow-up.',
 };
 
 export default function RootLayout({
@@ -25,12 +25,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <Providers>{children}</Providers>
-                <Toaster richColors position="top-right" />
             </body>
         </html>
     );
