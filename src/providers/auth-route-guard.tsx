@@ -27,6 +27,18 @@ function isAuthRoute(pathname: string) {
     return authRoutes.includes(pathname);
 }
 
+function getLoginUrl(nextPath: string) {
+    return `/login?next=${encodeURIComponent(nextPath)}`;
+}
+
+function getCurrentPath(pathname: string) {
+    if (typeof window === 'undefined') {
+        return pathname;
+    }
+
+    return `${pathname}${window.location.search}`;
+}
+
 export function AuthRouteGuard({ children }: { children: ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -45,8 +57,13 @@ export function AuthRouteGuard({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const handleUnauthorized = () => {
+            const currentPath = getCurrentPath(pathname);
             logout();
-            router.replace('/login');
+            router.replace(
+                isProtectedRoute(pathname)
+                    ? getLoginUrl(currentPath)
+                    : '/login',
+            );
         };
 
         window.addEventListener('snote-auth-unauthorized', handleUnauthorized);
@@ -57,7 +74,7 @@ export function AuthRouteGuard({ children }: { children: ReactNode }) {
                 handleUnauthorized,
             );
         };
-    }, [logout, router]);
+    }, [logout, pathname, router]);
 
     useEffect(() => {
         if (isCheckingAuth) {
@@ -65,7 +82,8 @@ export function AuthRouteGuard({ children }: { children: ReactNode }) {
         }
 
         if (!isAuthenticated && isProtectedRoute(pathname)) {
-            router.replace('/login');
+            const currentPath = getCurrentPath(pathname);
+            router.replace(getLoginUrl(currentPath));
             return;
         }
 

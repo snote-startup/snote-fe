@@ -18,6 +18,7 @@ import {
     mockUser,
 } from '@/lib/snote/mock-data';
 import { useAuthStore } from '@/stores/use-auth-store';
+import type { MinimalAccount } from '@/lib/api/auth-api';
 
 type UserRole = 'admin' | 'user' | null;
 export type MockAuthRole = 'free' | 'pro' | 'admin';
@@ -78,46 +79,8 @@ const roleProfiles: Record<MockAuthRole, RoleProfile> = {
     },
 };
 
-const mockUsersByRole: Record<MockAuthRole, User> = {
-    free: {
-        ...mockUser,
-        id: 'free-user',
-        email: 'free.user@snote.ai',
-        name: 'Alex Free',
-        subscription: {
-            plan: 'free',
-            status: 'active',
-            minutesLimit: 120,
-            minutesUsed: 96,
-        },
-    },
-    pro: {
-        ...mockUser,
-        id: 'pro-user',
-        email: 'pro.user@snote.ai',
-        name: 'Priya Pro',
-        subscription: {
-            plan: 'pro',
-            status: 'active',
-            minutesLimit: 999999,
-            minutesUsed: 1260,
-        },
-    },
-    admin: {
-        ...mockUser,
-        id: 'admin-user',
-        email: 'admin@snote.ai',
-        name: 'Morgan Admin',
-        subscription: {
-            plan: 'enterprise',
-            status: 'active',
-            minutesLimit: 999999,
-            minutesUsed: 28450,
-        },
-    },
-};
-
 interface AppContextType {
+    account: MinimalAccount | null;
     user: User | null;
     setUser: (user: User | null) => void;
     userRole: UserRole;
@@ -159,7 +122,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const authLogout = useAuthStore((state) => state.logout);
     const [authRole, setAuthRoleState] = useState<MockAuthRole>('free');
     const [userOverride, setUserOverride] = useState<User | null>(null);
-    const [, setUserRoleState] = useState<UserRole>('user');
     const [meetings, setMeetings] = useState<Meeting[]>(mockMeetings);
     const [tasks, setTasks] = useState<Task[]>(mockTasks);
     const [calendarEvents, setCalendarEvents] =
@@ -172,12 +134,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         insights: [],
     });
 
+    const canPreviewRole = process.env.NODE_ENV === 'development';
     const effectiveAuthRole: MockAuthRole =
         authUser?.role === 'admin'
             ? 'admin'
-            : authRole === 'admin'
-              ? 'free'
-              : authRole;
+            : canPreviewRole && authRole !== 'admin'
+              ? authRole
+              : 'free';
     const roleProfile = roleProfiles[effectiveAuthRole];
 
     const user = useMemo<User | null>(() => {
@@ -185,22 +148,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
             return null;
         }
 
-        const fallbackUser =
-            authUser.role === 'admin'
-                ? mockUsersByRole.admin
-                : mockUsersByRole.free;
         const matchingOverride =
             userOverride?.email === authUser.email ? userOverride : null;
 
         return {
-            ...fallbackUser,
+            ...mockUser,
             ...matchingOverride,
-            id: authUser.id,
+            id: authUser.email,
             email: authUser.email,
             name: authUser.name,
-            avatar: authUser.image ?? undefined,
             subscription:
-                matchingOverride?.subscription ?? fallbackUser.subscription,
+                matchingOverride?.subscription ?? mockUser.subscription,
         };
     }, [authUser, userOverride]);
 
@@ -211,20 +169,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         : null;
 
     const setAuthRole = (role: MockAuthRole) => {
+        if (!canPreviewRole) {
+            return;
+        }
+
         if (role === 'admin' && authUser?.role !== 'admin') {
             return;
         }
 
         setAuthRoleState(role);
-        setUserRoleState(role === 'admin' ? 'admin' : 'user');
     };
 
     const setUserRole = (role: UserRole) => {
-        if (role === 'admin' && authUser?.role !== 'admin') {
+        if (!canPreviewRole) {
             return;
         }
 
-        setUserRoleState(role);
+        if (role === 'admin' && authUser?.role !== 'admin') {
+            return;
+        }
 
         if (role === 'admin') {
             setAuthRole('admin');
@@ -237,7 +200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
 
     const login = async (email: string, password: string) => {
-        await authLogin({ email, password });
+        await authLogin(email, password);
     };
 
     const logout = () => {
@@ -245,12 +208,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
 
     const signup = async (email: string, password: string, name: string) => {
-        await authRegister({ email, password, name });
+        await authRegister(name, email, password);
     };
 
     return (
         <AppContext.Provider
             value={{
+                account: authUser,
                 user,
                 setUser: setUserOverride,
                 userRole: effectiveUserRole,
@@ -259,7 +223,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 setAuthRole,
                 roleProfile,
                 roleProfiles,
-                isAdmin: roleProfile.isAdmin,
+                isAdmin: authUser?.role === 'admin',
                 isPro: roleProfile.isPro,
                 isFree: effectiveAuthRole === 'free',
                 meetings,

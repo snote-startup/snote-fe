@@ -1,12 +1,10 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-    ChevronsUpDown,
-    Crown,
     LayoutDashboard,
     Mic,
     FolderOpen,
@@ -15,45 +13,186 @@ import {
     CreditCard,
     User,
     LogOut,
-    Clock,
     ShieldCheck,
-    UserRound,
+    Menu,
+    X,
+    CircleHelp,
 } from 'lucide-react';
-import { useApp, type MockAuthRole } from '@/providers/snote-app-provider';
+import { useProductTour } from '@/features/onboarding/use-product-tour';
+import { useApp } from '@/providers/snote-app-provider';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '@/components/snote/ThemeToggle';
+
+// ─── Nav Links ────────────────────────────────────────────────────────────────
+
+interface NavLinksProps {
+    navItems: Array<{ icon: React.ElementType; label: string; path: string }>;
+    pathname: string;
+    onNavigate?: () => void;
+}
+
+function NavLinks({ navItems, pathname, onNavigate }: NavLinksProps) {
+    return (
+        <>
+            {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                    pathname === item.path ||
+                    (item.path !== '/dashboard' &&
+                        pathname.startsWith(item.path));
+
+                const dataTour =
+                    item.path === '/dashboard'
+                        ? 'nav-dashboard'
+                        : item.path === '/live-assistant/setup'
+                          ? 'nav-live-assistant'
+                          : item.path === '/meetings'
+                            ? 'nav-meetings'
+                            : undefined;
+
+                return (
+                    <Link
+                        key={item.path}
+                        href={item.path}
+                        onClick={onNavigate}
+                        data-tour={dataTour}
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150 ${
+                            isActive
+                                ? 'active-brand-link font-medium'
+                                : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                        }`}
+                    >
+                        <Icon
+                            className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'text-primary' : ''}`}
+                        />
+                        <span>{item.label}</span>
+                    </Link>
+                );
+            })}
+        </>
+    );
+}
+
+// ─── Sidebar Bottom Content ───────────────────────────────────────────────────
+
+interface SidebarBottomProps {
+    quotaPercent: number;
+    meetingLimit: number | null;
+    meetingsUsed: number;
+    meetingsRemaining: number | null;
+    initials: string;
+    displayName: string;
+    displayEmail: string;
+    displayRole: string;
+    onLogout: () => void;
+}
+
+function SidebarBottom({
+    quotaPercent,
+    meetingLimit,
+    meetingsUsed,
+    meetingsRemaining,
+    initials,
+    displayName,
+    displayEmail,
+    displayRole,
+    onLogout,
+}: SidebarBottomProps) {
+    return (
+        <>
+            {/* Quota / usage — only show for free plan */}
+            {meetingLimit !== null && (
+                <div className="border-border border-t px-4 py-3">
+                    <div className="mb-1.5 flex items-center justify-between">
+                        <span className="text-muted-foreground text-xs">
+                            Meetings used
+                        </span>
+                        <span className="text-foreground text-xs font-medium">
+                            {meetingsUsed}/{meetingLimit}
+                        </span>
+                    </div>
+                    <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+                        <div
+                            className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${quotaPercent}%` }}
+                        />
+                    </div>
+                    <p className="text-muted-foreground mt-1.5 text-xs">
+                        {meetingsRemaining} remaining
+                    </p>
+                </div>
+            )}
+
+            {/* User footer */}
+            <div
+                data-tour="user-menu"
+                className="border-border border-t px-3 py-3"
+            >
+                <div className="flex items-center gap-2.5">
+                    {/* Avatar */}
+                    <div className="bg-muted text-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+                        {initials}
+                    </div>
+                    {/* Name / email */}
+                    <div className="min-w-0 flex-1">
+                        <div className="text-foreground flex items-center gap-1.5 truncate text-sm font-medium">
+                            <span className="truncate">{displayName}</span>
+                            <span className="text-muted-foreground bg-muted shrink-0 rounded-full px-1.5 py-0.5 text-[10px] leading-none font-medium">
+                                {displayRole}
+                            </span>
+                        </div>
+                        <div className="text-muted-foreground truncate text-xs">
+                            {displayEmail}
+                        </div>
+                    </div>
+                    {/* Actions */}
+                    <div className="flex shrink-0 items-center">
+                        <span data-tour="theme-toggle">
+                            <ThemeToggle
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                            />
+                        </span>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onLogout}
+                            aria-label="Log out"
+                            className="h-8 w-8"
+                        >
+                            <LogOut className="text-muted-foreground h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getInitials(name: string) {
+    return name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+}
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
 
 interface LayoutProps {
     children: ReactNode;
 }
 
-const roleIcons = {
-    free: UserRound,
-    pro: Crown,
-    admin: ShieldCheck,
-} satisfies Record<MockAuthRole, typeof UserRound>;
-
 export function Layout({ children }: LayoutProps) {
     const pathname = usePathname();
     const router = useRouter();
-    const {
-        authRole,
-        isAdmin,
-        roleProfile,
-        roleProfiles,
-        setAuthRole,
-        user,
-        logout,
-    } = useApp();
-    const ActiveRoleIcon = roleIcons[authRole];
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { account, authRole, isAdmin, roleProfile, user, logout } = useApp();
+    const { startCurrentPageTour } = useProductTour();
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -77,203 +216,150 @@ export function Layout({ children }: LayoutProps) {
         return <>{children}</>;
     }
 
-    const minutesRemaining =
-        user.subscription.minutesLimit - user.subscription.minutesUsed;
+    const displayName = account?.name ?? user.name;
+    const displayEmail = account?.email ?? user.email;
+    const displayRole =
+        authRole === 'admin' ? 'Admin' : authRole === 'pro' ? 'Pro' : 'Free';
+    const initials = getInitials(displayName);
+
     const meetingLimit = roleProfile.meetingLimit;
+    const meetingsUsed = roleProfile.meetingsUsed;
     const meetingsRemaining =
+        meetingLimit === null ? null : Math.max(meetingLimit - meetingsUsed, 0);
+    const quotaPercent =
         meetingLimit === null
-            ? null
-            : Math.max(meetingLimit - roleProfile.meetingsUsed, 0);
+            ? 100
+            : Math.min((meetingsUsed / meetingLimit) * 100, 100);
+
+    const sidebarBottomProps: SidebarBottomProps = {
+        quotaPercent,
+        meetingLimit,
+        meetingsUsed,
+        meetingsRemaining,
+        initials,
+        displayName,
+        displayEmail,
+        displayRole,
+        onLogout: handleLogout,
+    };
 
     return (
-        <div className="bg-background text-foreground flex h-screen">
-            {/* Sidebar */}
-            <div className="bg-card border-border flex w-64 flex-col border-r">
+        <div className="bg-background text-foreground flex h-screen overflow-hidden">
+            {/* Mobile overlay */}
+            {mobileMenuOpen && (
+                <div
+                    className="bg-background/80 fixed inset-0 z-40 backdrop-blur lg:hidden"
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Desktop Sidebar */}
+            <aside
+                data-tour="sidebar"
+                className="border-border bg-card/70 hidden w-64 flex-col border-r backdrop-blur-sm lg:flex"
+            >
                 {/* Logo */}
-                <div className="border-border border-b p-6">
+                <div className="border-border border-b px-4 py-4">
                     <Image
                         src="/snote-logo.png"
                         alt="SNOTE"
-                        width={112}
-                        height={32}
+                        width={100}
+                        height={28}
                         priority
                         style={{ width: 'auto', height: 'auto' }}
                     />
                 </div>
 
-                <div className="border-border border-b p-4">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button
-                                type="button"
-                                className="bg-glass border-border hover:bg-muted/60 flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition-colors"
-                            >
-                                <span
-                                    className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-                                        authRole === 'pro'
-                                            ? 'bg-gradient-to-br from-[#490aad] to-[#a171ff] text-white'
-                                            : authRole === 'admin'
-                                              ? 'bg-foreground text-background'
-                                              : 'bg-brand-soft text-purple-primary dark:bg-accent'
-                                    }`}
-                                >
-                                    <ActiveRoleIcon className="h-4 w-4" />
-                                </span>
-                                <span className="min-w-0 flex-1">
-                                    <span className="text-foreground block truncate text-sm font-medium">
-                                        {roleProfile.label}
-                                    </span>
-                                    <span className="text-muted-foreground block truncate text-xs">
-                                        {roleProfile.description}
-                                    </span>
-                                </span>
-                                <ChevronsUpDown className="text-muted-foreground h-4 w-4" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-60">
-                            <DropdownMenuLabel>Test role</DropdownMenuLabel>
-                            <DropdownMenuRadioGroup
-                                value={authRole}
-                                onValueChange={(value) =>
-                                    setAuthRole(value as MockAuthRole)
-                                }
-                            >
-                                {(
-                                    Object.keys(roleProfiles) as MockAuthRole[]
-                                ).map((role) => {
-                                    const RoleIcon = roleIcons[role];
-                                    const profile = roleProfiles[role];
-
-                                    return (
-                                        <DropdownMenuRadioItem
-                                            key={role}
-                                            value={role}
-                                        >
-                                            <RoleIcon className="h-4 w-4" />
-                                            <span className="flex flex-col">
-                                                <span>{profile.label}</span>
-                                                <span className="text-muted-foreground text-xs">
-                                                    {profile.badge}
-                                                </span>
-                                            </span>
-                                        </DropdownMenuRadioItem>
-                                    );
-                                })}
-                            </DropdownMenuRadioGroup>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuLabel className="text-[11px] leading-4 font-normal">
-                                Switch roles to preview limits, Pro insights,
-                                and Admin access.
-                            </DropdownMenuLabel>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-
                 {/* Navigation */}
-                <nav className="flex-1 space-y-1 p-4">
-                    {navItems.map((item) => {
-                        const Icon = item.icon;
-                        const isActive =
-                            pathname === item.path ||
-                            (item.path !== '/dashboard' &&
-                                pathname.startsWith(item.path));
-
-                        return (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
-                                    isActive
-                                        ? 'active-brand-link'
-                                        : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
-                                }`}
-                            >
-                                <Icon className="h-5 w-5" />
-                                <span>{item.label}</span>
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* Minutes Remaining */}
-                <div className="border-border border-t p-4">
-                    <div className="bg-brand-soft dark:bg-accent border-border rounded-xl border p-3">
-                        <div className="text-muted-foreground mb-1 flex items-center gap-2 text-sm">
-                            <Clock className="h-4 w-4" />
-                            <span>
-                                {meetingLimit === null
-                                    ? 'Meeting Capacity'
-                                    : 'Meetings Remaining'}
-                            </span>
-                        </div>
-                        <div className="text-foreground text-2xl font-semibold">
-                            {meetingLimit === null
-                                ? 'Unlimited'
-                                : `${meetingsRemaining}/${meetingLimit}`}
-                        </div>
-                        <div className="text-muted-foreground mt-1 text-xs">
-                            {meetingLimit === null
-                                ? 'Pro-grade meeting capacity'
-                                : `${minutesRemaining} minutes still available`}
-                        </div>
+                <nav className="flex flex-1 flex-col justify-between space-y-0.5 overflow-y-auto px-3 py-4">
+                    <div className="space-y-0.5">
+                        <NavLinks navItems={navItems} pathname={pathname} />
                     </div>
-                </div>
-
-                {/* User Profile */}
-                <div className="border-border border-t p-4">
-                    <div className="flex items-center gap-3">
-                        <div
-                            className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                                authRole === 'pro'
-                                    ? 'bg-gradient-to-br from-[#f6c453] via-[#a171ff] to-[#490aad] text-white shadow-lg shadow-[#490aad]/20'
-                                    : authRole === 'admin'
-                                      ? 'bg-foreground text-background'
-                                      : 'bg-brand-soft dark:bg-accent'
-                            }`}
-                        >
-                            <span
-                                className={`font-medium ${
-                                    authRole === 'free'
-                                        ? 'text-purple-primary'
-                                        : 'text-white'
-                                }`}
-                            >
-                                {user.name
-                                    .split(' ')
-                                    .map((n) => n[0])
-                                    .join('')}
-                            </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <div className="text-foreground truncate text-sm font-medium">
-                                {user.name}
-                            </div>
-                            <div className="text-muted-foreground flex items-center gap-2 truncate text-xs">
-                                <span className="truncate">{user.email}</span>
-                                {authRole === 'pro' && (
-                                    <span className="rounded-full bg-gradient-to-r from-[#f6c453] via-[#a171ff] to-[#490aad] px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm">
-                                        PRO
-                                    </span>
-                                )}
-                                {authRole === 'admin' && (
-                                    <ShieldCheck className="text-purple-primary h-3.5 w-3.5 shrink-0" />
-                                )}
-                            </div>
-                        </div>
+                    <div className="border-border/40 mt-auto border-t px-3 pt-4">
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={handleLogout}
-                            className="p-2"
+                            onClick={() => startCurrentPageTour()}
+                            className="text-muted-foreground hover:bg-muted/60 hover:text-foreground flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
                         >
-                            <LogOut className="text-muted-foreground h-4 w-4" />
+                            <CircleHelp className="text-primary h-[18px] w-[18px] shrink-0" />
+                            <span>Quick Tour</span>
                         </Button>
                     </div>
-                </div>
-            </div>
+                </nav>
 
-            {/* Main Content */}
-            <div className="flex-1 overflow-auto">{children}</div>
+                <SidebarBottom {...sidebarBottomProps} />
+            </aside>
+
+            {/* Mobile Sidebar (slide-in) */}
+            <aside
+                className={`border-border bg-card fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r transition-transform duration-200 lg:hidden ${
+                    mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
+            >
+                <div className="border-border flex items-center justify-between border-b px-4 py-4">
+                    <Image
+                        src="/snote-logo.png"
+                        alt="SNOTE"
+                        width={96}
+                        height={28}
+                        priority
+                        style={{ width: 'auto', height: 'auto' }}
+                    />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setMobileMenuOpen(false)}
+                        aria-label="Close menu"
+                        className="h-8 w-8"
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
+
+                {/* Navigation */}
+                <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+                    <NavLinks
+                        navItems={navItems}
+                        pathname={pathname}
+                        onNavigate={() => setMobileMenuOpen(false)}
+                    />
+                </nav>
+
+                <SidebarBottom {...sidebarBottomProps} />
+            </aside>
+
+            {/* Main content area */}
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                {/* Mobile top bar */}
+                <header className="border-border bg-background/95 flex h-14 shrink-0 items-center justify-between border-b px-4 backdrop-blur lg:hidden">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setMobileMenuOpen(true)}
+                        aria-label="Open menu"
+                        className="h-8 w-8"
+                    >
+                        <Menu className="h-5 w-5" />
+                    </Button>
+                    <Image
+                        src="/snote-logo.png"
+                        alt="SNOTE"
+                        width={88}
+                        height={24}
+                        priority
+                        style={{ width: 'auto', height: 'auto' }}
+                    />
+                    <ThemeToggle
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                    />
+                </header>
+
+                {/* Page content */}
+                <div className="flex-1 overflow-auto">{children}</div>
+            </div>
         </div>
     );
 }

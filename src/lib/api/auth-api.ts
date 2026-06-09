@@ -1,6 +1,5 @@
 import { apiClient } from '@/lib/api/axios-config';
-import { parseAuthTokens, type ParsedAuthTokens } from '@/lib/api/token-parser';
-import type { User } from '@/stores/use-auth-store';
+import { parseAccessToken } from '@/lib/api/token-parser';
 
 interface LoginPayload {
     email: string;
@@ -13,9 +12,17 @@ interface RegisterPayload {
     password: string;
 }
 
+export type AuthRole = 'admin' | 'member';
+
+export interface MinimalAccount {
+    email: string;
+    name: string;
+    role: AuthRole;
+}
+
 type AuthResponse = unknown;
 
-export async function login(payload: LoginPayload): Promise<ParsedAuthTokens> {
+export async function login(payload: LoginPayload): Promise<string> {
     const body = await apiClient.post<AuthResponse, AuthResponse>(
         '/auth/login',
         payload,
@@ -27,12 +34,10 @@ export async function login(payload: LoginPayload): Promise<ParsedAuthTokens> {
         },
     );
 
-    return parseAuthTokens(body);
+    return parseAccessToken(body);
 }
 
-export async function register(
-    payload: RegisterPayload,
-): Promise<ParsedAuthTokens> {
+export async function register(payload: RegisterPayload): Promise<string> {
     const body = await apiClient.post<AuthResponse, AuthResponse>(
         '/auth/register',
         payload,
@@ -44,27 +49,24 @@ export async function register(
         },
     );
 
-    return parseAuthTokens(body);
+    return parseAccessToken(body);
 }
 
-export async function me(): Promise<User> {
-    return apiClient.get<User, User>('/auth/me');
+export async function me(): Promise<MinimalAccount> {
+    return apiClient.get<MinimalAccount, MinimalAccount>('/auth/me');
 }
 
-export async function refresh(
-    refreshTokenOrAccessToken: string,
-): Promise<ParsedAuthTokens> {
+export async function refresh(): Promise<string> {
     const body = await apiClient.post<AuthResponse, AuthResponse>(
         '/auth/refresh',
         undefined,
         {
             headers: {
                 Accept: 'text/plain, application/json',
-                Authorization: `Bearer ${refreshTokenOrAccessToken}`,
             },
             responseType: 'text',
         },
     );
 
-    return parseAuthTokens(body);
+    return parseAccessToken(body);
 }

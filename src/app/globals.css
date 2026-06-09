@@ -331,13 +331,107 @@
         -webkit-backdrop-filter: blur(24px) saturate(160%);
     }
     .active-brand-link {
-        border-color: color-mix(
-            in oklab,
-            var(--brand-primary) 18%,
-            transparent
-        );
-        background: color-mix(in oklab, var(--brand-primary) 10%, var(--glass));
-        color: var(--brand-primary);
+        background-color: var(--muted);
+        color: var(--foreground);
+        box-shadow: inset 2px 0 0 var(--primary);
+        padding-left: calc(0.75rem - 2px);
+    }
+}
+
+/* Scroll-reveal / entrance animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@layer utilities {
+    .animate-fade-in-up {
+        animation: fadeInUp 0.5s ease-out both;
+    }
+    .animate-fade-in-up-delay-1 {
+        animation: fadeInUp 0.5s ease-out 0.1s both;
+    }
+    .animate-fade-in-up-delay-2 {
+        animation: fadeInUp 0.5s ease-out 0.2s both;
+    }
+    .animate-fade-in-up-delay-3 {
+        animation: fadeInUp 0.5s ease-out 0.3s both;
+    }
+    .animate-fade-in-up-delay-4 {
+        animation: fadeInUp 0.5s ease-out 0.4s both;
+    }
+    .animate-fade-in-up-delay-5 {
+        animation: fadeInUp 0.5s ease-out 0.5s both;
+    }
+    .animate-fade-in-up-delay-6 {
+        animation: fadeInUp 0.5s ease-out 0.6s both;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@layer utilities {
+    .animate-shimmer {
+        background-size: 200% auto;
+        animation: shimmer 3s linear infinite;
+    }
+    .animate-slide-in-left {
+        animation: slideInLeft 0.5s ease-out both;
+    }
+    .animate-scale-in {
+        animation: scaleIn 0.4s ease-out both;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-fade-in-up-delay-1,
+    .animate-fade-in-up-delay-2,
+    .animate-fade-in-up-delay-3,
+    .animate-fade-in-up-delay-4,
+    .animate-fade-in-up-delay-5,
+    .animate-fade-in-up-delay-6,
+    .animate-shimmer,
+    .animate-slide-in-left,
+    .animate-scale-in {
+        animation: none;
+        opacity: 1;
+        transform: none;
     }
 }
 
@@ -378,4 +472,74 @@
     --normal-bg: color-mix(in oklab, #dc2626 7%, var(--background));
     --normal-text: #dc2626;
     --normal-border: color-mix(in oklab, #dc2626 70%, #7c3aed);
+}
+
+/* Onboarding Driver.js Custom Styling */
+.driver-popover {
+    border-radius: 12px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--card) !important;
+    color: var(--card-foreground) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+    padding: 16px !important;
+    font-family: inherit !important;
+}
+
+.driver-popover-title {
+    color: var(--foreground) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+}
+
+.driver-popover-description {
+    color: var(--muted-foreground) !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 14px !important;
+}
+
+.driver-popover-progress-text {
+    color: var(--muted-foreground) !important;
+    font-size: 11px !important;
+}
+
+.driver-popover-next-btn,
+.driver-popover-prev-btn,
+.driver-popover-close-btn {
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    transition: all 0.15s ease-out !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.driver-popover-next-btn {
+    background: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    border: 1px solid var(--primary) !important;
+}
+
+.driver-popover-next-btn:hover {
+    background: color-mix(in oklab, var(--primary) 85%, black) !important;
+}
+
+.driver-popover-prev-btn {
+    background: var(--muted) !important;
+    color: var(--muted-foreground) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.driver-popover-prev-btn:hover {
+    background: color-mix(in oklab, var(--muted) 85%, black) !important;
+}
+
+.driver-popover-close-btn {
+    color: var(--muted-foreground) !important;
+}
+
+.driver-popover-close-btn:hover {
+    color: var(--foreground) !important;
 }

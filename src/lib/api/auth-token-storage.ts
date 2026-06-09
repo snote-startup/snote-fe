@@ -1,9 +1,10 @@
 export interface StoredAuthTokens {
     accessToken: string | null;
-    refreshToken: string | null;
 }
 
 const ACCESS_TOKEN_KEY = 'snote.access_token';
+// Legacy key from the earlier bearer-refresh prototype. Backend now stores the
+// refresh token in an HttpOnly cookie, but logout still clears old sessions.
 const REFRESH_TOKEN_KEY = 'snote.refresh_token';
 
 function canUseLocalStorage() {
@@ -12,28 +13,20 @@ function canUseLocalStorage() {
 
 export function getStoredAuthTokens(): StoredAuthTokens {
     if (!canUseLocalStorage()) {
-        return { accessToken: null, refreshToken: null };
+        return { accessToken: null };
     }
 
     return {
         accessToken: window.localStorage.getItem(ACCESS_TOKEN_KEY),
-        refreshToken: window.localStorage.getItem(REFRESH_TOKEN_KEY),
     };
 }
 
-export function persistAuthTokens(tokens: {
-    accessToken: string;
-    refreshToken?: string | null;
-}) {
+export function persistAccessToken(accessToken: string) {
     if (!canUseLocalStorage()) {
         return;
     }
 
-    window.localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-
-    if (tokens.refreshToken) {
-        window.localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-    }
+    window.localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
 }
 
 export function clearStoredAuthTokens() {

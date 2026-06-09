@@ -106,10 +106,10 @@ export function Billing() {
             <div className="mx-auto max-w-5xl p-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="mb-2 text-3xl font-semibold text-gray-900">
+                    <h1 className="text-foreground mb-2 text-3xl font-semibold">
                         Billing & Subscription
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-muted-foreground">
                         Manage your subscription and billing information
                     </p>
                 </div>
@@ -117,13 +117,13 @@ export function Billing() {
                 {/* Trial Warning */}
                 {user.subscription.plan === 'trial' &&
                     user.subscription.trialEndsAt && (
-                        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-6">
+                        <div className="border-border bg-muted/40 mb-6 rounded-xl border p-6">
                             <div className="flex items-start gap-4">
-                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100">
-                                    <AlertCircle className="h-5 w-5 text-blue-600" />
+                                <div className="bg-muted flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
+                                    <AlertCircle className="text-foreground h-5 w-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="mb-1 font-semibold text-blue-900">
+                                    <h3 className="text-foreground mb-1 font-semibold">
                                         Your trial ends in{' '}
                                         {Math.ceil(
                                             (user.subscription.trialEndsAt.getTime() -
@@ -132,7 +132,7 @@ export function Billing() {
                                         )}{' '}
                                         days
                                     </h3>
-                                    <p className="mb-4 text-blue-700">
+                                    <p className="text-muted-foreground mb-4">
                                         Upgrade to Pro to continue enjoying
                                         unlimited access after{' '}
                                         {format(
@@ -151,16 +151,16 @@ export function Billing() {
                 {/* Cancelled Warning */}
                 {user.subscription.status === 'cancelled' &&
                     user.subscription.periodEndsAt && (
-                        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-6">
+                        <div className="border-destructive/30 bg-destructive/5 mb-6 rounded-xl border p-6">
                             <div className="flex items-start gap-4">
-                                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-red-100">
-                                    <AlertCircle className="h-5 w-5 text-red-600" />
+                                <div className="bg-destructive/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg">
+                                    <AlertCircle className="text-destructive h-5 w-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="mb-1 font-semibold text-red-900">
+                                    <h3 className="text-foreground mb-1 font-semibold">
                                         Subscription Cancelled
                                     </h3>
-                                    <p className="mb-4 text-red-700">
+                                    <p className="text-muted-foreground mb-4">
                                         Your subscription will remain active
                                         until{' '}
                                         {format(
@@ -177,20 +177,22 @@ export function Billing() {
                     )}
 
                 {/* Current Plan */}
-                <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
+                <div className="border-border bg-card mb-6 rounded-xl border p-6">
                     <div className="mb-6 flex items-start justify-between">
                         <div>
-                            <h2 className="mb-1 text-xl font-semibold text-gray-900">
+                            <h2 className="text-foreground mb-1 text-xl font-semibold">
                                 Current Plan
                             </h2>
-                            <p className="text-gray-600">{planDetails.name}</p>
+                            <p className="text-muted-foreground">
+                                {planDetails.name}
+                            </p>
                         </div>
                         {planDetails.price > 0 && (
                             <div className="text-right">
-                                <div className="text-3xl font-semibold text-gray-900">
+                                <div className="text-foreground text-3xl font-semibold">
                                     ${planDetails.price}
                                 </div>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-muted-foreground text-sm">
                                     per month
                                 </div>
                             </div>
@@ -201,7 +203,7 @@ export function Billing() {
                         {planDetails.features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="flex items-center gap-2 text-gray-700"
+                                className="text-foreground flex items-center gap-2"
                             >
                                 <Check className="h-5 w-5 text-green-600" />
                                 <span>{feature}</span>
@@ -221,29 +223,29 @@ export function Billing() {
                 {/* Usage Stats */}
                 <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                     {/* Minutes Remaining */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
+                    <div className="border-border bg-card rounded-xl border p-6">
                         <div className="mb-4 flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                                <Clock className="h-5 w-5 text-blue-600" />
+                            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+                                <Clock className="text-foreground h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-muted-foreground text-sm">
                                     Minutes Remaining
                                 </p>
-                                <p className="text-2xl font-semibold text-gray-900">
+                                <p className="text-foreground text-2xl font-semibold">
                                     {minutesRemaining}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="mb-2 h-3 w-full rounded-full bg-gray-200">
+                        <div className="bg-muted mb-2 h-2 w-full rounded-full">
                             <div
-                                className={`h-3 rounded-full transition-all ${
+                                className={`h-2 rounded-full transition-all ${
                                     usagePercentage > 90
-                                        ? 'bg-red-500'
+                                        ? 'bg-destructive'
                                         : usagePercentage > 70
                                           ? 'bg-yellow-500'
-                                          : 'bg-blue-600'
+                                          : 'bg-primary'
                                 }`}
                                 style={{
                                     width: `${Math.min(100, usagePercentage)}%`,
@@ -251,23 +253,23 @@ export function Billing() {
                             />
                         </div>
 
-                        <p className="text-xs text-gray-500">
+                        <p className="text-muted-foreground text-xs">
                             {minutesUsed} of {minutesLimit} minutes used (
                             {Math.round(usagePercentage)}%)
                         </p>
                     </div>
 
                     {/* Billing Period */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
+                    <div className="border-border bg-card rounded-xl border p-6">
                         <div className="mb-4 flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
-                                <Calendar className="h-5 w-5 text-purple-600" />
+                            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+                                <Calendar className="text-foreground h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-muted-foreground text-sm">
                                     Billing Period
                                 </p>
-                                <p className="text-lg font-semibold text-gray-900">
+                                <p className="text-foreground text-lg font-semibold">
                                     {user.subscription.plan === 'trial'
                                         ? 'Trial'
                                         : 'Monthly'}
@@ -276,7 +278,7 @@ export function Billing() {
                         </div>
 
                         {user.subscription.trialEndsAt && (
-                            <p className="text-sm text-gray-600">
+                            <p className="text-muted-foreground text-sm">
                                 {user.subscription.status === 'cancelled'
                                     ? 'Ends'
                                     : 'Renews'}{' '}
@@ -294,20 +296,20 @@ export function Billing() {
                 {/* Payment Method */}
                 {user.subscription.plan !== 'trial' &&
                     user.subscription.plan !== 'free' && (
-                        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                        <div className="border-border bg-card mb-6 rounded-xl border p-6">
+                            <h2 className="text-foreground mb-4 text-lg font-semibold">
                                 Payment Method
                             </h2>
 
-                            <div className="flex items-center gap-4 rounded-lg bg-gray-50 p-4">
-                                <div className="flex h-8 w-12 items-center justify-center rounded bg-gradient-to-r from-blue-600 to-blue-400">
-                                    <CreditCard className="h-6 w-6 text-white" />
+                            <div className="bg-muted/50 flex items-center gap-4 rounded-lg p-4">
+                                <div className="bg-muted flex h-8 w-12 items-center justify-center rounded">
+                                    <CreditCard className="text-foreground h-5 w-5" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-medium text-gray-900">
+                                    <p className="text-foreground font-medium">
                                         •••• •••• •••• 4242
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-muted-foreground text-sm">
                                         Expires 12/2026
                                     </p>
                                 </div>
@@ -321,52 +323,52 @@ export function Billing() {
                 {/* Billing History */}
                 {user.subscription.plan !== 'trial' &&
                     user.subscription.plan !== 'free' && (
-                        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                        <div className="border-border bg-card mb-6 rounded-xl border p-6">
+                            <h2 className="text-foreground mb-4 text-lg font-semibold">
                                 Billing History
                             </h2>
 
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+                                <div className="border-border flex items-center justify-between rounded-lg border p-4">
                                     <div>
-                                        <p className="font-medium text-gray-900">
+                                        <p className="text-foreground font-medium">
                                             {planDetails.name}
                                         </p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-muted-foreground text-sm">
                                             March 5, 2026
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-semibold text-gray-900">
+                                        <p className="text-foreground font-semibold">
                                             ${planDetails.price}.00
                                         </p>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="text-blue-600"
+                                            className="text-primary"
                                         >
                                             Download
                                         </Button>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+                                <div className="border-border flex items-center justify-between rounded-lg border p-4">
                                     <div>
-                                        <p className="font-medium text-gray-900">
+                                        <p className="text-foreground font-medium">
                                             {planDetails.name}
                                         </p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-muted-foreground text-sm">
                                             February 5, 2026
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-semibold text-gray-900">
+                                        <p className="text-foreground font-semibold">
                                             ${planDetails.price}.00
                                         </p>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="text-blue-600"
+                                            className="text-primary"
                                         >
                                             Download
                                         </Button>
@@ -379,11 +381,11 @@ export function Billing() {
                 {/* Cancel Subscription */}
                 {user.subscription.status === 'active' &&
                     user.subscription.plan !== 'trial' && (
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-2 text-lg font-semibold text-gray-900">
+                        <div className="border-border bg-card rounded-xl border p-6">
+                            <h2 className="text-foreground mb-2 text-lg font-semibold">
                                 Cancel Subscription
                             </h2>
-                            <p className="mb-4 text-gray-600">
+                            <p className="text-muted-foreground mb-4">
                                 You can cancel your subscription at any time.
                                 You&apos;ll continue to have access until the
                                 end of your billing period.
@@ -391,7 +393,7 @@ export function Billing() {
                             <Button
                                 variant="outline"
                                 onClick={() => setShowCancelDialog(true)}
-                                className="border-red-600 text-red-600 hover:bg-red-50"
+                                className="border-destructive text-destructive hover:bg-destructive/5"
                             >
                                 Cancel Subscription
                             </Button>

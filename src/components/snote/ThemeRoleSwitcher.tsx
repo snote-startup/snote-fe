@@ -46,9 +46,13 @@ export function ThemeRoleSwitcher() {
         getClientSnapshot,
         getServerSnapshot,
     );
-    const { authRole, roleProfile, roleProfiles, setAuthRole } = useApp();
+    const { account, authRole, roleProfile, roleProfiles, setAuthRole } =
+        useApp();
     const { theme = 'system', setTheme } = useTheme();
     const ActiveRoleIcon = roleIcons[authRole];
+    const previewRoles = (
+        account?.role === 'admin' ? Object.keys(roleProfiles) : ['free', 'pro']
+    ) as MockAuthRole[];
 
     if (!mounted) {
         return null;
@@ -65,47 +69,41 @@ export function ThemeRoleSwitcher() {
                     >
                         <ActiveRoleIcon className="text-purple-primary h-4 w-4" />
                         <span className="hidden text-xs font-semibold sm:inline">
-                            {roleProfile.badge}
+                            Dev: {roleProfile.badge}
                         </span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
-                    <DropdownMenuLabel>Preview role</DropdownMenuLabel>
+                    <DropdownMenuLabel>Dev preview role</DropdownMenuLabel>
                     <DropdownMenuRadioGroup
                         value={authRole}
                         onValueChange={(value) =>
                             setAuthRole(value as MockAuthRole)
                         }
                     >
-                        {(Object.keys(roleProfiles) as MockAuthRole[]).map(
-                            (role) => {
-                                const RoleIcon = roleIcons[role];
-                                const profile = roleProfiles[role];
+                        {previewRoles.map((role) => {
+                            const RoleIcon = roleIcons[role];
+                            const profile = roleProfiles[role];
 
-                                return (
-                                    <DropdownMenuRadioItem
-                                        key={role}
-                                        value={role}
-                                    >
-                                        <RoleIcon
-                                            className={cn(
-                                                'h-4 w-4',
-                                                role === 'pro' &&
-                                                    'text-pro-gold',
-                                                role === 'admin' &&
-                                                    'text-admin-cyan',
-                                            )}
-                                        />
-                                        <span className="flex flex-col">
-                                            <span>{profile.label}</span>
-                                            <span className="text-muted-foreground text-xs">
-                                                {profile.description}
-                                            </span>
+                            return (
+                                <DropdownMenuRadioItem key={role} value={role}>
+                                    <RoleIcon
+                                        className={cn(
+                                            'h-4 w-4',
+                                            role === 'pro' && 'text-pro-gold',
+                                            role === 'admin' &&
+                                                'text-admin-cyan',
+                                        )}
+                                    />
+                                    <span className="flex flex-col">
+                                        <span>{profile.label}</span>
+                                        <span className="text-muted-foreground text-xs">
+                                            {profile.description}
                                         </span>
-                                    </DropdownMenuRadioItem>
-                                );
-                            },
-                        )}
+                                    </span>
+                                </DropdownMenuRadioItem>
+                            );
+                        })}
                     </DropdownMenuRadioGroup>
 
                     <DropdownMenuSeparator />
