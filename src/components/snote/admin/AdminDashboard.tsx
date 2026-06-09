@@ -159,7 +159,7 @@ function tooltipCurrency(value: unknown) {
 
 export function AdminDashboard() {
     const router = useRouter();
-    const { isAdmin, meetings, setAuthRole } = useApp();
+    const { isAdmin, meetings } = useApp();
 
     const latestUsers = userGrowthData[userGrowthData.length - 1];
     const previousUsers = userGrowthData[userGrowthData.length - 2];
@@ -190,16 +190,9 @@ export function AdminDashboard() {
                         Admin role required
                     </h1>
                     <p className="mt-2 text-sm text-zinc-400">
-                        Switch the mock role to Admin to preview the global
-                        command center.
+                        Your authenticated account does not have admin access.
                     </p>
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                        <Button
-                            className="flex-1"
-                            onClick={() => setAuthRole('admin')}
-                        >
-                            Switch to Admin
-                        </Button>
                         <Button
                             className="flex-1"
                             variant="outline"
@@ -249,12 +242,9 @@ export function AdminDashboard() {
                         </Button>
                         <Button
                             className="bg-gradient-to-r from-[#490aad] to-[#a171ff] text-white hover:opacity-90"
-                            onClick={() => {
-                                setAuthRole('free');
-                                router.push('/dashboard');
-                            }}
+                            onClick={() => router.push('/dashboard')}
                         >
-                            Switch role
+                            User app
                         </Button>
                     </div>
                 </div>

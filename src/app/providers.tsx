@@ -1,7 +1,6 @@
 'use client';
 
 import { Toaster } from '@/components/ui/sonner';
-import { ThemeRoleSwitcher } from '@/components/snote/ThemeRoleSwitcher';
 import { AuthRouteGuard } from '@/providers/auth-route-guard';
 import { QueryProvider } from '@/providers/query-provider';
 import { AppProvider } from '@/providers/snote-app-provider';
@@ -22,7 +21,6 @@ export function Providers({ children }: { children: ReactNode }) {
             <QueryProvider>
                 <AppProvider>
                     <AuthRouteGuard>{children}</AuthRouteGuard>
-                    <ThemeRoleSwitcher />
                 </AppProvider>
             </QueryProvider>
             <Toaster richColors position="top-right" />
