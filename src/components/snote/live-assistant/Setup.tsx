@@ -12,8 +12,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Mic, Settings, AlertCircle } from 'lucide-react';
+import { Settings, AlertCircle, Plus, Loader2 } from 'lucide-react';
 import { useApp } from '@/providers/snote-app-provider';
+import { useCreateProject } from '@/features/projects/hooks';
+import { toast } from 'sonner';
 
 export function LiveAssistantSetup() {
     const router = useRouter();
@@ -24,6 +26,9 @@ export function LiveAssistantSetup() {
     const [industry, setIndustry] = useState('general');
     const [audioSources, setAudioSources] = useState<string[]>(['microphone']);
 
+    const createMutation = useCreateProject();
+    const [createError, setCreateError] = useState<string | null>(null);
+
     const minutesRemaining = user
         ? user.subscription.minutesLimit - user.subscription.minutesUsed
         : 0;
@@ -31,11 +36,34 @@ export function LiveAssistantSetup() {
 
     const handleStart = () => {
         if (!canStartMeeting) {
-            // Show upgrade modal (we'll handle this in the routing)
             router.push('/pricing');
             return;
         }
-        router.push('/live-assistant/permissions');
+
+        const projectTitle =
+            title.trim() ||
+            `Meeting Session - ${new Date().toLocaleDateString()}`;
+        const generatedDescription = `Input Language: ${inputLanguage} | Output Translation: ${outputLanguage} | Domain/Industry: ${industry} | Audio Sources: ${audioSources.join(', ')}`;
+
+        setCreateError(null);
+        createMutation.mutate(
+            {
+                title: projectTitle,
+                description: generatedDescription,
+            },
+            {
+                onSuccess: (projectId) => {
+                    toast.success('Meeting project created successfully');
+                    router.push(`/meetings/${projectId}`);
+                },
+                onError: (err) => {
+                    setCreateError(
+                        err.message || 'Failed to create meeting project',
+                    );
+                    toast.error(err.message || 'Failed to create project');
+                },
+            },
+        );
     };
 
     const languages = [
@@ -85,12 +113,12 @@ export function LiveAssistantSetup() {
         <div className="mx-auto max-w-4xl p-8">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="mb-2 text-3xl font-semibold text-gray-900">
-                    Start Live Assistant
+                <h1 className="text-foreground mb-2 text-3xl font-semibold">
+                    Create Meeting Project
                 </h1>
-                <p className="text-gray-600">
-                    Configure your meeting settings to begin recording and
-                    transcription
+                <p className="text-muted-foreground">
+                    Set up a project now. Audio upload and transcript processing
+                    live inside each project.
                 </p>
             </div>
 
@@ -131,7 +159,7 @@ export function LiveAssistantSetup() {
             )}
 
             {/* Setup Form */}
-            <div className="rounded-xl border border-gray-200 bg-white p-8">
+            <div className="border-border bg-card rounded-xl border p-8">
                 <div className="space-y-6">
                     {/* Meeting Title */}
                     <div>
@@ -144,7 +172,7 @@ export function LiveAssistantSetup() {
                             onChange={(e) => setTitle(e.target.value)}
                             className="mt-2"
                         />
-                        <p className="mt-1.5 text-sm text-gray-500">
+                        <p className="text-muted-foreground mt-1.5 text-sm">
                             Leave blank to auto-generate a title
                         </p>
                     </div>
@@ -173,7 +201,7 @@ export function LiveAssistantSetup() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <p className="mt-1.5 text-sm text-gray-500">
+                            <p className="text-muted-foreground mt-1.5 text-sm">
                                 Language being spoken in the meeting
                             </p>
                         </div>
@@ -200,7 +228,7 @@ export function LiveAssistantSetup() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <p className="mt-1.5 text-sm text-gray-500">
+                            <p className="text-muted-foreground mt-1.5 text-sm">
                                 Translate transcript to this language
                             </p>
                         </div>
@@ -224,7 +252,7 @@ export function LiveAssistantSetup() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <p className="mt-1.5 text-sm text-gray-500">
+                        <p className="text-muted-foreground mt-1.5 text-sm">
                             Improves terminology translation accuracy for your
                             industry
                         </p>
@@ -240,27 +268,27 @@ export function LiveAssistantSetup() {
                                     onClick={() =>
                                         toggleAudioSource(source.value)
                                     }
-                                    className={`cursor-pointer rounded-lg border-2 p-4 transition-all ${
+                                    className={`cursor-pointer rounded-lg border p-4 transition-all ${
                                         audioSources.includes(source.value)
-                                            ? 'border-[#490aad] bg-[#F7F6FF]'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                            ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                                            : 'border-border hover:border-primary/50 bg-card'
                                     }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div
-                                            className={`flex h-5 w-5 items-center justify-center rounded border-2 ${
+                                            className={`flex h-5 w-5 items-center justify-center rounded border ${
                                                 audioSources.includes(
                                                     source.value,
                                                 )
-                                                    ? 'border-[#490aad] bg-[#490aad]'
-                                                    : 'border-gray-300'
+                                                    ? 'border-primary bg-primary'
+                                                    : 'border-border'
                                             }`}
                                         >
                                             {audioSources.includes(
                                                 source.value,
                                             ) && (
                                                 <svg
-                                                    className="h-3 w-3 text-white"
+                                                    className="text-primary-foreground h-3 w-3"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -275,10 +303,10 @@ export function LiveAssistantSetup() {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-gray-900">
+                                            <p className="text-foreground font-medium">
                                                 {source.label}
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-muted-foreground text-sm">
                                                 {source.description}
                                             </p>
                                         </div>
@@ -288,19 +316,35 @@ export function LiveAssistantSetup() {
                         </div>
                     </div>
 
+                    {createError && (
+                        <div className="text-destructive bg-destructive/10 mt-4 flex items-start gap-2 rounded-lg p-3 text-sm">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                            <span>{createError}</span>
+                        </div>
+                    )}
+
                     {/* Action Buttons */}
                     <div className="flex items-center gap-3 pt-6">
                         <Button
                             onClick={handleStart}
-                            disabled={!canStartMeeting}
+                            disabled={
+                                !canStartMeeting || createMutation.isPending
+                            }
                             className="flex-1 border-0 bg-gradient-to-r from-[#490aad] to-[#a171ff] text-white hover:from-[#5a1bc0] hover:to-[#b185ff]"
                         >
-                            <Mic className="mr-2 h-4 w-4" />
-                            Start Recording
+                            {createMutation.isPending ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Plus className="mr-2 h-4 w-4" />
+                            )}
+                            {createMutation.isPending
+                                ? 'Creating Project...'
+                                : 'Create Project'}
                         </Button>
                         <Button
                             variant="outline"
                             onClick={() => router.push('/dashboard')}
+                            disabled={createMutation.isPending}
                         >
                             Cancel
                         </Button>
@@ -310,37 +354,39 @@ export function LiveAssistantSetup() {
 
             {/* Info Cards */}
             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border border-[#D0C9FF] bg-gradient-to-br from-[#F7F6FF] to-[#EAE7FF] p-4">
-                    <div className="mb-2 flex items-center gap-2 text-[#490aad]">
+                <div className="border-border bg-card rounded-lg border p-4">
+                    <div className="text-primary mb-2 flex items-center gap-2">
                         <Settings className="h-4 w-4" />
-                        <span className="text-sm font-medium">
+                        <span className="text-foreground text-sm font-medium">
                             Real-time Transcription
                         </span>
                     </div>
-                    <p className="text-xs text-gray-700">
+                    <p className="text-muted-foreground text-xs">
                         See your conversation transcribed in real-time as you
                         speak
                     </p>
                 </div>
 
-                <div className="rounded-lg border border-[#D0C9FF] bg-gradient-to-br from-[#F7F6FF] to-[#EAE7FF] p-4">
-                    <div className="mb-2 flex items-center gap-2 text-[#490aad]">
+                <div className="border-border bg-card rounded-lg border p-4">
+                    <div className="text-primary mb-2 flex items-center gap-2">
                         <Settings className="h-4 w-4" />
-                        <span className="text-sm font-medium">AI Insights</span>
+                        <span className="text-foreground text-sm font-medium">
+                            AI Insights
+                        </span>
                     </div>
-                    <p className="text-xs text-gray-700">
+                    <p className="text-muted-foreground text-xs">
                         Automatic detection of tasks, decisions, and key points
                     </p>
                 </div>
 
-                <div className="rounded-lg border border-[#D0C9FF] bg-gradient-to-br from-[#F7F6FF] to-[#EAE7FF] p-4">
-                    <div className="mb-2 flex items-center gap-2 text-[#490aad]">
+                <div className="border-border bg-card rounded-lg border p-4">
+                    <div className="text-primary mb-2 flex items-center gap-2">
                         <Settings className="h-4 w-4" />
-                        <span className="text-sm font-medium">
+                        <span className="text-foreground text-sm font-medium">
                             Instant Summary
                         </span>
                     </div>
-                    <p className="text-xs text-gray-700">
+                    <p className="text-muted-foreground text-xs">
                         Get meeting minutes and summary as soon as you finish
                     </p>
                 </div>

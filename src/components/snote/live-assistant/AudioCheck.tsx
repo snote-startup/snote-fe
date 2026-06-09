@@ -41,20 +41,20 @@ export function AudioCheck() {
                     )}
                 </div>
 
-                <h1 className="mb-3 text-2xl font-semibold text-gray-900">
+                <h1 className="text-foreground mb-3 text-2xl font-semibold">
                     Audio Check
                 </h1>
-                <p className="mb-8 text-gray-600">
+                <p className="text-muted-foreground mb-8">
                     {audioDetected
                         ? "Audio detected! You're all set to start recording."
                         : 'Speak into your microphone to test audio levels'}
                 </p>
 
                 {/* Audio Level Bars */}
-                <div className="mb-6 rounded-xl border border-gray-200 bg-white p-8">
+                <div className="border-border bg-card mb-6 rounded-xl border p-8">
                     <div className="mb-4 flex items-center gap-2">
-                        <Volume2 className="h-5 w-5 text-gray-600" />
-                        <span className="font-medium text-gray-900">
+                        <Volume2 className="text-muted-foreground h-5 w-5" />
+                        <span className="text-foreground font-medium">
                             Audio Level
                         </span>
                     </div>
@@ -70,7 +70,7 @@ export function AudioCheck() {
                                             : audioLevel > 40
                                               ? 'bg-green-500'
                                               : 'bg-yellow-500'
-                                        : 'bg-gray-200'
+                                        : 'bg-muted'
                                 }`}
                                 style={{
                                     height: `${Math.min(100, (i + 1) * 5)}%`,
@@ -79,7 +79,7 @@ export function AudioCheck() {
                         ))}
                     </div>
 
-                    <p className="mt-4 text-sm text-gray-500">
+                    <p className="text-muted-foreground mt-4 text-sm">
                         {audioLevel > 70
                             ? 'Audio level is high - reduce volume or move away from mic'
                             : audioLevel > 20
@@ -120,7 +120,7 @@ export function AudioCheck() {
                     </Button>
                 </div>
 
-                <p className="mt-6 text-xs text-gray-500">
+                <p className="text-muted-foreground mt-6 text-xs">
                     Recording will start automatically when you continue
                 </p>
             </div>

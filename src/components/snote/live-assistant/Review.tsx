@@ -162,16 +162,16 @@ Design review scheduled for this afternoon`,
     };
 
     return (
-        <div className="h-full overflow-auto bg-gray-50">
+        <div className="bg-background h-full overflow-auto">
             <div className="mx-auto max-w-6xl p-8">
                 {/* Header */}
                 <div className="mb-6">
                     <div className="mb-4 flex items-start justify-between">
                         <div>
-                            <h1 className="mb-2 text-3xl font-semibold text-gray-900">
+                            <h1 className="text-foreground mb-2 text-3xl font-semibold">
                                 {meeting.title}
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-muted-foreground">
                                 Meeting completed • {meeting.duration} minutes
                             </p>
                         </div>
@@ -192,13 +192,13 @@ Design review scheduled for this afternoon`,
                     </div>
 
                     {/* Success Banner */}
-                    <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
+                        <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                         <div>
-                            <p className="font-medium text-green-900">
+                            <p className="font-medium text-emerald-900 dark:text-emerald-100">
                                 Meeting processed successfully!
                             </p>
-                            <p className="text-sm text-green-700">
+                            <p className="text-sm text-emerald-700 dark:text-emerald-300">
                                 AI has generated your summary, meeting minutes,
                                 and action items. Review and edit below.
                             </p>
@@ -233,9 +233,9 @@ Design review scheduled for this afternoon`,
 
                     {/* Summary Tab */}
                     <TabsContent value="summary" className="space-y-4">
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
+                        <div className="border-border bg-card rounded-xl border p-6">
                             <div className="mb-4 flex items-center justify-between">
-                                <h2 className="font-semibold text-gray-900">
+                                <h2 className="text-foreground font-semibold">
                                     Meeting Summary
                                 </h2>
                                 <Button variant="ghost" size="sm">
@@ -253,9 +253,9 @@ Design review scheduled for this afternoon`,
 
                     {/* Minutes Tab */}
                     <TabsContent value="minutes" className="space-y-4">
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
+                        <div className="border-border bg-card rounded-xl border p-6">
                             <div className="mb-4 flex items-center justify-between">
-                                <h2 className="font-semibold text-gray-900">
+                                <h2 className="text-foreground font-semibold">
                                     Meeting Minutes
                                 </h2>
                                 <Button variant="ghost" size="sm">
@@ -273,15 +273,15 @@ Design review scheduled for this afternoon`,
 
                     {/* Tasks Tab */}
                     <TabsContent value="tasks" className="space-y-4">
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-4 font-semibold text-gray-900">
+                        <div className="border-border bg-card rounded-xl border p-6">
+                            <h2 className="text-foreground mb-4 font-semibold">
                                 Action Items
                             </h2>
 
                             {tasks.length === 0 ? (
                                 <div className="py-8 text-center">
-                                    <List className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                                    <p className="text-gray-600">
+                                    <List className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+                                    <p className="text-muted-foreground">
                                         No action items detected
                                     </p>
                                 </div>
@@ -290,7 +290,7 @@ Design review scheduled for this afternoon`,
                                     {tasks.map((task) => (
                                         <div
                                             key={task.id}
-                                            className="rounded-lg border border-gray-200 p-4 transition-colors hover:border-gray-300"
+                                            className="border-border hover:border-primary/50 rounded-lg border p-4 transition-colors"
                                         >
                                             <div className="flex items-start gap-3">
                                                 <button
@@ -301,12 +301,12 @@ Design review scheduled for this afternoon`,
                                                     }
                                                     className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 ${
                                                         task.status === 'done'
-                                                            ? 'border-blue-600 bg-blue-600'
-                                                            : 'border-gray-300 hover:border-blue-600'
+                                                            ? 'border-primary bg-primary'
+                                                            : 'border-muted-foreground/30 hover:border-primary'
                                                     }`}
                                                 >
                                                     {task.status === 'done' && (
-                                                        <CheckCircle className="h-3 w-3 fill-current text-white" />
+                                                        <CheckCircle className="text-primary-foreground h-3 w-3 fill-current" />
                                                     )}
                                                 </button>
 
@@ -332,11 +332,11 @@ Design review scheduled for this afternoon`,
                                                         className="mb-2 font-medium"
                                                     />
                                                     {task.description && (
-                                                        <p className="mb-2 text-sm text-gray-600">
+                                                        <p className="text-muted-foreground mb-2 text-sm">
                                                             {task.description}
                                                         </p>
                                                     )}
-                                                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                                                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
                                                         {task.assignee && (
                                                             <span>
                                                                 Assignee:{' '}
@@ -348,11 +348,11 @@ Design review scheduled for this afternoon`,
                                                                 className={`rounded-full px-2 py-0.5 text-xs ${
                                                                     task.priority ===
                                                                     'high'
-                                                                        ? 'bg-red-100 text-red-700'
+                                                                        ? 'bg-destructive/10 text-destructive'
                                                                         : task.priority ===
                                                                             'medium'
-                                                                          ? 'bg-yellow-100 text-yellow-700'
-                                                                          : 'bg-gray-100 text-gray-700'
+                                                                          ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                                                          : 'bg-muted text-muted-foreground'
                                                                 }`}
                                                             >
                                                                 {task.priority}
@@ -370,7 +370,7 @@ Design review scheduled for this afternoon`,
                                                         )
                                                     }
                                                 >
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
+                                                    <Trash2 className="text-destructive h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </div>
@@ -382,15 +382,15 @@ Design review scheduled for this afternoon`,
 
                     {/* Calendar Tab */}
                     <TabsContent value="calendar" className="space-y-4">
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-4 font-semibold text-gray-900">
+                        <div className="border-border bg-card rounded-xl border p-6">
+                            <h2 className="text-foreground mb-4 font-semibold">
                                 Calendar Suggestions
                             </h2>
 
                             {calendarEvents.length === 0 ? (
                                 <div className="py-8 text-center">
-                                    <CalendarIcon className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                                    <p className="text-gray-600">
+                                    <CalendarIcon className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+                                    <p className="text-muted-foreground">
                                         No calendar suggestions
                                     </p>
                                 </div>
@@ -401,16 +401,16 @@ Design review scheduled for this afternoon`,
                                             key={event.id}
                                             className={`rounded-lg border-2 p-4 transition-colors ${
                                                 event.isApproved
-                                                    ? 'border-green-300 bg-green-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-emerald-500/30 bg-emerald-500/5'
+                                                    : 'border-border hover:border-primary/50'
                                             }`}
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <h3 className="mb-2 font-medium text-gray-900">
+                                                    <h3 className="text-foreground mb-2 font-medium">
                                                         {event.title}
                                                     </h3>
-                                                    <div className="space-y-1 text-sm text-gray-600">
+                                                    <div className="text-muted-foreground space-y-1 text-sm">
                                                         <p>
                                                             {event.date.toLocaleDateString()}{' '}
                                                             at {event.time}
@@ -453,8 +453,8 @@ Design review scheduled for this afternoon`,
 
                     {/* Transcript Tab */}
                     <TabsContent value="transcript" className="space-y-4">
-                        <div className="rounded-xl border border-gray-200 bg-white p-6">
-                            <h2 className="mb-4 font-semibold text-gray-900">
+                        <div className="border-border bg-card rounded-xl border p-6">
+                            <h2 className="text-foreground mb-4 font-semibold">
                                 Full Transcript
                             </h2>
                             <ScrollArea className="h-96">
@@ -462,13 +462,13 @@ Design review scheduled for this afternoon`,
                                     {meeting.transcript.map((segment) => (
                                         <div
                                             key={segment.id}
-                                            className="border-b border-gray-100 pb-4 last:border-0"
+                                            className="border-border border-b pb-4 last:border-0"
                                         >
                                             <div className="mb-1 flex items-center gap-2">
-                                                <span className="text-sm font-medium text-gray-900">
+                                                <span className="text-foreground text-sm font-medium">
                                                     {segment.speaker}
                                                 </span>
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-muted-foreground text-xs">
                                                     {Math.floor(
                                                         segment.timestamp / 60,
                                                     )}
@@ -478,7 +478,7 @@ Design review scheduled for this afternoon`,
                                                         .padStart(2, '0')}
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700">
+                                            <p className="text-foreground">
                                                 {segment.text}
                                             </p>
                                         </div>
