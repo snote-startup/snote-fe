@@ -4,245 +4,323 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Search, Calendar, Clock, CheckCircle, FolderOpen } from 'lucide-react';
-import { useApp } from '@/providers/snote-app-provider';
-import { format } from 'date-fns';
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Search,
+    FolderOpen,
+    Mic,
+    Plus,
+    Loader2,
+    AlertCircle,
+    FileAudio,
+    ArrowRight,
+} from 'lucide-react';
+import { useProjects, useCreateProject } from '@/features/projects/hooks';
+import { toast } from 'sonner';
+
+function SkeletonCard() {
+    return (
+        <div className="border-border bg-card animate-pulse space-y-4 rounded-xl border p-6">
+            <div className="flex items-start justify-between">
+                <div className="flex-1 space-y-2">
+                    <div className="bg-muted h-5 w-1/3 rounded" />
+                    <div className="bg-muted h-4 w-1/4 rounded" />
+                    <div className="bg-muted h-4 w-3/4 rounded" />
+                </div>
+                <div className="bg-muted h-6 w-16 rounded" />
+            </div>
+        </div>
+    );
+}
 
 export function MeetingsList() {
     const router = useRouter();
-    const { meetings } = useApp();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [dateFilter, setDateFilter] = useState('all');
-    const [languageFilter, setLanguageFilter] = useState('all');
+    const { data: projects, isLoading, error, refetch } = useProjects();
+    const createMutation = useCreateProject();
 
-    // Filter meetings
-    const filteredMeetings = meetings.filter((meeting) => {
-        const matchesSearch = meeting.title
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [newTitle, setNewTitle] = useState('');
+    const [newDescription, setNewDescription] = useState('');
+    const [createError, setCreateError] = useState<string | null>(null);
+
+    const handleCreateSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newTitle.trim()) {
+            toast.error('Project title is required');
+            return;
+        }
+
+        setCreateError(null);
+        createMutation.mutate(
+            {
+                title: newTitle,
+                description: newDescription || null,
+            },
+            {
+                onSuccess: (projectId) => {
+                    setIsCreateOpen(false);
+                    setNewTitle('');
+                    setNewDescription('');
+                    toast.success('Project created successfully');
+                    router.push(`/meetings/${projectId}`);
+                },
+                onError: (err) => {
+                    setCreateError(err.message || 'Failed to create project');
+                },
+            },
+        );
+    };
+
+    // Filter projects client-side by title or description
+    const filteredProjects = (projects || []).filter((project) => {
+        const titleMatch = project.title
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
-        const matchesDate =
-            dateFilter === 'all' ||
-            (() => {
-                const now = new Date();
-                const meetingDate = new Date(meeting.date);
-                switch (dateFilter) {
-                    case 'today':
-                        return (
-                            meetingDate.toDateString() === now.toDateString()
-                        );
-                    case 'week':
-                        const weekAgo = new Date(
-                            now.getTime() - 7 * 24 * 60 * 60 * 1000,
-                        );
-                        return meetingDate >= weekAgo;
-                    case 'month':
-                        const monthAgo = new Date(
-                            now.getTime() - 30 * 24 * 60 * 60 * 1000,
-                        );
-                        return meetingDate >= monthAgo;
-                    default:
-                        return true;
-                }
-            })();
-        const matchesLanguage =
-            languageFilter === 'all' ||
-            meeting.inputLanguage.toLowerCase() === languageFilter;
-
-        return matchesSearch && matchesDate && matchesLanguage;
+        const descMatch = (project.description || '')
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
+        return titleMatch || descMatch;
     });
 
     return (
         <div className="mx-auto max-w-7xl p-8">
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="mb-2 text-3xl font-semibold text-gray-900">
-                    Meetings
-                </h1>
-                <p className="text-gray-600">
-                    View and manage all your recorded meetings
-                </p>
+            <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div data-tour="projects-header">
+                    <h1 className="text-foreground mb-2 text-3xl font-semibold">
+                        Meeting Projects
+                    </h1>
+                    <p className="text-muted-foreground">
+                        Each project represents one meeting or translation
+                        session.
+                    </p>
+                </div>
+                <Button
+                    data-tour="create-project-button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="self-start sm:w-auto"
+                >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create project
+                </Button>
             </div>
 
-            {/* Filters */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                    {/* Search */}
-                    <div className="md:col-span-2">
-                        <div className="relative">
-                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                            <Input
-                                placeholder="Search meetings..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Date Filter */}
-                    <div>
-                        <Select
-                            value={dateFilter}
-                            onValueChange={setDateFilter}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Date range" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All dates</SelectItem>
-                                <SelectItem value="today">Today</SelectItem>
-                                <SelectItem value="week">Past week</SelectItem>
-                                <SelectItem value="month">
-                                    Past month
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Language Filter */}
-                    <div>
-                        <Select
-                            value={languageFilter}
-                            onValueChange={setLanguageFilter}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Language" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">
-                                    All languages
-                                </SelectItem>
-                                <SelectItem value="english">English</SelectItem>
-                                <SelectItem value="spanish">Spanish</SelectItem>
-                                <SelectItem value="french">French</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+            {/* Filters / Actions */}
+            <div
+                data-tour="project-search"
+                className="border-border bg-card mb-6 rounded-xl border p-4"
+            >
+                <div className="relative">
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                    <Input
+                        placeholder="Search projects by title or description..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10"
+                    />
                 </div>
             </div>
 
-            {/* Meetings List */}
-            {filteredMeetings.length === 0 ? (
-                <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-                    <FolderOpen className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-                    <h2 className="mb-2 text-xl font-semibold text-gray-900">
-                        {searchQuery ||
-                        dateFilter !== 'all' ||
-                        languageFilter !== 'all'
-                            ? 'No meetings found'
-                            : 'No meetings yet'}
+            {/* Content States */}
+            {isLoading ? (
+                <div className="space-y-3">
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                </div>
+            ) : error ? (
+                <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-xl border p-8 text-center">
+                    <AlertCircle className="mx-auto mb-3 h-12 w-12" />
+                    <h2 className="mb-2 text-lg font-semibold">
+                        Failed to load projects
                     </h2>
-                    <p className="mb-6 text-gray-600">
-                        {searchQuery ||
-                        dateFilter !== 'all' ||
-                        languageFilter !== 'all'
-                            ? 'Try adjusting your filters'
-                            : 'Start recording meetings to see them here'}
+                    <p className="mb-4 text-sm opacity-90">
+                        {error?.message || 'An error occurred'}
                     </p>
-                    {!searchQuery &&
-                        dateFilter === 'all' &&
-                        languageFilter === 'all' && (
-                            <Button
-                                onClick={() =>
-                                    router.push('/live-assistant/setup')
-                                }
-                            >
-                                Start Your First Meeting
-                            </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => refetch()}
+                        className="border-destructive/30 hover:bg-destructive/10 text-destructive-foreground"
+                    >
+                        Retry Loading
+                    </Button>
+                </div>
+            ) : filteredProjects.length === 0 ? (
+                <div className="border-border bg-card rounded-xl border p-12 text-center">
+                    <div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                        {searchQuery ? (
+                            <FolderOpen className="text-muted-foreground h-8 w-8" />
+                        ) : (
+                            <Mic className="text-muted-foreground h-8 w-8" />
                         )}
+                    </div>
+                    <h2 className="text-foreground mb-2 text-xl font-semibold">
+                        {searchQuery
+                            ? 'No matching projects'
+                            : 'No projects yet'}
+                    </h2>
+                    <p className="text-muted-foreground mb-6">
+                        {searchQuery
+                            ? 'Try adjusting your search query'
+                            : 'Create a meeting project to upload audio and review transcripts.'}
+                    </p>
+                    {!searchQuery && (
+                        <Button onClick={() => setIsCreateOpen(true)}>
+                            Create project
+                        </Button>
+                    )}
                 </div>
             ) : (
-                <div className="space-y-3">
-                    {filteredMeetings.map((meeting) => (
+                <div data-tour="project-list" className="space-y-3">
+                    {filteredProjects.map((project, index) => (
                         <div
-                            key={meeting.id}
+                            key={project.id}
                             onClick={() =>
-                                router.push(`/meetings/${meeting.id}`)
+                                router.push(`/meetings/${project.id}`)
                             }
-                            className="cursor-pointer rounded-xl border border-gray-200 bg-white p-6 transition-all hover:border-blue-300 hover:shadow-md"
+                            data-tour={index === 0 ? 'project-card' : undefined}
+                            className="border-border hover:border-primary/50 hover:bg-accent/40 bg-card cursor-pointer rounded-xl border p-6 transition-all duration-150"
                         >
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                                        {meeting.title}
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="text-foreground mb-1 truncate text-lg font-semibold">
+                                        {project.title}
                                     </h3>
-
-                                    <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                                        <div className="flex items-center gap-1.5">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>
-                                                {format(
-                                                    meeting.date,
-                                                    'MMM d, yyyy',
-                                                )}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <Clock className="h-4 w-4" />
-                                            <span>{meeting.duration} min</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <span>
-                                                🌐 {meeting.inputLanguage}
-                                            </span>
-                                        </div>
-                                        {meeting.tasks.length > 0 && (
-                                            <div className="flex items-center gap-1.5">
-                                                <CheckCircle className="h-4 w-4" />
-                                                <span>
-                                                    {meeting.tasks.length} tasks
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <p className="line-clamp-2 text-gray-700">
-                                        {meeting.summary}
+                                    <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
+                                        {project.description ||
+                                            'No description'}
                                     </p>
-
-                                    {meeting.tags.length > 0 && (
-                                        <div className="mt-3 flex items-center gap-2">
-                                            {meeting.tags.map((tag) => (
-                                                <span
-                                                    key={tag}
-                                                    className="rounded-md bg-blue-50 px-2 py-1 text-xs text-blue-700"
-                                                >
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className="flex items-center gap-2 text-xs font-medium">
+                                        <span
+                                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 ${
+                                                project.audio_url
+                                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                    : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                                            }`}
+                                        >
+                                            <FileAudio className="h-3 w-3" />
+                                            {project.audio_url
+                                                ? 'Audio uploaded'
+                                                : 'Waiting for audio'}
+                                        </span>
+                                    </div>
                                 </div>
-
-                                <div
-                                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                                        meeting.status === 'completed'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-yellow-100 text-yellow-700'
-                                    }`}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="shrink-0 self-end sm:self-center"
                                 >
-                                    {meeting.status}
-                                </div>
+                                    Open
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
                     ))}
+                    <div className="text-muted-foreground mt-6 text-center text-sm">
+                        Showing {filteredProjects.length} of{' '}
+                        {projects?.length ?? 0} projects
+                    </div>
                 </div>
             )}
 
-            {/* Results count */}
-            {filteredMeetings.length > 0 && (
-                <div className="mt-6 text-center text-sm text-gray-600">
-                    Showing {filteredMeetings.length} of {meetings.length}{' '}
-                    meetings
-                </div>
-            )}
+            {/* Create Project Dialog */}
+            <Dialog
+                open={isCreateOpen}
+                onOpenChange={(open) => {
+                    setIsCreateOpen(open);
+                    if (!open) {
+                        setNewTitle('');
+                        setNewDescription('');
+                        setCreateError(null);
+                    }
+                }}
+            >
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Create Meeting Project</DialogTitle>
+                        <DialogDescription>
+                            Create a project for your meeting. You can upload
+                            the audio file and get transcripts once backend
+                            upload capability is ready.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleCreateSubmit}>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor="title"
+                                    className="text-foreground"
+                                >
+                                    Title{' '}
+                                    <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="title"
+                                    placeholder="e.g. Sales Sync - Q2 Planning"
+                                    value={newTitle}
+                                    onChange={(e) =>
+                                        setNewTitle(e.target.value)
+                                    }
+                                    required
+                                    disabled={createMutation.isPending}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label
+                                    htmlFor="description"
+                                    className="text-foreground"
+                                >
+                                    Description
+                                </Label>
+                                <Textarea
+                                    id="description"
+                                    placeholder="Brief details about the meeting session..."
+                                    value={newDescription}
+                                    onChange={(e) =>
+                                        setNewDescription(e.target.value)
+                                    }
+                                    disabled={createMutation.isPending}
+                                />
+                            </div>
+                            {createError && (
+                                <div className="text-destructive bg-destructive/10 flex items-start gap-2 rounded-lg p-3 text-sm">
+                                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                                    <span>{createError}</span>
+                                </div>
+                            )}
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsCreateOpen(false)}
+                                disabled={createMutation.isPending}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={createMutation.isPending}
+                            >
+                                {createMutation.isPending && (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                Create Project
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
