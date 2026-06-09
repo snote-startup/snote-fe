@@ -1,8 +1,3 @@
-export interface ParsedAuthTokens {
-    accessToken: string;
-    refreshToken?: string;
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null;
 }
@@ -21,7 +16,7 @@ function parseJsonString(value: string): unknown {
     }
 }
 
-function readTokenShape(body: unknown): ParsedAuthTokens | null {
+function readTokenShape(body: unknown): string | null {
     if (!isRecord(body)) {
         return null;
     }
@@ -31,11 +26,9 @@ function readTokenShape(body: unknown): ParsedAuthTokens | null {
         readString(body.access_token) ??
         readString(body.token) ??
         readString(body.jwt);
-    const refreshToken =
-        readString(body.refreshToken) ?? readString(body.refresh_token);
 
     if (accessToken) {
-        return { accessToken, refreshToken };
+        return accessToken;
     }
 
     if (isRecord(body.data)) {
@@ -45,7 +38,7 @@ function readTokenShape(body: unknown): ParsedAuthTokens | null {
     return null;
 }
 
-export function parseAuthTokens(body: unknown): ParsedAuthTokens {
+export function parseAccessToken(body: unknown): string {
     if (typeof body === 'string') {
         const raw = body.trim();
         if (raw === '') {
@@ -60,7 +53,7 @@ export function parseAuthTokens(body: unknown): ParsedAuthTokens {
             }
         }
 
-        return { accessToken: raw };
+        return raw;
     }
 
     const parsedTokens = readTokenShape(body);

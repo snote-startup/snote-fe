@@ -1,48 +1,28 @@
 import {
     clearStoredAuthTokens,
     getStoredAuthTokens,
-    persistAuthTokens,
+    persistAccessToken,
 } from '@/lib/api/auth-token-storage';
 import * as authApi from '@/lib/api/auth-api';
+import type { MinimalAccount } from '@/lib/api/auth-api';
 import { create } from 'zustand';
 
-export type Role = 'admin' | 'user';
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    image: string | null;
-    role?: Role | null;
-}
-
-interface LoginInput {
-    email: string;
-    password: string;
-}
-
-interface RegisterInput {
-    email: string;
-    name: string;
-    password: string;
-}
+export type Role = MinimalAccount['role'];
+export type User = MinimalAccount;
 
 interface AuthState {
-    user: User | null;
+    user: MinimalAccount | null;
     accessToken: string | null;
-    refreshToken: string | null;
     isAuthenticated: boolean;
     isCheckingAuth: boolean;
+    isSubmitting: boolean;
     authError: string | null;
-    setAuth: (user: User | null) => void;
-    setTokens: (tokens: {
-        accessToken: string;
-        refreshToken?: string | null;
-    }) => void;
+    setAuth: (user: MinimalAccount | null) => void;
+    setAccessToken: (accessToken: string) => void;
     clearAuthError: () => void;
-    login: (input: LoginInput) => Promise<void>;
-    register: (input: RegisterInput) => Promise<void>;
-    refresh: () => Promise<boolean>;
+    login: (email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    refreshSession: () => Promise<boolean>;
     bootstrapSession: () => Promise<void>;
     logout: () => void;
 }
@@ -55,22 +35,23 @@ function toErrorMessage(error: unknown) {
     return 'Authentication request failed. Please try again.';
 }
 
-function normalizeUser(user: User): User {
-    return {
-        id: String(user.id ?? user.email),
-        name: user.name || user.email,
-        email: user.email,
-        image: user.image ?? null,
-        role: user.role ?? null,
-    };
+function clearSessionState(set: (state: Partial<AuthState>) => void) {
+    clearStoredAuthTokens();
+    set({
+        user: null,
+        accessToken: null,
+        isAuthenticated: false,
+        isCheckingAuth: false,
+        isSubmitting: false,
+    });
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     accessToken: null,
-    refreshToken: null,
     isAuthenticated: false,
     isCheckingAuth: true,
+    isSubmitting: false,
     authError: null,
     setAuth: (user) =>
         set({
@@ -78,29 +59,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isAuthenticated: !!user,
             isCheckingAuth: false,
         }),
-    setTokens: ({ accessToken, refreshToken }) => {
-        persistAuthTokens({ accessToken, refreshToken });
-        set({
-            accessToken,
-            refreshToken: refreshToken ?? get().refreshToken,
-        });
+    setAccessToken: (accessToken) => {
+        persistAccessToken(accessToken);
+        set({ accessToken });
     },
     clearAuthError: () => set({ authError: null }),
-    login: async (input) => {
-        set({ authError: null, isCheckingAuth: true });
+    login: async (email, password) => {
+        set({ authError: null, isSubmitting: true });
 
         try {
-            const tokens = await authApi.login(input);
-            get().setTokens(tokens);
+            const accessToken = await authApi.login({ email, password });
+            get().setAccessToken(accessToken);
             const user = await authApi.me();
-            const latestTokens = getStoredAuthTokens();
 
             set({
-                user: normalizeUser(user),
-                accessToken: latestTokens.accessToken,
-                refreshToken: latestTokens.refreshToken,
+                user,
+                accessToken,
                 isAuthenticated: true,
                 isCheckingAuth: false,
+                isSubmitting: false,
                 authError: null,
             });
         } catch (error) {
@@ -108,29 +85,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({
                 user: null,
                 accessToken: null,
-                refreshToken: null,
                 isAuthenticated: false,
                 isCheckingAuth: false,
+                isSubmitting: false,
                 authError: toErrorMessage(error),
             });
             throw error;
         }
     },
-    register: async (input) => {
-        set({ authError: null, isCheckingAuth: true });
+    register: async (name, email, password) => {
+        set({ authError: null, isSubmitting: true });
 
         try {
-            const tokens = await authApi.register(input);
-            get().setTokens(tokens);
+            const accessToken = await authApi.register({
+                name,
+                email,
+                password,
+            });
+            get().setAccessToken(accessToken);
             const user = await authApi.me();
-            const latestTokens = getStoredAuthTokens();
 
             set({
-                user: normalizeUser(user),
-                accessToken: latestTokens.accessToken,
-                refreshToken: latestTokens.refreshToken,
+                user,
+                accessToken,
                 isAuthenticated: true,
                 isCheckingAuth: false,
+                isSubmitting: false,
                 authError: null,
             });
         } catch (error) {
@@ -138,93 +118,74 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({
                 user: null,
                 accessToken: null,
-                refreshToken: null,
                 isAuthenticated: false,
                 isCheckingAuth: false,
+                isSubmitting: false,
                 authError: toErrorMessage(error),
             });
             throw error;
         }
     },
-    refresh: async () => {
-        const { accessToken, refreshToken } = get();
-        const tokenForRefresh = refreshToken ?? accessToken;
-
-        if (!tokenForRefresh) {
-            return false;
-        }
-
+    refreshSession: async () => {
         try {
-            const tokens = await authApi.refresh(tokenForRefresh);
-            get().setTokens(tokens);
+            const accessToken = await authApi.refresh();
+            get().setAccessToken(accessToken);
+            const user = await authApi.me();
+
+            set({
+                user,
+                accessToken,
+                isAuthenticated: true,
+                isCheckingAuth: false,
+                isSubmitting: false,
+                authError: null,
+            });
+
             return true;
         } catch {
-            get().logout();
+            clearSessionState(set);
             return false;
         }
     },
     bootstrapSession: async () => {
-        const storedTokens = getStoredAuthTokens();
-
-        if (!storedTokens.accessToken) {
-            set({
-                user: null,
-                accessToken: null,
-                refreshToken: null,
-                isAuthenticated: false,
-                isCheckingAuth: false,
-            });
-            return;
-        }
+        const { accessToken } = getStoredAuthTokens();
 
         set({
-            accessToken: storedTokens.accessToken,
-            refreshToken: storedTokens.refreshToken,
+            accessToken,
             isCheckingAuth: true,
+            authError: null,
         });
+
+        if (!accessToken) {
+            await get().refreshSession();
+            return;
+        }
 
         try {
             const user = await authApi.me();
             const latestTokens = getStoredAuthTokens();
+
             set({
-                user: normalizeUser(user),
+                user,
                 accessToken: latestTokens.accessToken,
-                refreshToken: latestTokens.refreshToken,
                 isAuthenticated: true,
                 isCheckingAuth: false,
+                isSubmitting: false,
                 authError: null,
             });
         } catch {
-            const refreshed = await get().refresh();
-
-            if (!refreshed) {
-                return;
-            }
-
-            try {
-                const user = await authApi.me();
-                const latestTokens = getStoredAuthTokens();
-                set({
-                    user: normalizeUser(user),
-                    accessToken: latestTokens.accessToken,
-                    refreshToken: latestTokens.refreshToken,
-                    isAuthenticated: true,
-                    isCheckingAuth: false,
-                    authError: null,
-                });
-            } catch {
-                get().logout();
-            }
+            clearSessionState(set);
         }
     },
     logout: () => {
+        // TODO: call backend logout/revoke endpoint when OpenAPI exposes it.
         clearStoredAuthTokens();
         set({
             user: null,
             accessToken: null,
-            refreshToken: null,
             isAuthenticated: false,
             isCheckingAuth: false,
+            isSubmitting: false,
             authError: null,
         });
     },
