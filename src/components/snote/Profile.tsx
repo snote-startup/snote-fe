@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
 import {
     Dialog,
     DialogContent,
@@ -70,19 +71,19 @@ export function Profile() {
         <div className="mx-auto max-w-4xl p-8">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="mb-2 text-3xl font-semibold text-gray-900">
+                <h1 className="text-foreground mb-2 text-3xl font-semibold">
                     Profile Settings
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                     Manage your account settings and preferences
                 </p>
             </div>
 
             {/* Profile Header */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
+            <div className="border-border bg-card mb-6 rounded-xl border p-6">
                 <div className="flex items-center gap-6">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600">
-                        <span className="text-3xl font-semibold text-white">
+                    <div className="from-primary to-primary/80 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br">
+                        <span className="text-primary-foreground text-3xl font-semibold">
                             {user.name
                                 .split(' ')
                                 .map((n) => n[0])
@@ -90,12 +91,12 @@ export function Profile() {
                         </span>
                     </div>
                     <div>
-                        <h2 className="mb-1 text-2xl font-semibold text-gray-900">
+                        <h2 className="text-foreground mb-1 text-2xl font-semibold">
                             {user.name}
                         </h2>
-                        <p className="text-gray-600">{user.email}</p>
+                        <p className="text-muted-foreground">{user.email}</p>
                         <div className="mt-2">
-                            <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 capitalize">
+                            <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-3 py-1 text-sm font-medium capitalize">
                                 {user.subscription.plan} Plan
                             </span>
                         </div>
@@ -122,8 +123,8 @@ export function Profile() {
 
                 {/* Account Tab */}
                 <TabsContent value="account">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <h2 className="mb-6 text-lg font-semibold text-gray-900">
+                    <div className="border-border bg-card rounded-xl border p-6">
+                        <h2 className="text-foreground mb-6 text-lg font-semibold">
                             Account Information
                         </h2>
 
@@ -162,12 +163,12 @@ export function Profile() {
                         </form>
 
                         {/* Danger Zone */}
-                        <div className="mt-8 border-t border-gray-200 pt-8">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                        <div className="border-border mt-8 border-t pt-8">
+                            <h3 className="text-foreground mb-4 text-lg font-semibold">
                                 Danger Zone
                             </h3>
-                            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                                <p className="mb-3 text-sm text-red-700">
+                            <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
+                                <p className="text-destructive mb-3 text-sm">
                                     Once you delete your account, there is no
                                     going back. This will permanently delete all
                                     your meetings, tasks, and data.
@@ -185,8 +186,8 @@ export function Profile() {
 
                 {/* Security Tab */}
                 <TabsContent value="security">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <h2 className="mb-6 text-lg font-semibold text-gray-900">
+                    <div className="border-border bg-card rounded-xl border p-6">
+                        <h2 className="text-foreground mb-6 text-lg font-semibold">
                             Change Password
                         </h2>
 
@@ -222,7 +223,7 @@ export function Profile() {
                                     }
                                     className="mt-2"
                                 />
-                                <p className="mt-1.5 text-sm text-gray-500">
+                                <p className="text-muted-foreground mt-1.5 text-sm">
                                     Must be at least 8 characters
                                 </p>
                             </div>
@@ -251,11 +252,11 @@ export function Profile() {
                         </form>
 
                         {/* Two-Factor Authentication */}
-                        <div className="mt-8 border-t border-gray-200 pt-8">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                        <div className="border-border mt-8 border-t pt-8">
+                            <h3 className="text-foreground mb-4 text-lg font-semibold">
                                 Two-Factor Authentication
                             </h3>
-                            <p className="mb-4 text-gray-600">
+                            <p className="text-muted-foreground mb-4">
                                 Add an extra layer of security to your account
                             </p>
                             <Button variant="outline">Enable 2FA</Button>
@@ -265,8 +266,8 @@ export function Profile() {
 
                 {/* Notifications Tab */}
                 <TabsContent value="notifications">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6">
-                        <h2 className="mb-6 text-lg font-semibold text-gray-900">
+                    <div className="border-border bg-card rounded-xl border p-6">
+                        <h2 className="text-foreground mb-6 text-lg font-semibold">
                             Notification Preferences
                         </h2>
 
@@ -274,126 +275,68 @@ export function Profile() {
                             {/* Email Notifications */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-medium text-gray-900">
+                                    <p className="text-foreground font-medium">
                                         Email Notifications
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-muted-foreground text-sm">
                                         Receive email updates about your account
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        setEmailNotifications(
-                                            !emailNotifications,
-                                        )
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        emailNotifications
-                                            ? 'bg-blue-600'
-                                            : 'bg-gray-200'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            emailNotifications
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
+                                <Switch
+                                    checked={emailNotifications}
+                                    onCheckedChange={setEmailNotifications}
+                                />
                             </div>
 
                             {/* Meeting Reminders */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-medium text-gray-900">
+                                    <p className="text-foreground font-medium">
                                         Meeting Reminders
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-muted-foreground text-sm">
                                         Get reminders for upcoming calendar
                                         events
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        setMeetingReminders(!meetingReminders)
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        meetingReminders
-                                            ? 'bg-blue-600'
-                                            : 'bg-gray-200'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            meetingReminders
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
+                                <Switch
+                                    checked={meetingReminders}
+                                    onCheckedChange={setMeetingReminders}
+                                />
                             </div>
 
                             {/* Task Notifications */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-medium text-gray-900">
+                                    <p className="text-foreground font-medium">
                                         Task Notifications
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-muted-foreground text-sm">
                                         Notifications about task assignments and
                                         updates
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        setTaskNotifications(!taskNotifications)
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        taskNotifications
-                                            ? 'bg-blue-600'
-                                            : 'bg-gray-200'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            taskNotifications
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
+                                <Switch
+                                    checked={taskNotifications}
+                                    onCheckedChange={setTaskNotifications}
+                                />
                             </div>
 
                             {/* Weekly Digest */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-medium text-gray-900">
+                                    <p className="text-foreground font-medium">
                                         Weekly Digest
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-muted-foreground text-sm">
                                         Receive a weekly summary of your
                                         meetings and tasks
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() =>
-                                        setWeeklyDigest(!weeklyDigest)
-                                    }
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                        weeklyDigest
-                                            ? 'bg-blue-600'
-                                            : 'bg-gray-200'
-                                    }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            weeklyDigest
-                                                ? 'translate-x-6'
-                                                : 'translate-x-1'
-                                        }`}
-                                    />
-                                </button>
+                                <Switch
+                                    checked={weeklyDigest}
+                                    onCheckedChange={setWeeklyDigest}
+                                />
                             </div>
 
                             <div className="pt-6">
