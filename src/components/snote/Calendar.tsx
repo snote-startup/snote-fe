@@ -102,10 +102,10 @@ export function Calendar() {
                 <div className="mb-6">
                     <div className="mb-4 flex items-center justify-between">
                         <div>
-                            <h1 className="mb-2 text-3xl font-semibold text-gray-900">
+                            <h1 className="text-foreground mb-2 text-3xl font-semibold">
                                 Calendar
                             </h1>
-                            <p className="text-gray-600">
+                            <p className="text-muted-foreground">
                                 View and manage your meeting-related calendar
                                 events
                             </p>
@@ -113,7 +113,7 @@ export function Calendar() {
                     </div>
 
                     {/* Calendar Controls */}
-                    <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4">
+                    <div className="border-border bg-card flex items-center justify-between rounded-xl border p-4">
                         <div className="flex items-center gap-3">
                             <Button
                                 variant="outline"
@@ -122,7 +122,7 @@ export function Calendar() {
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <h2 className="min-w-[200px] text-center text-lg font-semibold text-gray-900">
+                            <h2 className="text-foreground min-w-[200px] text-center text-lg font-semibold">
                                 {format(currentDate, 'MMMM yyyy')}
                             </h2>
                             <Button
@@ -144,14 +144,14 @@ export function Calendar() {
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                <div className="border-border bg-card overflow-hidden rounded-xl border">
                     {/* Day Headers */}
-                    <div className="grid grid-cols-7 border-b border-gray-200">
+                    <div className="border-border grid grid-cols-7 border-b">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
                             (day) => (
                                 <div
                                     key={day}
-                                    className="border-r border-gray-200 p-3 text-center text-sm font-medium text-gray-600 last:border-r-0"
+                                    className="border-border text-muted-foreground border-r p-3 text-center text-sm font-medium last:border-r-0"
                                 >
                                     {day}
                                 </div>
@@ -166,7 +166,7 @@ export function Calendar() {
                                 return (
                                     <div
                                         key={`empty-${index}`}
-                                        className="h-32 border-r border-b border-gray-200 bg-gray-50 last:border-r-0"
+                                        className="border-border bg-muted/20 h-32 border-r border-b last:border-r-0"
                                     />
                                 );
                             }
@@ -181,8 +181,8 @@ export function Calendar() {
                             return (
                                 <div
                                     key={day.toISOString()}
-                                    className={`h-32 border-r border-b border-gray-200 p-2 last:border-r-0 ${
-                                        !isCurrentMonth ? 'bg-gray-50' : ''
+                                    className={`border-border h-32 border-r border-b p-2 last:border-r-0 ${
+                                        !isCurrentMonth ? 'bg-muted/20' : ''
                                     }`}
                                 >
                                     {/* Day Number */}
@@ -190,10 +190,10 @@ export function Calendar() {
                                         <span
                                             className={`text-sm font-medium ${
                                                 isToday
-                                                    ? 'flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white'
+                                                    ? 'bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full'
                                                     : !isCurrentMonth
-                                                      ? 'text-gray-400'
-                                                      : 'text-gray-900'
+                                                      ? 'text-muted-foreground/50'
+                                                      : 'text-foreground'
                                             }`}
                                         >
                                             {format(day, 'd')}
@@ -208,13 +208,13 @@ export function Calendar() {
                                                 onClick={() =>
                                                     handleEventClick(event)
                                                 }
-                                                className="w-full truncate rounded bg-blue-100 px-2 py-1 text-left text-xs text-blue-900 transition-colors hover:bg-blue-200"
+                                                className="bg-primary/10 text-primary hover:bg-primary/20 w-full truncate rounded px-2 py-1 text-left text-xs transition-colors"
                                             >
                                                 {event.time} - {event.title}
                                             </button>
                                         ))}
                                         {dayEvents.length > 2 && (
-                                            <div className="px-2 text-xs text-gray-500">
+                                            <div className="text-muted-foreground px-2 text-xs">
                                                 +{dayEvents.length - 2} more
                                             </div>
                                         )}
@@ -226,15 +226,17 @@ export function Calendar() {
                 </div>
 
                 {/* Upcoming Events */}
-                <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
-                    <h2 className="mb-4 font-semibold text-gray-900">
+                <div className="border-border bg-card mt-6 rounded-xl border p-6">
+                    <h2 className="text-foreground mb-4 font-semibold">
                         Upcoming Events
                     </h2>
 
                     {calendarEvents.length === 0 ? (
                         <div className="py-8 text-center">
-                            <CalendarIcon className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                            <p className="text-gray-600">No upcoming events</p>
+                            <CalendarIcon className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+                            <p className="text-muted-foreground">
+                                No upcoming events
+                            </p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -262,14 +264,14 @@ export function Calendar() {
                                             onClick={() =>
                                                 handleEventClick(event)
                                             }
-                                            className="cursor-pointer rounded-lg border border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50/50"
+                                            className="border-border hover:border-primary/50 hover:bg-primary/5 cursor-pointer rounded-lg border p-4 transition-colors"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <h3 className="mb-1 font-medium text-gray-900">
+                                                    <h3 className="text-foreground mb-1 font-medium">
                                                         {event.title}
                                                     </h3>
-                                                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                    <div className="text-muted-foreground flex items-center gap-4 text-sm">
                                                         <span className="flex items-center gap-1">
                                                             <CalendarIcon className="h-4 w-4" />
                                                             {format(
@@ -288,7 +290,7 @@ export function Calendar() {
                                                         </span>
                                                     </div>
                                                     {eventMeeting && (
-                                                        <p className="mt-2 text-xs text-blue-600">
+                                                        <p className="text-primary mt-2 text-xs">
                                                             From:{' '}
                                                             {eventMeeting.title}
                                                         </p>
@@ -313,10 +315,10 @@ export function Calendar() {
                     {selectedEvent && (
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-600">
+                                <label className="text-muted-foreground text-sm font-medium">
                                     Date & Time
                                 </label>
-                                <p className="mt-1 text-gray-900">
+                                <p className="text-foreground mt-1">
                                     {format(
                                         new Date(selectedEvent.date),
                                         'MMMM d, yyyy',
@@ -326,17 +328,17 @@ export function Calendar() {
                             </div>
 
                             <div>
-                                <label className="text-sm font-medium text-gray-600">
+                                <label className="text-muted-foreground text-sm font-medium">
                                     Duration
                                 </label>
-                                <p className="mt-1 text-gray-900">
+                                <p className="text-foreground mt-1">
                                     {selectedEvent.duration} minutes
                                 </p>
                             </div>
 
                             {selectedEvent.meetingId && (
                                 <div>
-                                    <label className="text-sm font-medium text-gray-600">
+                                    <label className="text-muted-foreground text-sm font-medium">
                                         Related Meeting
                                     </label>
                                     <Button
@@ -355,7 +357,7 @@ export function Calendar() {
                                 </div>
                             )}
 
-                            <div className="flex gap-2 border-t border-gray-200 pt-4">
+                            <div className="border-border flex gap-2 border-t pt-4">
                                 <Button
                                     variant="outline"
                                     className="flex-1"
