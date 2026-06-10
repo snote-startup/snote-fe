@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Settings, AlertCircle, Plus, Loader2 } from 'lucide-react';
+import { Settings, AlertCircle, Plus, Loader2, Check } from 'lucide-react';
 import { useApp } from '@/providers/snote-app-provider';
 import { useCreateProject } from '@/features/projects/hooks';
 import { toast } from 'sonner';
@@ -287,19 +287,7 @@ export function LiveAssistantSetup() {
                                             {audioSources.includes(
                                                 source.value,
                                             ) && (
-                                                <svg
-                                                    className="text-primary-foreground h-3 w-3"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={3}
-                                                        d="M5 13l4 4L19 7"
-                                                    />
-                                                </svg>
+                                                <Check className="text-primary-foreground h-3 w-3" strokeWidth={3} />
                                             )}
                                         </div>
                                         <div>

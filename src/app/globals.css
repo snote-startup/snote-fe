@@ -269,6 +269,24 @@
     }
 }
 
+/* Custom cursor — applied to body when CustomCursor component is active */
+body.cursor-none {
+    cursor: none;
+}
+body.cursor-none a,
+body.cursor-none button,
+body.cursor-none [role='button'],
+body.cursor-none label {
+    cursor: none;
+}
+/* Restore native cursor on text inputs so they stay usable */
+body.cursor-none input,
+body.cursor-none textarea,
+body.cursor-none select,
+body.cursor-none [contenteditable] {
+    cursor: text;
+}
+
 /* SNOTE Brand Purple Utilities */
 @layer utilities {
     .bg-purple-primary {

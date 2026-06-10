@@ -156,25 +156,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             authError: null,
         });
 
-        if (!accessToken) {
-            await get().refreshSession();
-            return;
-        }
-
         try {
-            const user = await authApi.me();
-            const latestTokens = getStoredAuthTokens();
+            if (!accessToken) {
+                await get().refreshSession();
+                return;
+            }
 
-            set({
-                user,
-                accessToken: latestTokens.accessToken,
-                isAuthenticated: true,
-                isCheckingAuth: false,
-                isSubmitting: false,
-                authError: null,
-            });
-        } catch {
-            clearSessionState(set);
+            try {
+                const user = await authApi.me();
+                const latestTokens = getStoredAuthTokens();
+
+                set({
+                    user,
+                    accessToken: latestTokens.accessToken,
+                    isAuthenticated: true,
+                    isSubmitting: false,
+                    authError: null,
+                });
+            } catch {
+                clearSessionState(set);
+            }
+        } finally {
+            set({ isCheckingAuth: false });
         }
     },
     logout: () => {

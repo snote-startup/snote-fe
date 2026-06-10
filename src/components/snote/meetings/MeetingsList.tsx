@@ -16,31 +16,18 @@ import {
 } from '@/components/ui/dialog';
 import {
     Search,
-    FolderOpen,
     Mic,
     Plus,
-    Loader2,
-    AlertCircle,
     FileAudio,
     ArrowRight,
+    AlertCircle,
+    Loader2,
 } from 'lucide-react';
 import { useProjects, useCreateProject } from '@/features/projects/hooks';
 import { toast } from 'sonner';
-
-function SkeletonCard() {
-    return (
-        <div className="border-border bg-card animate-pulse space-y-4 rounded-xl border p-6">
-            <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-2">
-                    <div className="bg-muted h-5 w-1/3 rounded" />
-                    <div className="bg-muted h-4 w-1/4 rounded" />
-                    <div className="bg-muted h-4 w-3/4 rounded" />
-                </div>
-                <div className="bg-muted h-6 w-16 rounded" />
-            </div>
-        </div>
-    );
-}
+import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
+import { AppErrorState } from '@/components/snote/shared/AppErrorState';
+import { AppEmptyState } from '@/components/snote/shared/AppEmptyState';
 
 export function MeetingsList() {
     const router = useRouter();
@@ -133,53 +120,31 @@ export function MeetingsList() {
 
             {/* Content States */}
             {isLoading ? (
-                <div className="space-y-3">
-                    <SkeletonCard />
-                    <SkeletonCard />
-                    <SkeletonCard />
-                </div>
+                <AppLoadingState variant="list" />
             ) : error ? (
-                <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-xl border p-8 text-center">
-                    <AlertCircle className="mx-auto mb-3 h-12 w-12" />
-                    <h2 className="mb-2 text-lg font-semibold">
-                        Failed to load projects
-                    </h2>
-                    <p className="mb-4 text-sm opacity-90">
-                        {error?.message || 'An error occurred'}
-                    </p>
-                    <Button
-                        variant="outline"
-                        onClick={() => refetch()}
-                        className="border-destructive/30 hover:bg-destructive/10 text-destructive-foreground"
-                    >
-                        Retry Loading
-                    </Button>
-                </div>
+                <AppErrorState
+                    title="Failed to load projects"
+                    error={error}
+                    onRetry={() => refetch()}
+                />
             ) : filteredProjects.length === 0 ? (
-                <div className="border-border bg-card rounded-xl border p-12 text-center">
-                    <div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-                        {searchQuery ? (
-                            <FolderOpen className="text-muted-foreground h-8 w-8" />
-                        ) : (
-                            <Mic className="text-muted-foreground h-8 w-8" />
-                        )}
-                    </div>
-                    <h2 className="text-foreground mb-2 text-xl font-semibold">
-                        {searchQuery
-                            ? 'No matching projects'
-                            : 'No projects yet'}
-                    </h2>
-                    <p className="text-muted-foreground mb-6">
-                        {searchQuery
+                <AppEmptyState
+                    title={searchQuery ? 'No matching projects' : 'No projects yet'}
+                    description={
+                        searchQuery
                             ? 'Try adjusting your search query'
-                            : 'Create a meeting project to upload audio and review transcripts.'}
-                    </p>
-                    {!searchQuery && (
-                        <Button onClick={() => setIsCreateOpen(true)}>
-                            Create project
-                        </Button>
-                    )}
-                </div>
+                            : 'Create a meeting project to upload audio and review transcripts.'
+                    }
+                    icon={searchQuery ? Search : Mic}
+                    action={
+                        !searchQuery
+                            ? {
+                                  label: 'Create project',
+                                  onClick: () => setIsCreateOpen(true),
+                              }
+                            : undefined
+                    }
+                />
             ) : (
                 <div data-tour="project-list" className="space-y-3">
                     {filteredProjects.map((project, index) => (
@@ -249,9 +214,9 @@ export function MeetingsList() {
                     <DialogHeader>
                         <DialogTitle>Create Meeting Project</DialogTitle>
                         <DialogDescription>
-                            Create a project for your meeting. You can upload
-                            the audio file and get transcripts once backend
-                            upload capability is ready.
+                            Create a project for your meeting. Upload audio
+                            to generate a transcript and use AI chat to
+                            analyze your meeting.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreateSubmit}>

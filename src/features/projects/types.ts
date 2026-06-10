@@ -16,7 +16,7 @@ export interface UpdateProjectRequest {
 }
 
 export interface TranscriptSegment {
-    id?: string;
+    id: string;
     speaker: string;
     text: string;
     start: number;
@@ -30,6 +30,7 @@ export interface ChatMessage {
     role: ChatRole;
     content: string;
     created_at: string;
+    references?: string[];
 }
 
 export interface PaginatedChatMessages {
