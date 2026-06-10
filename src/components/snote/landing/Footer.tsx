@@ -76,7 +76,7 @@ export function Footer() {
 
                 {/* Bottom bar */}
                 <div className="border-border mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-muted-foreground text-xs" suppressHydrationWarning>
                         © {new Date().getFullYear()} Snote. Meeting
                         transcription workspace.
                     </p>

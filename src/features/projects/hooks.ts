@@ -6,6 +6,7 @@ import {
     updateProject,
     getProjectTranscript,
     getProjectChatMessages,
+    uploadProjectAudio,
 } from './api';
 import { CreateProjectRequest, UpdateProjectRequest } from './types';
 
@@ -56,11 +57,21 @@ export function useUpdateProject(id: string) {
     });
 }
 
-export function useProjectTranscript(id: string) {
+export interface UseProjectTranscriptOptions {
+    /** Polling interval in ms. Set to a number to enable polling. Pass false or undefined to disable. */
+    refetchInterval?: number | false;
+    enabled?: boolean;
+}
+
+export function useProjectTranscript(
+    id: string,
+    options?: UseProjectTranscriptOptions,
+) {
     return useQuery({
         queryKey: projectKeys.transcript(id),
         queryFn: () => getProjectTranscript(id),
-        enabled: !!id,
+        enabled: options?.enabled !== undefined ? options.enabled && !!id : !!id,
+        refetchInterval: options?.refetchInterval,
     });
 }
 
@@ -72,5 +83,25 @@ export function useProjectChatMessages(
         queryKey: projectKeys.chat(id, params?.cursor),
         queryFn: () => getProjectChatMessages(id, params),
         enabled: !!id,
+    });
+}
+
+/**
+ * Upload audio mutation.
+ * On success: invalidates project detail, transcript list, and project list.
+ */
+export function useUploadProjectAudio(id: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (file: File) => uploadProjectAudio(id, file),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: projectKeys.detail(id),
+            });
+            queryClient.invalidateQueries({
+                queryKey: projectKeys.transcript(id),
+            });
+            queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+        },
     });
 }

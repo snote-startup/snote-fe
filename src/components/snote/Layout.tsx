@@ -22,6 +22,7 @@ import { useProductTour } from '@/features/onboarding/use-product-tour';
 import { useApp } from '@/providers/snote-app-provider';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/snote/ThemeToggle';
+import { PageTransition } from '@/components/snote/shared/PageTransition';
 
 // ─── Nav Links ────────────────────────────────────────────────────────────────
 
@@ -358,7 +359,9 @@ export function Layout({ children }: LayoutProps) {
                 </header>
 
                 {/* Page content */}
-                <div className="flex-1 overflow-auto">{children}</div>
+                <div className="flex-1 overflow-auto">
+                    <PageTransition key={pathname}>{children}</PageTransition>
+                </div>
             </div>
         </div>
     );

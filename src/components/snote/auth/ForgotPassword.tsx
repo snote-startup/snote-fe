@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,19 +23,7 @@ export function ForgotPassword() {
                 <div className="w-full max-w-md">
                     <div className="mb-8 text-center">
                         <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
-                            <svg
-                                className="h-8 w-8 text-green-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
+                            <CheckCircle2 className="h-8 w-8 text-green-600" />
                         </div>
                         <h1 className="text-2xl font-semibold text-gray-900">
                             Check your email
