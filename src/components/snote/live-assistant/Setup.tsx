@@ -287,7 +287,10 @@ export function LiveAssistantSetup() {
                                             {audioSources.includes(
                                                 source.value,
                                             ) && (
-                                                <Check className="text-primary-foreground h-3 w-3" strokeWidth={3} />
+                                                <Check
+                                                    className="text-primary-foreground h-3 w-3"
+                                                    strokeWidth={3}
+                                                />
                                             )}
                                         </div>
                                         <div>

@@ -561,3 +561,214 @@ body.cursor-none [contenteditable] {
 .driver-popover-close-btn:hover {
     color: var(--foreground) !important;
 }
+
+/* ───────────────────────────────────────────────
+   Landing page — cinematic dark animations
+   ─────────────────────────────────────────────── */
+
+/* Subtle dot-grid background */
+@layer utilities {
+    .landing-grid-bg {
+        background-image: radial-gradient(
+            circle,
+            rgb(255 255 255 / 0.04) 1px,
+            transparent 1px
+        );
+        background-size: 32px 32px;
+    }
+}
+
+/* Streaming text cursor blink */
+@keyframes blink-cursor {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Reference chip subtle pulse */
+@keyframes chip-pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgb(124 58 237 / 0.3);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgb(124 58 237 / 0);
+    }
+}
+
+/* Gentle float for workspace mock */
+@keyframes gentle-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Streaming text reveal */
+@keyframes stream-reveal {
+    from {
+        max-width: 0;
+    }
+    to {
+        max-width: 100%;
+    }
+}
+
+/* Glow pulse for hero orbs */
+@keyframes glow-pulse {
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@layer utilities {
+    .animate-blink-cursor {
+        animation: blink-cursor 1s step-end infinite;
+    }
+    .animate-chip-pulse {
+        animation: chip-pulse 2.4s ease-in-out infinite;
+    }
+    .animate-gentle-float {
+        animation: gentle-float 6s ease-in-out infinite;
+    }
+    .animate-stream-reveal {
+        overflow: hidden;
+        white-space: nowrap;
+        animation: stream-reveal 2s ease-out forwards;
+    }
+    .animate-glow-pulse {
+        animation: glow-pulse 4s ease-in-out infinite;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-blink-cursor,
+    .animate-chip-pulse,
+    .animate-gentle-float,
+    .animate-stream-reveal,
+    .animate-glow-pulse {
+        animation: none;
+        opacity: 1;
+        transform: none;
+        max-width: 100%;
+    }
+}
+
+/* ───────────────────────────────────────────────
+   Cursor-reactive background layers
+   Driven by CSS vars: --mouse-x, --mouse-y, --tilt-x, --tilt-y
+   ─────────────────────────────────────────────── */
+
+.cursor-reactive-bg {
+    position: relative;
+    isolation: isolate;
+}
+
+/* 1. Radial spotlight follows cursor */
+.cursor-reactive-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(139, 92, 246, 0.12),
+        rgba(79, 70, 229, 0.04) 40%,
+        transparent 70%
+    );
+    transition: background 0.15s ease-out;
+}
+
+/* 2. Aurora blob — large, soft, follows cursor with offset */
+.cursor-reactive-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        800px ellipse at calc(var(--mouse-x, 50%) + 5%)
+            calc(var(--mouse-y, 50%) - 10%),
+        rgba(99, 50, 220, 0.08),
+        transparent 60%
+    );
+}
+
+/* Parallax container for hero mock */
+.hero-parallax {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translate(
+        calc(var(--tilt-x, 0) * -6px),
+        calc(var(--tilt-y, 0) * -4px)
+    );
+    will-change: transform;
+}
+
+/* Deeper parallax for inner panels */
+.hero-parallax-deep {
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translate(
+        calc(var(--tilt-x, 0) * -10px),
+        calc(var(--tilt-y, 0) * -6px)
+    );
+    will-change: transform;
+}
+
+/* Horizontal beam that follows cursor Y */
+.cursor-beam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    top: var(--mouse-y, 50%);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(139, 92, 246, 0.08) 20%,
+        rgba(139, 92, 246, 0.12) 50%,
+        rgba(139, 92, 246, 0.08) 80%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+    transition: top 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cursor-reactive-bg::before,
+    .cursor-reactive-bg::after,
+    .cursor-beam {
+        transition: none;
+        background: none;
+    }
+    .hero-parallax,
+    .hero-parallax-deep {
+        transition: none;
+        transform: none;
+    }
+}
+
+/* Touch/mobile: disable cursor layers */
+@media (pointer: coarse) {
+    .cursor-reactive-bg::before,
+    .cursor-reactive-bg::after,
+    .cursor-beam {
+        display: none;
+    }
+    .hero-parallax,
+    .hero-parallax-deep {
+        transform: none;
+    }
+}

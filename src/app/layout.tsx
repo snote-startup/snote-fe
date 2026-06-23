@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -14,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'SNOTE - AI Meeting Assistant',
+    title: 'Snote — AI meeting transcripts with grounded answers',
     description:
-        'AI-powered meeting assistant for live transcription, meeting minutes, tasks, and calendar follow-up.',
+        'Upload meeting audio, generate transcripts, and chat with AI answers linked to transcript references.',
 };
 
 export default function RootLayout({
@@ -30,6 +31,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <Providers>{children}</Providers>
+                <Analytics />
             </body>
         </html>
     );

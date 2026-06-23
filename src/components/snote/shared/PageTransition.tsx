@@ -14,7 +14,10 @@ interface PageTransitionProps {
  * - Respects `prefers-reduced-motion` via the CSS animation declaration in globals.css.
  * - No Math.random, no window branch in render, no hydration mismatch.
  */
-export function PageTransition({ children, className = '' }: PageTransitionProps) {
+export function PageTransition({
+    children,
+    className = '',
+}: PageTransitionProps) {
     const [ready, setReady] = useState(false);
 
     useEffect(() => {

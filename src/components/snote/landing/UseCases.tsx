@@ -1,66 +1,90 @@
 'use client';
 
-import { Briefcase, Phone, Microscope } from 'lucide-react';
+import {
+    GraduationCap,
+    Users,
+    Mic2,
+    FlaskConical,
+    BookOpen,
+} from 'lucide-react';
 import { Reveal } from './Reveal';
 
 const cases = [
     {
-        icon: Briefcase,
-        label: 'Product meetings',
-        what: 'Weekly standups, sprint reviews, roadmap planning sessions.',
-        value: 'Extract decisions, feature discussions, and open blockers across long recordings without replaying the entire meeting.',
+        icon: GraduationCap,
+        label: 'Online classes',
+        description:
+            'Record lectures and review them with AI. Find exactly where the professor explained a concept.',
     },
     {
-        icon: Phone,
-        label: 'Client calls',
-        what: 'Sales discovery calls, customer interviews, and support escalations.',
-        value: 'Review what was promised, identify pain points mentioned, and surface follow-up actions for the account team.',
+        icon: Users,
+        label: 'Team meetings',
+        description:
+            'Capture standups, sprint reviews, and planning sessions. Extract decisions and action items.',
     },
     {
-        icon: Microscope,
-        label: 'Research interviews',
-        what: '1-on-1 user research sessions with multiple participants.',
-        value: 'Tag speaker turns by theme, ask AI to summarize patterns, and export key quotes for research documentation.',
+        icon: Mic2,
+        label: 'Interviews',
+        description:
+            'Transcribe candidate or user interviews. Search for specific answers and compare across sessions.',
+    },
+    {
+        icon: FlaskConical,
+        label: 'Research calls',
+        description:
+            'Tag speaker turns by theme, surface patterns across research participants, and export key quotes.',
+    },
+    {
+        icon: BookOpen,
+        label: 'Student review',
+        description:
+            'Revisit recorded study sessions and lectures. Ask AI to summarize specific topics covered.',
     },
 ];
 
 export function UseCases() {
     return (
-        <section id="use-cases" className="relative z-10 py-20 sm:py-24">
+        <section id="use-cases" className="relative z-10 py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <Reveal className="mb-12 max-w-2xl">
-                    <p className="text-primary mb-3 text-sm font-semibold">
+                <Reveal className="mx-auto mb-14 max-w-2xl text-center">
+                    <p className="mb-3 text-sm font-semibold text-violet-400">
                         Use cases
                     </p>
-                    <h2 className="text-foreground text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                        Built for the meetings that matter most.
+                    <h2 className="text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
+                        Built for the audio that matters.
                     </h2>
+                    <p className="mt-4 text-base leading-relaxed text-zinc-500">
+                        Any recorded conversation becomes searchable and
+                        reviewable.
+                    </p>
                 </Reveal>
 
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {cases.map((c, i) => {
                         const Icon = c.icon;
                         return (
-                            <Reveal key={c.label} delay={i * 80}>
-                                <article className="group border-border bg-card hover:border-primary/25 flex h-full flex-col rounded-2xl border p-6 transition-all">
-                                    <div className="bg-primary/10 text-primary mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl">
-                                        <Icon className="h-5 w-5" />
+                            <Reveal
+                                key={c.label}
+                                delay={i * 70}
+                                className={
+                                    /* last 2 cards: center on lg when 3-col */
+                                    i >= 3 && cases.length === 5
+                                        ? 'lg:last:col-start-2'
+                                        : ''
+                                }
+                            >
+                                <article className="group flex h-full gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 transition-all duration-300 hover:border-violet-500/20 hover:bg-white/[0.05]">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10">
+                                        <Icon className="h-5 w-5 text-violet-400" />
                                     </div>
-                                    <h3 className="text-foreground mb-3 text-base font-semibold">
-                                        {c.label}
-                                    </h3>
-                                    <p className="text-muted-foreground mb-4 text-sm leading-6">
-                                        <span className="text-foreground font-medium">
-                                            What you upload:{' '}
-                                        </span>
-                                        {c.what}
-                                    </p>
-                                    <p className="text-muted-foreground border-border mt-auto border-t pt-4 text-sm leading-6">
-                                        <span className="text-foreground font-medium">
-                                            What Snote helps:{' '}
-                                        </span>
-                                        {c.value}
-                                    </p>
+                                    <div>
+                                        <h3 className="mb-1.5 text-sm font-semibold text-zinc-200">
+                                            {c.label}
+                                        </h3>
+                                        <p className="text-sm leading-6 text-zinc-500">
+                                            {c.description}
+                                        </p>
+                                    </div>
                                 </article>
                             </Reveal>
                         );

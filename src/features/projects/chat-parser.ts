@@ -10,15 +10,17 @@ export const REFERENCES_DELIMITER = '<<<REFERENCES>>>';
  *   - bare "uuid"    → "uuid"
  */
 function normalizeReferenceLine(line: string): string {
-    return line
-        .trim()
-        // Remove backticks
-        .replace(/`/g, '')
-        // Remove leading "- " or "* " bullet markers
-        .replace(/^[-*]\s+/, '')
-        // Remove leading numbered list markers like "1. " or "12. "
-        .replace(/^\d+\.\s+/, '')
-        .trim();
+    return (
+        line
+            .trim()
+            // Remove backticks
+            .replace(/`/g, '')
+            // Remove leading "- " or "* " bullet markers
+            .replace(/^[-*]\s+/, '')
+            // Remove leading numbered list markers like "1. " or "12. "
+            .replace(/^\d+\.\s+/, '')
+            .trim()
+    );
 }
 
 export function parseChatResponse(raw: string): {

@@ -1,7 +1,5 @@
 'use client';
 
-
-
 interface AppLoadingStateProps {
     variant?: 'brand' | 'list' | 'detail';
     message?: string;
@@ -52,7 +50,7 @@ export function AppLoadingState({
 
     if (variant === 'list') {
         return (
-            <div className="mx-auto max-w-7xl p-8 space-y-6">
+            <div className="mx-auto max-w-7xl space-y-6 p-8">
                 {/* Header skeleton */}
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div className="space-y-2">
@@ -70,7 +68,7 @@ export function AppLoadingState({
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <div
                             key={i}
-                            className="border-border bg-card/50 flex flex-col justify-between gap-6 animate-pulse rounded-2xl border p-6"
+                            className="border-border bg-card/50 flex animate-pulse flex-col justify-between gap-6 rounded-2xl border p-6"
                         >
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
@@ -109,22 +107,22 @@ export function AppLoadingState({
             </div>
 
             {/* Split pane body skeleton */}
-            <div className="grid flex-1 grid-cols-1 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 overflow-hidden">
+            <div className="grid flex-1 grid-cols-1 divide-y overflow-hidden lg:grid-cols-2 lg:divide-x lg:divide-y-0">
                 {/* Left panel: Transcript skeleton */}
-                <div className="flex flex-col p-6 space-y-6 overflow-hidden">
+                <div className="flex flex-col space-y-6 overflow-hidden p-6">
                     <div className="flex items-center justify-between">
                         <div className="bg-muted h-6 w-24 animate-pulse rounded-lg" />
                         <div className="bg-muted h-8 w-32 animate-pulse rounded-lg" />
                     </div>
                     {/* Audio upload dropzone mockup / progress */}
-                    <div className="bg-muted/30 border-border/40 h-28 w-full animate-pulse rounded-xl border flex flex-col justify-center items-center gap-2">
+                    <div className="bg-muted/30 border-border/40 flex h-28 w-full animate-pulse flex-col items-center justify-center gap-2 rounded-xl border">
                         <div className="bg-muted h-8 w-8 rounded-full" />
                         <div className="bg-muted h-4 w-32 rounded" />
                     </div>
                     {/* Pulsing paragraphs simulating transcript segments */}
-                    <div className="space-y-6 overflow-hidden flex-1">
+                    <div className="flex-1 space-y-6 overflow-hidden">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="space-y-2 animate-pulse">
+                            <div key={i} className="animate-pulse space-y-2">
                                 <div className="flex items-center gap-2">
                                     <div className="bg-muted h-4 w-16 rounded" />
                                     <div className="bg-muted h-3.5 w-10 rounded" />
@@ -140,7 +138,7 @@ export function AppLoadingState({
                 </div>
 
                 {/* Right panel: Chat workspace skeleton */}
-                <div className="flex flex-col p-6 space-y-4 overflow-hidden">
+                <div className="flex flex-col space-y-4 overflow-hidden p-6">
                     <div className="flex items-center justify-between border-b pb-4">
                         <div className="flex items-center gap-2">
                             <div className="bg-muted h-5 w-5 animate-pulse rounded-full" />
@@ -149,16 +147,16 @@ export function AppLoadingState({
                     </div>
                     {/* Chat messages placeholder */}
                     <div className="flex-1 space-y-4 overflow-hidden py-4">
-                        <div className="flex gap-3 max-w-[80%] animate-pulse">
-                            <div className="bg-muted h-8 w-8 rounded-full shrink-0" />
+                        <div className="flex max-w-[80%] animate-pulse gap-3">
+                            <div className="bg-muted h-8 w-8 shrink-0 rounded-full" />
                             <div className="bg-muted/40 h-14 w-full rounded-2xl" />
                         </div>
-                        <div className="flex gap-3 max-w-[80%] ml-auto justify-end animate-pulse">
+                        <div className="ml-auto flex max-w-[80%] animate-pulse justify-end gap-3">
                             <div className="bg-muted/80 h-10 w-48 rounded-2xl" />
                         </div>
-                        <div className="flex gap-3 max-w-[80%] animate-pulse">
-                            <div className="bg-muted h-8 w-8 rounded-full shrink-0" />
-                            <div className="space-y-1.5 flex-1">
+                        <div className="flex max-w-[80%] animate-pulse gap-3">
+                            <div className="bg-muted h-8 w-8 shrink-0 rounded-full" />
+                            <div className="flex-1 space-y-1.5">
                                 <div className="bg-muted/40 h-4 w-full rounded" />
                                 <div className="bg-muted/40 h-4 w-5/6 rounded" />
                             </div>

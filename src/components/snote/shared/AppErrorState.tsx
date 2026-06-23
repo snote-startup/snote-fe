@@ -27,7 +27,7 @@ export function AppErrorState({
             : 'We encountered a problem loading this view. Please try again or contact support.');
 
     return (
-        <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center p-8 text-center animate-fade-in">
+        <div className="animate-fade-in mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center p-8 text-center">
             {/* Visual Indicator */}
             <div className="border-destructive/20 bg-destructive/10 text-destructive mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border p-4 shadow-sm">
                 <AlertCircle className="h-8 w-8" />
@@ -42,15 +42,23 @@ export function AppErrorState({
             </p>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+            <div className="flex w-full flex-col justify-center gap-3 sm:flex-row">
                 {onRetry && (
-                    <Button onClick={onRetry} variant="default" className="gap-2">
+                    <Button
+                        onClick={onRetry}
+                        variant="default"
+                        className="gap-2"
+                    >
                         <RotateCcw className="h-4 w-4" />
                         Try again
                     </Button>
                 )}
                 {onBack && (
-                    <Button onClick={onBack} variant="outline" className="gap-2">
+                    <Button
+                        onClick={onBack}
+                        variant="outline"
+                        className="gap-2"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                         {backText}
                     </Button>

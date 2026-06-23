@@ -70,7 +70,8 @@ export function useProjectTranscript(
     return useQuery({
         queryKey: projectKeys.transcript(id),
         queryFn: () => getProjectTranscript(id),
-        enabled: options?.enabled !== undefined ? options.enabled && !!id : !!id,
+        enabled:
+            options?.enabled !== undefined ? options.enabled && !!id : !!id,
         refetchInterval: options?.refetchInterval,
     });
 }
