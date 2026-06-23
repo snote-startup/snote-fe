@@ -34,7 +34,9 @@ export function CustomCursor() {
     useEffect(() => {
         // Disable on touch-only or touch-primary devices
         const isFinePointer = window.matchMedia('(pointer: fine)').matches;
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const prefersReducedMotion = window.matchMedia(
+            '(prefers-reduced-motion: reduce)',
+        ).matches;
 
         if (!isFinePointer || prefersReducedMotion) {
             return;
@@ -62,16 +64,18 @@ export function CustomCursor() {
             if (!target) return;
 
             const tag = target.tagName?.toLowerCase();
-            const isInputEl = ['input', 'textarea', 'select'].includes(tag) || target.isContentEditable;
+            const isInputEl =
+                ['input', 'textarea', 'select'].includes(tag) ||
+                target.isContentEditable;
 
-            const isClickable = !isInputEl && (
-                tag === 'a' ||
-                tag === 'button' ||
-                target.closest('a') !== null ||
-                target.closest('button') !== null ||
-                target.getAttribute('role') === 'button' ||
-                target.closest('[role="button"]') !== null
-            );
+            const isClickable =
+                !isInputEl &&
+                (tag === 'a' ||
+                    tag === 'button' ||
+                    target.closest('a') !== null ||
+                    target.closest('button') !== null ||
+                    target.getAttribute('role') === 'button' ||
+                    target.closest('[role="button"]') !== null);
 
             isTextInput.current = !!isInputEl;
             isHovering.current = !!isClickable;
@@ -84,7 +88,9 @@ export function CustomCursor() {
             isVisible.current = false;
         };
 
-        document.addEventListener('mousemove', handleMouseMove, { passive: true });
+        document.addEventListener('mousemove', handleMouseMove, {
+            passive: true,
+        });
         document.addEventListener('mouseleave', handleMouseLeave);
 
         const lerp = (start: number, end: number, factor: number) => {
@@ -96,8 +102,16 @@ export function CustomCursor() {
             const el = ringRef.current;
             if (el && isVisible.current) {
                 // Smooth follow
-                ringPos.current.x = lerp(ringPos.current.x, cursorPos.current.x, 0.15);
-                ringPos.current.y = lerp(ringPos.current.y, cursorPos.current.y, 0.15);
+                ringPos.current.x = lerp(
+                    ringPos.current.x,
+                    cursorPos.current.x,
+                    0.15,
+                );
+                ringPos.current.y = lerp(
+                    ringPos.current.y,
+                    cursorPos.current.y,
+                    0.15,
+                );
 
                 el.style.transform = `translate(${ringPos.current.x}px, ${ringPos.current.y}px) translate(-50%, -50%)`;
 
@@ -110,12 +124,14 @@ export function CustomCursor() {
                     el.style.width = '48px';
                     el.style.height = '48px';
                     el.style.borderColor = 'var(--brand-primary)';
-                    el.style.backgroundColor = 'color-mix(in oklab, var(--brand-primary) 8%, transparent)';
+                    el.style.backgroundColor =
+                        'color-mix(in oklab, var(--brand-primary) 8%, transparent)';
                 } else {
                     el.style.opacity = '0.6';
                     el.style.width = '28px';
                     el.style.height = '28px';
-                    el.style.borderColor = 'color-mix(in oklab, var(--brand-primary) 60%, transparent)';
+                    el.style.borderColor =
+                        'color-mix(in oklab, var(--brand-primary) 60%, transparent)';
                     el.style.backgroundColor = 'transparent';
                 }
             }
@@ -146,11 +162,13 @@ export function CustomCursor() {
                 height: '28px',
                 borderRadius: '50%',
                 border: '1.5px solid color-mix(in oklab, var(--brand-primary) 60%, transparent)',
-                boxShadow: '0 0 10px color-mix(in oklab, var(--brand-primary) 20%, transparent)',
+                boxShadow:
+                    '0 0 10px color-mix(in oklab, var(--brand-primary) 20%, transparent)',
                 pointerEvents: 'none',
                 zIndex: 9999,
                 willChange: 'transform, width, height, opacity',
-                transition: 'opacity 0.25s ease, width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background-color 0.25s ease',
+                transition:
+                    'opacity 0.25s ease, width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background-color 0.25s ease',
                 opacity: 0,
             }}
         />

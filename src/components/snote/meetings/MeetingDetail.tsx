@@ -43,6 +43,7 @@ import {
     StopCircle,
     Search,
     X,
+    ListTodo,
 } from 'lucide-react';
 import {
     useProject,
@@ -56,6 +57,7 @@ import { parseChatResponse } from '@/features/projects/chat-parser';
 import { toast } from 'sonner';
 import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
 import { AppErrorState } from '@/components/snote/shared/AppErrorState';
+import { ProjectTasksPanel } from './ProjectTasksPanel';
 
 // ─── Timestamp formatter ──────────────────────────────────────────────────────
 
@@ -79,10 +81,7 @@ interface UploadSectionProps {
     onUploadSuccess: () => void;
 }
 
-function UploadSection({
-    projectId,
-    onUploadSuccess,
-}: UploadSectionProps) {
+function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
     const uploadMutation = useUploadProjectAudio(projectId);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -152,14 +151,13 @@ function UploadSection({
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => !selectedFile && fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-6 transition-all duration-150 cursor-pointer
-          ${
-              isDragging
-                  ? 'border-primary/60 bg-primary/5'
-                  : selectedFile
-                    ? 'border-border bg-muted/30 cursor-default'
-                    : 'border-border hover:border-primary/40 hover:bg-muted/20'
-          }`}
+                className={`cursor-pointer rounded-xl border-2 border-dashed p-6 transition-all duration-150 ${
+                    isDragging
+                        ? 'border-primary/60 bg-primary/5'
+                        : selectedFile
+                          ? 'border-border bg-muted/30 cursor-default'
+                          : 'border-border hover:border-primary/40 hover:bg-muted/20'
+                }`}
             >
                 <input
                     ref={fileInputRef}
@@ -287,7 +285,9 @@ function TranscriptPanel({
                       s.text
                           .toLowerCase()
                           .includes(searchQuery.toLowerCase()) ||
-                      s.speaker.toLowerCase().includes(searchQuery.toLowerCase()),
+                      s.speaker
+                          .toLowerCase()
+                          .includes(searchQuery.toLowerCase()),
               )
             : transcript
         : [];
@@ -314,7 +314,7 @@ function TranscriptPanel({
                             placeholder="Search…"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-7 py-1 pl-7 pr-2 text-xs"
+                            className="h-7 py-1 pr-2 pl-7 text-xs"
                         />
                     </div>
                 )}
@@ -342,7 +342,8 @@ function TranscriptPanel({
                     <div className="mx-4 flex flex-col items-center rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/40 dark:bg-red-950/20">
                         <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
                         <p className="text-sm font-medium text-red-700 dark:text-red-400">
-                            {transcriptError.message || 'Failed to load transcript'}
+                            {transcriptError.message ||
+                                'Failed to load transcript'}
                         </p>
                         <Button
                             variant="outline"
@@ -526,7 +527,9 @@ function ChatPanel({
     // Merge: hide history items that are already present in liveMessages
     const messages = useMemo(() => {
         const historyUserPrompts = new Set(
-            historyMessages.filter((m) => m.role === 'user').map((m) => m.content),
+            historyMessages
+                .filter((m) => m.role === 'user')
+                .map((m) => m.content),
         );
 
         const filteredLive: DisplayMessage[] = [];
@@ -555,7 +558,9 @@ function ChatPanel({
         if (liveMessages.length === 0) return;
 
         const historyUserPrompts = new Set(
-            historyMessages.filter((m) => m.role === 'user').map((m) => m.content),
+            historyMessages
+                .filter((m) => m.role === 'user')
+                .map((m) => m.content),
         );
 
         const allSaved = liveMessages
@@ -570,15 +575,18 @@ function ChatPanel({
         }
     }, [historyMessages, liveMessages]);
 
-    const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
-        const container = scrollRef.current;
-        if (container) {
-            container.scrollTo({
-                top: container.scrollHeight,
-                behavior,
-            });
-        }
-    }, []);
+    const scrollToBottom = useCallback(
+        (behavior: ScrollBehavior = 'smooth') => {
+            const container = scrollRef.current;
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior,
+                });
+            }
+        },
+        [],
+    );
 
     // Auto-scroll logic (smart scrolling: only if user is already near bottom or just sent a message)
     useEffect(() => {
@@ -587,7 +595,10 @@ function ChatPanel({
 
         const threshold = 180; // px from bottom
         const isNearBottom =
-            container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+            container.scrollHeight -
+                container.scrollTop -
+                container.clientHeight <
+            threshold;
 
         const lastMessage = messages[messages.length - 1];
         const isUserMsg = lastMessage?.role === 'user';
@@ -628,30 +639,27 @@ function ChatPanel({
         let rawAccumulated = '';
 
         try {
-            const result = await sendProjectChatMessage(
-                projectId,
-                prompt,
-                {
-                    signal: controller.signal,
-                    onChunk: (chunk) => {
-                        rawAccumulated += chunk;
-                        // During streaming: show text before the delimiter only
-                        const delimiterIdx = rawAccumulated.indexOf('<<<REFERENCES>>>');
-                        const liveDisplay =
-                            delimiterIdx !== -1
-                                ? rawAccumulated.slice(0, delimiterIdx).trim()
-                                : rawAccumulated;
+            const result = await sendProjectChatMessage(projectId, prompt, {
+                signal: controller.signal,
+                onChunk: (chunk) => {
+                    rawAccumulated += chunk;
+                    // During streaming: show text before the delimiter only
+                    const delimiterIdx =
+                        rawAccumulated.indexOf('<<<REFERENCES>>>');
+                    const liveDisplay =
+                        delimiterIdx !== -1
+                            ? rawAccumulated.slice(0, delimiterIdx).trim()
+                            : rawAccumulated;
 
-                        setLiveMessages((prev) =>
-                            prev.map((m) =>
-                                m.id === streamingAssistantId
-                                    ? { ...m, content: liveDisplay }
-                                    : m,
-                            ),
-                        );
-                    },
+                    setLiveMessages((prev) =>
+                        prev.map((m) =>
+                            m.id === streamingAssistantId
+                                ? { ...m, content: liveDisplay }
+                                : m,
+                        ),
+                    );
                 },
-            );
+            });
 
             // Replace streaming message with final parsed result
             setLiveMessages((prev) =>
@@ -673,15 +681,18 @@ function ChatPanel({
             // After refetch, history will contain the new message; the useEffect handles clearing liveMessages
             await refetchChat();
         } catch (err: unknown) {
-            if (
-                err instanceof Error &&
-                err.name === 'AbortError'
-            ) {
+            if (err instanceof Error && err.name === 'AbortError') {
                 // User cancelled — finalize current content with Stopped tag
                 setLiveMessages((prev) =>
                     prev.map((m) =>
                         m.id === streamingAssistantId
-                            ? { ...m, content: m.content ? `${m.content}\n\n[Stopped]` : '[Stopped]', isStreaming: false }
+                            ? {
+                                  ...m,
+                                  content: m.content
+                                      ? `${m.content}\n\n[Stopped]`
+                                      : '[Stopped]',
+                                  isStreaming: false,
+                              }
                             : m,
                     ),
                 );
@@ -752,7 +763,7 @@ function ChatPanel({
                                     : 'items-start'
                             }`}
                         >
-                            <span className="text-muted-foreground mb-1 px-1 text-[10px] font-semibold uppercase tracking-wider">
+                            <span className="text-muted-foreground mb-1 px-1 text-[10px] font-semibold tracking-wider uppercase">
                                 {msg.role === 'user' ? 'You' : 'AI Assistant'}
                             </span>
                             <div
@@ -762,13 +773,36 @@ function ChatPanel({
                                         : 'bg-card border-border text-foreground rounded-tl-none border'
                                 }`}
                             >
-                                {msg.role === 'assistant' && msg.isStreaming && !msg.content ? (
+                                {msg.role === 'assistant' &&
+                                msg.isStreaming &&
+                                !msg.content ? (
                                     <span className="text-muted-foreground flex items-center gap-1.5 italic">
                                         Thinking
                                         <span className="inline-flex gap-0.5">
-                                            <span className="animate-pulse" style={{ animationDelay: '0ms' }}>.</span>
-                                            <span className="animate-pulse" style={{ animationDelay: '150ms' }}>.</span>
-                                            <span className="animate-pulse" style={{ animationDelay: '300ms' }}>.</span>
+                                            <span
+                                                className="animate-pulse"
+                                                style={{
+                                                    animationDelay: '0ms',
+                                                }}
+                                            >
+                                                .
+                                            </span>
+                                            <span
+                                                className="animate-pulse"
+                                                style={{
+                                                    animationDelay: '150ms',
+                                                }}
+                                            >
+                                                .
+                                            </span>
+                                            <span
+                                                className="animate-pulse"
+                                                style={{
+                                                    animationDelay: '300ms',
+                                                }}
+                                            >
+                                                .
+                                            </span>
                                         </span>
                                     </span>
                                 ) : (
@@ -800,9 +834,13 @@ function ChatPanel({
                                                     key={ref}
                                                     onClick={() => {
                                                         if (isKnown) {
-                                                            onReferenceClick(ref);
+                                                            onReferenceClick(
+                                                                ref,
+                                                            );
                                                         } else {
-                                                            toast.info('Reference segment not found in current transcript.');
+                                                            toast.info(
+                                                                'Reference segment not found in current transcript.',
+                                                            );
                                                         }
                                                     }}
                                                     title={
@@ -909,32 +947,25 @@ export function MeetingDetail() {
     const [copiedId, setCopiedId] = useState(false);
 
     const hasSegments = !!(transcript && transcript.length > 0);
-    const transcriptSegmentIds = new Set(
-        (transcript ?? []).map((s) => s.id),
-    );
+    const transcriptSegmentIds = new Set((transcript ?? []).map((s) => s.id));
 
-    const handleReferenceClick = useCallback(
-        (segmentId: string) => {
-            setActiveReferences((prev) =>
-                prev.includes(segmentId) ? prev : [...prev, segmentId],
-            );
-            // Scroll to segment in transcript panel
-            setTimeout(() => {
-                const el = segmentRefs.current.get(segmentId);
-                if (el) {
-                    el.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center',
-                    });
-                } else {
-                    toast.info(
-                        'Segment not found in current transcript.',
-                    );
-                }
-            }, 50);
-        },
-        [],
-    );
+    const handleReferenceClick = useCallback((segmentId: string) => {
+        setActiveReferences((prev) =>
+            prev.includes(segmentId) ? prev : [...prev, segmentId],
+        );
+        // Scroll to segment in transcript panel
+        setTimeout(() => {
+            const el = segmentRefs.current.get(segmentId);
+            if (el) {
+                el.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            } else {
+                toast.info('Segment not found in current transcript.');
+            }
+        }, 50);
+    }, []);
 
     // Clear highlights after 5 seconds
     useEffect(() => {
@@ -950,7 +981,9 @@ export function MeetingDetail() {
     if (error || !project) {
         return (
             <AppErrorState
-                title={!project ? 'Project not found' : 'Failed to load project'}
+                title={
+                    !project ? 'Project not found' : 'Failed to load project'
+                }
                 error={error}
                 onBack={() => router.push('/meetings')}
                 backText="Back to Projects"
@@ -1056,7 +1089,9 @@ export function MeetingDetail() {
                                     </span>
                                     {hasSegments && (
                                         <>
-                                            <span className="text-border">•</span>
+                                            <span className="text-border">
+                                                •
+                                            </span>
                                             <span className="text-muted-foreground">
                                                 {transcript!.length} segments
                                             </span>
@@ -1064,8 +1099,10 @@ export function MeetingDetail() {
                                     )}
                                     {project.description && (
                                         <>
-                                            <span className="text-border">•</span>
-                                            <span className="hidden truncate sm:inline max-w-[30ch]">
+                                            <span className="text-border">
+                                                •
+                                            </span>
+                                            <span className="hidden max-w-[30ch] truncate sm:inline">
                                                 {project.description}
                                             </span>
                                         </>
@@ -1118,18 +1155,48 @@ export function MeetingDetail() {
                             />
                         </div>
 
-                        {/* Right: Chat */}
+                        {/* Right: Chat & Tasks Tabs */}
                         <div
-                            data-tour="project-chat-tab"
-                            className="border-border bg-card flex min-h-0 flex-col rounded-xl border shadow-sm"
+                            className="border-border bg-card flex min-h-0 flex-col overflow-hidden rounded-xl border shadow-sm"
                             style={{ height: 'calc(100vh - 14rem)' }}
                         >
-                            <ChatPanel
-                                projectId={id}
-                                hasSegments={hasSegments}
-                                transcriptSegmentIds={transcriptSegmentIds}
-                                onReferenceClick={handleReferenceClick}
-                            />
+                            <Tabs
+                                defaultValue="chat"
+                                className="flex h-full flex-1 flex-col"
+                            >
+                                <div className="border-border/60 shrink-0 border-b px-4 py-2">
+                                    <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="chat">
+                                            AI Chat
+                                        </TabsTrigger>
+                                        <TabsTrigger value="tasks">
+                                            Action Items
+                                        </TabsTrigger>
+                                    </TabsList>
+                                </div>
+                                <TabsContent
+                                    value="chat"
+                                    className="mt-0 min-h-0 flex-1 flex-col data-[state=active]:flex"
+                                >
+                                    <ChatPanel
+                                        projectId={id}
+                                        hasSegments={hasSegments}
+                                        transcriptSegmentIds={
+                                            transcriptSegmentIds
+                                        }
+                                        onReferenceClick={handleReferenceClick}
+                                    />
+                                </TabsContent>
+                                <TabsContent
+                                    value="tasks"
+                                    className="mt-0 min-h-0 flex-1 flex-col data-[state=active]:flex"
+                                >
+                                    <ProjectTasksPanel
+                                        projectId={id}
+                                        hasSegments={hasSegments}
+                                    />
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     </div>
 
@@ -1165,6 +1232,13 @@ export function MeetingDetail() {
                                 >
                                     <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
                                     Chat
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="tasks"
+                                    className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
+                                >
+                                    <ListTodo className="mr-1.5 h-3.5 w-3.5" />
+                                    Tasks
                                 </TabsTrigger>
                             </TabsList>
 
@@ -1214,7 +1288,9 @@ export function MeetingDetail() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={handleDownloadAudio}
+                                                        onClick={
+                                                            handleDownloadAudio
+                                                        }
                                                         className="h-8"
                                                     >
                                                         <Download className="mr-2 h-3.5 w-3.5" />
@@ -1274,8 +1350,22 @@ export function MeetingDetail() {
                                     <ChatPanel
                                         projectId={id}
                                         hasSegments={hasSegments}
-                                        transcriptSegmentIds={transcriptSegmentIds}
+                                        transcriptSegmentIds={
+                                            transcriptSegmentIds
+                                        }
                                         onReferenceClick={handleReferenceClick}
+                                    />
+                                </div>
+                            </TabsContent>
+
+                            <TabsContent value="tasks" className="mt-0 flex-1">
+                                <div
+                                    className="border-border bg-card flex flex-col rounded-xl border shadow-sm"
+                                    style={{ minHeight: '60vh' }}
+                                >
+                                    <ProjectTasksPanel
+                                        projectId={id}
+                                        hasSegments={hasSegments}
                                     />
                                 </div>
                             </TabsContent>

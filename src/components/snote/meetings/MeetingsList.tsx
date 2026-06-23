@@ -129,7 +129,9 @@ export function MeetingsList() {
                 />
             ) : filteredProjects.length === 0 ? (
                 <AppEmptyState
-                    title={searchQuery ? 'No matching projects' : 'No projects yet'}
+                    title={
+                        searchQuery ? 'No matching projects' : 'No projects yet'
+                    }
                     description={
                         searchQuery
                             ? 'Try adjusting your search query'
@@ -214,9 +216,9 @@ export function MeetingsList() {
                     <DialogHeader>
                         <DialogTitle>Create Meeting Project</DialogTitle>
                         <DialogDescription>
-                            Create a project for your meeting. Upload audio
-                            to generate a transcript and use AI chat to
-                            analyze your meeting.
+                            Create a project for your meeting. Upload audio to
+                            generate a transcript and use AI chat to analyze
+                            your meeting.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreateSubmit}>

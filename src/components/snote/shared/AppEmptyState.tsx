@@ -23,7 +23,7 @@ export function AppEmptyState({
     children,
 }: AppEmptyStateProps) {
     return (
-        <div className="border-border bg-card/50 mx-auto flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm backdrop-blur-sm animate-fade-in">
+        <div className="border-border bg-card/50 animate-fade-in mx-auto flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border p-12 text-center shadow-sm backdrop-blur-sm">
             {/* Ambient icon container */}
             <div className="bg-muted border-border/40 mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border shadow-inner">
                 <Icon className="text-muted-foreground h-8 w-8 animate-pulse" />
@@ -39,7 +39,12 @@ export function AppEmptyState({
 
             {/* Custom or default actions */}
             {action && (
-                <Button onClick={action.onClick} variant="default" size="lg" className="shadow-sm">
+                <Button
+                    onClick={action.onClick}
+                    variant="default"
+                    size="lg"
+                    className="shadow-sm"
+                >
                     {action.label}
                 </Button>
             )}
