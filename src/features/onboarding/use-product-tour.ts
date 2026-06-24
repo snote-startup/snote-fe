@@ -25,7 +25,7 @@ export function useProductTour() {
         });
 
         if (activeSteps.length === 0) {
-            toast.info('No visible targets found to tour on this screen.');
+            toast.info('Không tìm thấy mục hướng dẫn trên màn hình này.');
             return;
         }
 
@@ -68,7 +68,7 @@ export function useProductTour() {
             startProjectDetailTour();
         } else {
             toast.info(
-                'Quick tour is available on Dashboard, Projects, and Project Details.',
+                'Hướng dẫn nhanh hiện có ở Tổng quan, Cuộc họp và Chi tiết cuộc họp.',
             );
         }
     };
@@ -79,7 +79,7 @@ export function useProductTour() {
         localStorage.removeItem('snote.onboarding.dashboard.dismissed');
         localStorage.removeItem('snote.onboarding.meetings.completed');
         localStorage.removeItem('snote.onboarding.project-detail.completed');
-        toast.success('Onboarding tours reset. Reloading your session...');
+        toast.success('Đã đặt lại hướng dẫn. Trang sẽ tải lại...');
         setTimeout(() => {
             window.location.reload();
         }, 1000);

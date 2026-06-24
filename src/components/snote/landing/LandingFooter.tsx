@@ -9,26 +9,26 @@ import { track } from '@vercel/analytics';
 
 const footerLinks = [
     {
-        section: 'Product',
+        section: 'Sản phẩm',
         links: [
-            { label: 'Features', href: '#workspace' },
-            { label: 'Workflow', href: '#workflow' },
-            { label: 'References', href: '#references' },
-            { label: 'Pricing', href: '/pricing' },
+            { label: 'Tính năng', href: '#workspace' },
+            { label: 'Quy trình', href: '#workflow' },
+            { label: 'Nguồn tham chiếu', href: '#references' },
+            { label: 'Gói dịch vụ', href: '/pricing' },
         ],
     },
     {
         section: 'Workspace',
         links: [
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Meetings', href: '/meetings' },
+            { label: 'Tổng quan', href: '/dashboard' },
+            { label: 'Cuộc họp', href: '/meetings' },
         ],
     },
     {
-        section: 'Account',
+        section: 'Tài khoản',
         links: [
-            { label: 'Sign in', href: '/login' },
-            { label: 'Register', href: '/register' },
+            { label: 'Đăng nhập', href: '/login' },
+            { label: 'Đăng ký', href: '/register' },
         ],
     },
 ];
@@ -45,14 +45,14 @@ export function LandingFooter() {
                             <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(124_58_237_/_0.08),transparent_60%)]" />
 
                             <p className="mb-4 text-sm font-semibold text-violet-400">
-                                Get started
+                                Bắt đầu
                             </p>
                             <h2 className="mb-5 text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl lg:text-5xl">
-                                Ready to review your next meeting?
+                                Sẵn sàng xem lại cuộc họp tiếp theo?
                             </h2>
                             <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-zinc-400">
-                                Create a project and upload your first audio
-                                file. No credit card required.
+                                Tạo dự án và tải audio đầu tiên lên. Không cần
+                                thẻ thanh toán.
                             </p>
                             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                                 <Button
@@ -64,7 +64,7 @@ export function LandingFooter() {
                                     }
                                 >
                                     <Link href="/dashboard">
-                                        Open app
+                                        Mở ứng dụng
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -74,7 +74,7 @@ export function LandingFooter() {
                                     variant="ghost"
                                     className="h-12 border border-white/[0.1] px-8 text-zinc-300 hover:bg-white/[0.06] hover:text-zinc-100"
                                 >
-                                    <Link href="/login">Sign in</Link>
+                                    <Link href="/login">Đăng nhập</Link>
                                 </Button>
                             </div>
                         </div>
@@ -98,8 +98,8 @@ export function LandingFooter() {
                                 />
                             </Link>
                             <p className="mt-3 max-w-xs text-sm leading-6 text-zinc-500">
-                                AI meeting workspace. Upload audio, review
-                                transcripts, and get grounded answers.
+                                Workspace cuộc họp với AI. Tải audio, xem
+                                transcript và nhận câu trả lời có nguồn.
                             </p>
                         </div>
 
@@ -131,11 +131,11 @@ export function LandingFooter() {
                             className="text-xs text-zinc-600"
                             suppressHydrationWarning
                         >
-                            © {new Date().getFullYear()} Snote. AI meeting
-                            workspace.
+                            © {new Date().getFullYear()} Snote. Workspace cuộc
+                            họp với AI.
                         </p>
                         <p className="text-xs text-zinc-600">
-                            Built for grounded meeting intelligence.
+                            Xây dựng cho transcript có thể kiểm chứng.
                         </p>
                     </div>
                 </div>

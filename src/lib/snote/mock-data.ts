@@ -5,14 +5,6 @@ export interface User {
     email: string;
     name: string;
     avatar?: string;
-    subscription: {
-        plan: 'free' | 'pro' | 'enterprise' | 'trial';
-        status: 'active' | 'expired' | 'cancelled';
-        minutesLimit: number;
-        minutesUsed: number;
-        trialEndsAt?: Date;
-        periodEndsAt?: Date;
-    };
 }
 
 export interface Meeting {
@@ -78,13 +70,6 @@ export const mockUser: User = {
     id: '1',
     email: 'user@example.com',
     name: 'Alex Johnson',
-    subscription: {
-        plan: 'trial',
-        status: 'active',
-        minutesLimit: 300,
-        minutesUsed: 145,
-        trialEndsAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-    },
 };
 
 // Mock meetings data

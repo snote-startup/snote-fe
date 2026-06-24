@@ -600,7 +600,7 @@ body.cursor-none [contenteditable] {
     }
 }
 
-/* Gentle float for workspace mock */
+/* Gentle float for workspace preview */
 @keyframes gentle-float {
     0%,
     100% {
@@ -706,7 +706,7 @@ body.cursor-none [contenteditable] {
     );
 }
 
-/* Parallax container for hero mock */
+/* Parallax container for hero preview */
 .hero-parallax {
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform: translate(

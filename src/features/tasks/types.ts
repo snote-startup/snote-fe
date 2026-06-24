@@ -9,6 +9,23 @@ export interface ProjectTask {
     created_at: string;
 }
 
+export type AggregatedTask = ProjectTask & {
+    projectId: string;
+    projectTitle: string;
+};
+
+export interface ProjectTaskFetchFailure {
+    projectId: string;
+    projectTitle: string;
+    message: string;
+}
+
+export interface AllProjectTasksResult {
+    tasks: AggregatedTask[];
+    failedProjects: ProjectTaskFetchFailure[];
+    projectCount: number;
+}
+
 export interface UpdateTaskRequest {
     content?: string | null;
     status?: TaskStatus | null;

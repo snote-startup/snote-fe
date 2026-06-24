@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, FileAudio, MessageSquareText, ArrowRight } from 'lucide-react';
+import { ArrowRight, Bot, FileAudio, MessageSquareText } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Reveal } from './Reveal';
@@ -8,29 +8,29 @@ import { Reveal } from './Reveal';
 const demoTranscript = [
     {
         time: '00:32',
-        speaker: 'Jamie',
-        text: 'We need to finalize the pricing tier before Thursday launch.',
+        speaker: 'Minh',
+        text: 'Chúng ta cần chốt phạm vi MVP trước buổi demo thứ Năm.',
     },
     {
         time: '01:15',
-        speaker: 'Sam',
-        text: 'Marketing confirmed the announcement goes out at 9 AM UTC.',
+        speaker: 'Lan',
+        text: 'Đội backend sẽ xác nhận endpoint task trong hôm nay.',
     },
     {
         time: '02:04',
-        speaker: 'Priya',
-        text: 'The free-tier limit should be 60 minutes per month, not 30.',
+        speaker: 'Huy',
+        text: 'Phần realtime audio sẽ tách sang phase sau khi protocol ổn định.',
     },
 ];
 
 const aiQA = [
     {
-        q: 'What was decided about pricing?',
-        a: 'Free-tier limit set to 60 min/month. Final pricing tier to be confirmed before Thursday launch.',
+        q: 'Cuộc họp đã quyết định gì?',
+        a: 'MVP giữ luồng upload audio, transcript, hỏi đáp AI và task theo dự án.',
     },
     {
-        q: 'Any action items?',
-        a: 'Jamie to confirm pricing tier. Marketing to send announcement at 9 AM UTC on launch day.',
+        q: 'Có công việc nào cần theo dõi?',
+        a: 'Backend xác nhận endpoint task. Frontend defer realtime audio đến phase sau.',
     },
 ];
 
@@ -42,63 +42,56 @@ export function AIChatDemo() {
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-                    {/* Left: copy */}
                     <Reveal>
                         <p className="text-primary mb-3 text-sm font-semibold">
-                            Transcript + AI chat
+                            Transcript + Trợ lý AI
                         </p>
                         <h2 className="text-foreground mb-4 text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                            Ask questions.
-                            <br className="hidden sm:block" /> Get answers from
-                            the actual conversation.
+                            Hỏi trực tiếp trên nội dung cuộc họp.
                         </h2>
                         <p className="text-muted-foreground mb-6 text-base leading-relaxed">
-                            Every AI answer is grounded in the transcript — not
-                            hallucinated. Ask about decisions, open questions,
-                            action items, or anything said in the meeting.
+                            Câu trả lời được nối với transcript và nguồn tham
+                            chiếu, giúp người dùng kiểm tra lại ngữ cảnh trước
+                            khi ra quyết định.
                         </p>
                         <Button asChild>
                             <Link href="/dashboard">
-                                Try it on your recording
+                                Mở ứng dụng
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </Button>
                     </Reveal>
 
-                    {/* Right: demo panel */}
                     <Reveal delay={120}>
                         <div className="border-border bg-card/70 rounded-2xl border p-3 shadow-xl shadow-black/5 dark:shadow-black/30">
-                            {/* Window chrome */}
                             <div className="mb-3 flex items-center gap-1.5 px-1">
                                 <span className="h-2 w-2 rounded-full bg-red-400/70" />
                                 <span className="h-2 w-2 rounded-full bg-yellow-400/70" />
                                 <span className="h-2 w-2 rounded-full bg-emerald-400/70" />
                                 <span className="text-muted-foreground ml-3 text-xs">
-                                    Launch planning · AI chat
+                                    Kế hoạch demo - Trợ lý AI
                                 </span>
                             </div>
 
                             <div className="border-border bg-background/80 rounded-xl border">
-                                {/* File header */}
                                 <div className="border-border flex items-center gap-3 border-b px-4 py-3">
                                     <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
                                         <FileAudio className="h-4 w-4" />
                                     </div>
                                     <div>
                                         <p className="text-foreground text-xs font-medium">
-                                            launch-planning-call.mp3
+                                            demo-planning-call.mp3
                                         </p>
                                         <p className="text-muted-foreground text-[11px]">
-                                            3 speakers · 12 min
+                                            3 người nói - 12 phút
                                         </p>
                                     </div>
                                     <span className="ml-auto rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-                                        Transcript ready
+                                        Transcript sẵn sàng
                                     </span>
                                 </div>
 
                                 <div className="grid gap-3 p-3 lg:grid-cols-2">
-                                    {/* Transcript */}
                                     <div className="space-y-2">
                                         <p className="text-muted-foreground px-1 text-[10px] font-semibold tracking-wider uppercase">
                                             Transcript
@@ -125,11 +118,10 @@ export function AIChatDemo() {
                                         )}
                                     </div>
 
-                                    {/* AI chat */}
                                     <div className="space-y-2">
                                         <p className="text-muted-foreground flex items-center gap-1.5 px-1 text-[10px] font-semibold tracking-wider uppercase">
                                             <Bot className="h-3 w-3" />
-                                            AI chat
+                                            Trợ lý AI
                                         </p>
                                         {aiQA.map(({ q, a }) => (
                                             <div

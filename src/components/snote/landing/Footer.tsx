@@ -5,26 +5,26 @@ import Image from 'next/image';
 
 const footerLinks = [
     {
-        section: 'Product',
+        section: 'Sản phẩm',
         links: [
-            { label: 'Features', href: '#features' },
-            { label: 'Workflow', href: '#workflow' },
-            { label: 'Pricing', href: '/pricing' },
+            { label: 'Tính năng', href: '#features' },
+            { label: 'Quy trình', href: '#workflow' },
+            { label: 'Gói dịch vụ', href: '/pricing' },
         ],
     },
     {
-        section: 'Workspace',
+        section: 'Không gian làm việc',
         links: [
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Meetings', href: '/meetings' },
-            { label: 'Tasks', href: '/tasks' },
+            { label: 'Tổng quan', href: '/dashboard' },
+            { label: 'Cuộc họp', href: '/meetings' },
+            { label: 'Công việc', href: '/tasks' },
         ],
     },
     {
-        section: 'Account',
+        section: 'Tài khoản',
         links: [
-            { label: 'Sign in', href: '/login' },
-            { label: 'Register', href: '/register' },
+            { label: 'Đăng nhập', href: '/login' },
+            { label: 'Đăng ký', href: '/register' },
         ],
     },
 ];
@@ -34,7 +34,6 @@ export function Footer() {
         <footer className="border-border bg-muted/10 relative z-10 border-t">
             <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                 <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[240px_repeat(3,1fr)]">
-                    {/* Brand */}
                     <div className="sm:col-span-2 lg:col-span-1">
                         <Link href="/" className="mb-4 inline-flex">
                             <Image
@@ -46,13 +45,11 @@ export function Footer() {
                             />
                         </Link>
                         <p className="text-muted-foreground mt-3 max-w-xs text-sm leading-6">
-                            Meeting audio intelligence. Create a project, upload
-                            audio, review transcripts, and ask AI questions over
-                            the conversation.
+                            Tạo dự án, tải audio lên, xem transcript và hỏi đáp
+                            với trợ lý AI trên nội dung cuộc họp.
                         </p>
                     </div>
 
-                    {/* Links */}
                     {footerLinks.map(({ section, links }) => (
                         <div key={section}>
                             <p className="text-foreground mb-4 text-xs font-semibold tracking-wider uppercase">
@@ -74,17 +71,16 @@ export function Footer() {
                     ))}
                 </div>
 
-                {/* Bottom bar */}
                 <div className="border-border mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
                     <p
                         className="text-muted-foreground text-xs"
                         suppressHydrationWarning
                     >
-                        © {new Date().getFullYear()} Snote. Meeting
-                        transcription workspace.
+                        © {new Date().getFullYear()} Snote. Không gian
+                        transcript cuộc họp.
                     </p>
                     <p className="text-muted-foreground text-xs">
-                        Built with audio intelligence in mind.
+                        Xây dựng cho luồng làm việc sau cuộc họp.
                     </p>
                 </div>
             </div>

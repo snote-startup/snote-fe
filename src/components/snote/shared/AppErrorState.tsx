@@ -13,18 +13,18 @@ interface AppErrorStateProps {
 }
 
 export function AppErrorState({
-    title = 'An unexpected error occurred',
+    title = 'Đã xảy ra lỗi',
     description,
     error,
     onRetry,
     onBack,
-    backText = 'Back to dashboard',
+    backText = 'Quay lại tổng quan',
 }: AppErrorStateProps) {
     const message =
         description ||
         (error && 'message' in error && typeof error.message === 'string'
             ? error.message
-            : 'We encountered a problem loading this view. Please try again or contact support.');
+            : 'Không thể tải màn hình này. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
 
     return (
         <div className="animate-fade-in mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center p-8 text-center">
@@ -50,7 +50,7 @@ export function AppErrorState({
                         className="gap-2"
                     >
                         <RotateCcw className="h-4 w-4" />
-                        Try again
+                        Thử lại
                     </Button>
                 )}
                 {onBack && (

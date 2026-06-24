@@ -10,24 +10,24 @@ import {
 
 const faqs = [
     {
-        q: 'What kind of audio can I upload?',
-        a: 'Snote is designed for meeting recordings. You can upload MP3, M4A, WAV, and other common audio formats. Long recordings with multiple speakers work well because the transcript is segmented by speaker turn and timestamp.',
+        q: 'Tôi có thể tải loại audio nào lên?',
+        a: 'Snote được thiết kế cho bản ghi cuộc họp. Người dùng có thể tải các định dạng audio phổ biến, tùy theo backend chấp nhận trong từng môi trường.',
     },
     {
-        q: 'Can I ask questions about a transcript?',
-        a: 'Yes. After a transcript is generated, you can use the AI chat to ask focused questions — like "what decisions were made?" or "who owns the follow-up on pricing?" Answers are grounded in the actual transcript content.',
+        q: 'Có thể hỏi AI trên transcript không?',
+        a: 'Có. Sau khi transcript được tạo, người dùng có thể hỏi về quyết định, câu hỏi còn mở hoặc công việc cần theo dõi trong nội dung cuộc họp.',
     },
     {
-        q: 'Does Snote support multiple speakers?',
-        a: 'The transcript is designed to show speaker-segmented turns with timestamps. The number of detected speakers depends on the audio quality and recording setup.',
+        q: 'Snote có hỗ trợ nhiều người nói không?',
+        a: 'Transcript hiển thị theo từng segment và mốc thời gian. Thông tin người nói phụ thuộc vào dữ liệu backend trả về.',
     },
     {
-        q: 'Is this for live translation or uploaded audio?',
-        a: 'Snote currently works with uploaded audio files. You record your meeting, upload the file to a project, and Snote processes it into a transcript for review. Live transcription is not available in this version.',
+        q: 'Phiên bản này có realtime audio không?',
+        a: 'Chưa. Phase hiện tại chỉ dùng audio upload. Realtime audio sẽ được làm sau khi backend xác nhận protocol.',
     },
     {
-        q: 'How is my workspace protected?',
-        a: 'All workspace routes require an authenticated session. Role-based navigation ensures only the right accounts can access admin features. Projects are scoped to your account — no one else can view your audio or transcripts without access.',
+        q: 'Dữ liệu dự án được bảo vệ thế nào?',
+        a: 'Các route trong ứng dụng yêu cầu phiên đăng nhập. Dự án và transcript được truy cập qua API có token xác thực.',
     },
 ];
 
@@ -41,14 +41,13 @@ export function FAQ() {
                 <div className="grid gap-12 lg:grid-cols-[320px_1fr] lg:items-start">
                     <Reveal>
                         <p className="text-primary mb-3 text-sm font-semibold">
-                            FAQ
+                            Câu hỏi thường gặp
                         </p>
                         <h2 className="text-foreground text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                            Common questions.
+                            Những điều cần biết.
                         </h2>
                         <p className="text-muted-foreground mt-4 text-base leading-relaxed">
-                            Can&apos;t find an answer? Reach out through the
-                            app.
+                            Các câu trả lời phản ánh phạm vi frontend hiện tại.
                         </p>
                     </Reveal>
 

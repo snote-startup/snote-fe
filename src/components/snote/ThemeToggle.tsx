@@ -14,9 +14,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const themeOptions = [
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'system', label: 'System', icon: Monitor },
+    { value: 'light', label: 'Sáng', icon: Sun },
+    { value: 'dark', label: 'Tối', icon: Moon },
+    { value: 'system', label: 'Theo hệ thống', icon: Monitor },
 ] as const;
 
 const subscribeToNothing = () => () => undefined;
@@ -49,7 +49,7 @@ export function ThemeToggle({
             <Button
                 variant={variant}
                 size={size}
-                aria-label="Toggle theme"
+                aria-label="Đổi giao diện"
                 className={className}
                 disabled
             >
@@ -67,7 +67,7 @@ export function ThemeToggle({
                 <Button
                     variant={variant}
                     size={size}
-                    aria-label="Toggle theme"
+                    aria-label="Đổi giao diện"
                     className={className}
                 >
                     <ActiveIcon className="h-4 w-4" />

@@ -12,33 +12,33 @@ import { Reveal } from './Reveal';
 const cases = [
     {
         icon: GraduationCap,
-        label: 'Online classes',
+        label: 'Lớp học online',
         description:
-            'Record lectures and review them with AI. Find exactly where the professor explained a concept.',
+            'Ghi lại bài giảng và xem lại với AI. Tìm đúng đoạn giảng viên giải thích một khái niệm.',
     },
     {
         icon: Users,
-        label: 'Team meetings',
+        label: 'Họp nhóm',
         description:
-            'Capture standups, sprint reviews, and planning sessions. Extract decisions and action items.',
+            'Lưu standup, review sprint và planning. Trích xuất quyết định và việc cần làm.',
     },
     {
         icon: Mic2,
-        label: 'Interviews',
+        label: 'Phỏng vấn',
         description:
-            'Transcribe candidate or user interviews. Search for specific answers and compare across sessions.',
+            'Chép lời phỏng vấn ứng viên hoặc người dùng. Tìm câu trả lời cụ thể giữa nhiều buổi.',
     },
     {
         icon: FlaskConical,
-        label: 'Research calls',
+        label: 'Cuộc gọi nghiên cứu',
         description:
-            'Tag speaker turns by theme, surface patterns across research participants, and export key quotes.',
+            'Theo dõi lượt nói theo chủ đề, nhận diện mẫu lặp và trích xuất quote quan trọng.',
     },
     {
         icon: BookOpen,
-        label: 'Student review',
+        label: 'Ôn tập',
         description:
-            'Revisit recorded study sessions and lectures. Ask AI to summarize specific topics covered.',
+            'Xem lại buổi học đã ghi âm và nhờ AI tóm tắt các chủ đề cụ thể.',
     },
 ];
 
@@ -48,14 +48,14 @@ export function UseCases() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <Reveal className="mx-auto mb-14 max-w-2xl text-center">
                     <p className="mb-3 text-sm font-semibold text-violet-400">
-                        Use cases
+                        Trường hợp sử dụng
                     </p>
                     <h2 className="text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
-                        Built for the audio that matters.
+                        Dành cho những cuộc trò chuyện quan trọng.
                     </h2>
                     <p className="mt-4 text-base leading-relaxed text-zinc-500">
-                        Any recorded conversation becomes searchable and
-                        reviewable.
+                        Mọi bản ghi cuộc trò chuyện đều có thể tìm kiếm và xem
+                        lại.
                     </p>
                 </Reveal>
 

@@ -7,10 +7,10 @@ import { Menu, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const navLinks = [
-    { href: '#workspace', label: 'Product' },
-    { href: '#workflow', label: 'Workflow' },
-    { href: '#references', label: 'References' },
-    { href: '/pricing', label: 'Pricing' },
+    { href: '#workspace', label: 'Sản phẩm' },
+    { href: '#workflow', label: 'Quy trình' },
+    { href: '#references', label: 'Nguồn tham chiếu' },
+    { href: '/pricing', label: 'Gói dịch vụ' },
 ];
 
 export function LandingNavbar() {
@@ -53,7 +53,7 @@ export function LandingNavbar() {
                             size="sm"
                             className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                         >
-                            <Link href="/login">Sign in</Link>
+                            <Link href="/login">Đăng nhập</Link>
                         </Button>
                         <Button
                             asChild
@@ -61,7 +61,7 @@ export function LandingNavbar() {
                             className="bg-violet-600 text-white hover:bg-violet-500"
                         >
                             <Link href="/dashboard">
-                                Open app
+                                Mở ứng dụng
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                         </Button>
@@ -72,7 +72,7 @@ export function LandingNavbar() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            aria-label={open ? 'Close menu' : 'Open menu'}
+                            aria-label={open ? 'Đóng menu' : 'Mở menu'}
                             onClick={() => setOpen((v) => !v)}
                             className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                         >
@@ -110,7 +110,7 @@ export function LandingNavbar() {
                                     href="/login"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Sign in
+                                    Đăng nhập
                                 </Link>
                             </Button>
                             <Button
@@ -121,7 +121,7 @@ export function LandingNavbar() {
                                     href="/dashboard"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Open app
+                                    Mở ứng dụng
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                             </Button>

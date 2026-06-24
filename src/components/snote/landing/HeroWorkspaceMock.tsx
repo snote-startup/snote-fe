@@ -18,40 +18,40 @@ const transcriptLines = [
     {
         time: '00:14',
         speaker: 'Mina',
-        text: 'The onboarding handoff is where customers lose context.',
+        text: 'Phần bàn giao onboarding là nơi khách hàng dễ mất ngữ cảnh.',
         highlighted: false,
     },
     {
         time: '01:02',
         speaker: 'Ken',
-        text: 'We should tag follow-up questions directly on transcript segments.',
+        text: 'Nên gắn câu hỏi follow-up trực tiếp vào từng đoạn transcript.',
         highlighted: true,
     },
     {
         time: '02:21',
         speaker: 'Ari',
-        text: 'The support team needs a searchable summary by account.',
+        text: 'Đội hỗ trợ cần bản tóm tắt có thể tìm kiếm theo tài khoản.',
         highlighted: false,
     },
 ];
 
 const aiAnswer = {
-    question: 'What decisions were made about follow-ups?',
-    answer: 'Ken proposed tagging follow-up questions directly on transcript segments. Ari suggested routing searchable summaries to the support team by account.',
+    question: 'Có quyết định gì về việc follow-up?',
+    answer: 'Ken đề xuất gắn câu hỏi follow-up trực tiếp vào đoạn transcript. Ari đề xuất chuyển bản tóm tắt có thể tìm kiếm cho đội hỗ trợ theo từng tài khoản.',
     references: [
-        { label: 'Ken · 01:02', segment: 'Tag follow-ups on segments' },
-        { label: 'Ari · 02:21', segment: 'Searchable summary by account' },
+        { label: 'Ken · 01:02', segment: 'Gắn follow-up vào đoạn' },
+        { label: 'Ari · 02:21', segment: 'Tóm tắt theo tài khoản' },
     ],
 };
 
 const statusItems = [
     {
         icon: CheckCircle2,
-        label: 'Transcript ready',
+        label: 'Transcript sẵn sàng',
         color: 'text-emerald-400',
     },
-    { icon: Users, label: '3 speakers', color: 'text-blue-400' },
-    { icon: Sparkles, label: 'AI analysis done', color: 'text-violet-400' },
+    { icon: Users, label: '3 người nói', color: 'text-blue-400' },
+    { icon: Sparkles, label: 'AI đã phân tích', color: 'text-violet-400' },
 ];
 
 export function HeroWorkspaceMock() {
@@ -63,7 +63,7 @@ export function HeroWorkspaceMock() {
                 <span className="h-2 w-2 rounded-full bg-yellow-400/60 sm:h-2.5 sm:w-2.5" />
                 <span className="h-2 w-2 rounded-full bg-emerald-400/60 sm:h-2.5 sm:w-2.5" />
                 <span className="ml-2 text-[10px] text-zinc-500 sm:ml-3 sm:text-xs">
-                    Weekly Product Review
+                    Họp review sản phẩm hằng tuần
                 </span>
             </div>
 
@@ -80,14 +80,14 @@ export function HeroWorkspaceMock() {
                                 product-review-june.mp3
                             </p>
                             <p className="text-[10px] text-zinc-500">
-                                12 min · 3 speakers
+                                12 phút · 3 người nói
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="hidden items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 sm:inline-flex">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                            Ready
+                            Sẵn sàng
                         </span>
                         <button className="flex h-6 w-6 items-center justify-center rounded-md bg-white/[0.06] text-zinc-400 transition-colors hover:text-zinc-200">
                             <Play className="h-3 w-3" />
@@ -137,7 +137,7 @@ export function HeroWorkspaceMock() {
                     <div className="p-2 sm:p-3">
                         <p className="mb-2 flex items-center gap-1.5 px-0.5 text-[9px] font-semibold tracking-widest text-zinc-500 uppercase sm:text-[10px]">
                             <MessageSquareText className="h-3 w-3" />
-                            AI Chat
+                            Trợ lý AI
                         </p>
 
                         {/* Question */}

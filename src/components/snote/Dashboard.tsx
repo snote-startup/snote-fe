@@ -13,13 +13,12 @@ import {
     Users,
     Plus,
     Upload,
-    Circle,
     AlertCircle,
     Sparkles,
 } from 'lucide-react';
 import { useProjects } from '@/features/projects/hooks';
+import { useAllProjectTasks } from '@/features/tasks/hooks';
 import { useProductTour } from '@/features/onboarding/use-product-tour';
-import { format } from 'date-fns';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -56,13 +55,18 @@ function EmptyState({
 
 export function Dashboard() {
     const router = useRouter();
-    const { authRole, isFree, roleProfile, user, tasks } = useApp();
+    const { authRole, user } = useApp();
 
     const {
         data: projects,
         isLoading: isProjectsLoading,
         error: projectsError,
     } = useProjects();
+    const {
+        data: allTaskData,
+        isLoading: isTasksLoading,
+        error: tasksError,
+    } = useAllProjectTasks();
     const { startDashboardTour } = useProductTour();
     const [showTourBanner, setShowTourBanner] = useState(false);
 
@@ -85,45 +89,38 @@ export function Dashboard() {
 
     const firstName = user.name.split(' ')[0];
     const recentProjects = (projects || []).slice(0, 3);
-    const pendingTasks = tasks.filter((t) => t.status !== 'done').slice(0, 3);
-
-    const meetingLimit = roleProfile.meetingLimit;
-    const meetingsUsed = roleProfile.meetingsUsed;
-    const meetingsRemaining =
-        meetingLimit === null ? null : Math.max(meetingLimit - meetingsUsed, 0);
-    const quotaPercent =
-        meetingLimit === null
-            ? 100
-            : Math.min((meetingsUsed / meetingLimit) * 100, 100);
-
-    const showUsageBanner = isFree && meetingLimit !== null;
+    const pendingTasks = (allTaskData?.tasks ?? [])
+        .filter((task) => task.status !== 'done')
+        .slice(0, 3);
 
     // Getting started — show when workspace is effectively empty
     const showGettingStarted =
-        projects !== undefined && projects.length === 0 && tasks.length === 0;
+        projects !== undefined &&
+        projects.length === 0 &&
+        (allTaskData?.tasks.length ?? 0) === 0;
 
     const gettingStartedItems = [
         {
             id: 'project',
-            label: 'Create your first project',
+            label: 'Tạo cuộc họp đầu tiên',
             done: projects !== undefined && projects.length > 0,
             path: '/meetings',
         },
         {
             id: 'upload',
-            label: 'Upload meeting audio',
+            label: 'Tải audio cuộc họp lên',
             done: false,
-            path: '/live-assistant/setup',
+            path: '/meetings',
         },
         {
             id: 'transcript',
-            label: 'Review a transcript',
+            label: 'Xem lại transcript',
             done: false,
             path: '/meetings',
         },
         {
             id: 'ai',
-            label: 'Ask AI about a meeting',
+            label: 'Hỏi trợ lý AI về cuộc họp',
             done: false,
             path: '/meetings',
         },
@@ -138,10 +135,10 @@ export function Dashboard() {
             >
                 <div>
                     <h1 className="text-foreground mb-1 text-2xl font-semibold tracking-tight">
-                        Welcome back, {firstName}
+                        Chào mừng trở lại, {firstName}
                     </h1>
                     <p className="text-muted-foreground text-sm">
-                        Manage your projects, meetings, and AI transcript
+                        Quản lý cuộc họp, transcript và trợ lý AI trong một
                         workspace.
                     </p>
                 </div>
@@ -152,14 +149,11 @@ export function Dashboard() {
                         onClick={() => router.push('/meetings')}
                     >
                         <FolderOpen className="h-4 w-4" />
-                        All meetings
+                        Tất cả cuộc họp
                     </Button>
-                    <Button
-                        size="sm"
-                        onClick={() => router.push('/live-assistant/setup')}
-                    >
+                    <Button size="sm" onClick={() => router.push('/meetings')}>
                         <Plus className="h-4 w-4" />
-                        New session
+                        Tạo cuộc họp
                     </Button>
                 </div>
             </div>
@@ -171,11 +165,11 @@ export function Dashboard() {
                         <Sparkles className="text-primary mt-0.5 h-5 w-5 shrink-0" />
                         <div>
                             <h4 className="text-foreground text-sm font-semibold">
-                                New to Snote?
+                                Mới dùng Snote?
                             </h4>
                             <p className="text-muted-foreground mt-0.5 text-xs">
-                                Take a 60-second interactive tour to understand
-                                projects, transcripts, and AI chat.
+                                Xem hướng dẫn ngắn để hiểu dự án, transcript và
+                                trợ lý AI.
                             </p>
                         </div>
                     </div>
@@ -193,7 +187,7 @@ export function Dashboard() {
                                 setShowTourBanner(false);
                             }}
                         >
-                            Dismiss
+                            Bỏ qua
                         </Button>
                         <Button
                             size="sm"
@@ -202,43 +196,9 @@ export function Dashboard() {
                                 startDashboardTour();
                             }}
                         >
-                            Start tour
+                            Bắt đầu
                         </Button>
                     </div>
-                </div>
-            )}
-
-            {/* ── Usage Banner (free plan only) ────────────────────────── */}
-            {showUsageBanner && (
-                <div className="border-border bg-card animate-fade-in-up-delay-1 mb-6 flex items-center justify-between gap-4 rounded-xl border px-4 py-3">
-                    <div className="min-w-0 flex-1">
-                        <div className="mb-1.5 flex items-center justify-between">
-                            <span className="text-foreground text-sm font-medium">
-                                Free workspace
-                            </span>
-                            <span className="text-muted-foreground text-xs">
-                                {meetingsUsed} of {meetingLimit} meetings used
-                            </span>
-                        </div>
-                        <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                            <div
-                                className="bg-primary h-1.5 rounded-full transition-all duration-500"
-                                style={{ width: `${quotaPercent}%` }}
-                            />
-                        </div>
-                        <p className="text-muted-foreground mt-1.5 text-xs">
-                            {meetingsRemaining} meetings remaining · upgrade
-                            when you need more transcripts and AI review.
-                        </p>
-                    </div>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="shrink-0"
-                        onClick={() => router.push('/billing')}
-                    >
-                        Upgrade
-                    </Button>
                 </div>
             )}
 
@@ -254,11 +214,11 @@ export function Dashboard() {
                         </div>
                         <div>
                             <h2 className="text-foreground mb-0.5 text-base font-semibold">
-                                Start a new transcript
+                                Bắt đầu transcript mới
                             </h2>
                             <p className="text-muted-foreground text-sm">
-                                Create a project, upload meeting audio, and
-                                review speaker transcripts with AI.
+                                Tạo cuộc họp, tải audio lên và xem transcript
+                                kèm trợ lý AI.
                             </p>
                         </div>
                     </div>
@@ -266,16 +226,16 @@ export function Dashboard() {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => router.push('/live-assistant/setup')}
+                            onClick={() => router.push('/meetings')}
                         >
                             <Upload className="h-4 w-4" />
-                            Upload audio
+                            Tải audio lên
                         </Button>
                         <Button
                             size="sm"
                             onClick={() => router.push('/meetings')}
                         >
-                            Create project
+                            Tạo cuộc họp
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </div>
@@ -289,22 +249,18 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <Mic className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Meetings
+                            Cuộc họp
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
-                        {meetingLimit === null
-                            ? 'Unlimited'
-                            : `${meetingsRemaining}/${meetingLimit}`}
+                        {projects?.length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        {meetingLimit === null
-                            ? `${meetingsUsed} meetings completed`
-                            : 'remaining this period'}
+                        tổng số cuộc họp trong workspace
                     </p>
                 </div>
 
-                {/* Transcripts */}
+                {/* Projects */}
                 <div
                     data-tour="dashboard-project-stats"
                     className="border-border bg-card rounded-xl border p-5"
@@ -312,14 +268,14 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <FolderOpen className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Projects
+                            Dự án
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
                         {projects?.length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        total meetings recorded
+                        dự án cuộc họp đã tạo
                     </p>
                 </div>
 
@@ -328,14 +284,15 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <ClipboardList className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Tasks
+                            Công việc
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
-                        {pendingTasks.length}
+                        {allTaskData?.tasks.filter((t) => t.status !== 'done')
+                            .length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        pending action items
+                        việc chưa hoàn tất từ transcript
                     </p>
                 </div>
             </div>
@@ -349,7 +306,7 @@ export function Dashboard() {
                 >
                     <div className="border-border flex items-center justify-between border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Recent work
+                            Cuộc họp gần đây
                         </h2>
                         <Button
                             variant="ghost"
@@ -357,7 +314,7 @@ export function Dashboard() {
                             onClick={() => router.push('/meetings')}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            View all
+                            Xem tất cả
                             <ArrowRight className="h-3.5 w-3.5" />
                         </Button>
                     </div>
@@ -372,14 +329,14 @@ export function Dashboard() {
                         ) : projectsError ? (
                             <div className="text-destructive flex flex-col items-center gap-2 py-6 text-center text-sm">
                                 <AlertCircle className="h-8 w-8" />
-                                <p>Failed to load recent projects</p>
+                                <p>Không tải được cuộc họp gần đây</p>
                             </div>
                         ) : recentProjects.length === 0 ? (
                             <EmptyState
                                 icon={Mic}
-                                title="No projects yet"
-                                description="Create a meeting project to upload audio and review transcripts."
-                                actionLabel="Create project"
+                                title="Chưa có cuộc họp"
+                                description="Tạo cuộc họp để tải audio và xem transcript."
+                                actionLabel="Tạo cuộc họp"
                                 onAction={() => router.push('/meetings')}
                             />
                         ) : (
@@ -413,7 +370,7 @@ export function Dashboard() {
                                                 </p>
                                                 <p className="text-muted-foreground mt-0.5 truncate text-xs">
                                                     {project.description ||
-                                                        'No description'}
+                                                        'Chưa có mô tả'}
                                                 </p>
                                             </div>
                                             <span
@@ -424,8 +381,8 @@ export function Dashboard() {
                                                 }`}
                                             >
                                                 {project.audio_url
-                                                    ? 'Audio'
-                                                    : 'Waiting'}
+                                                    ? 'Có audio'
+                                                    : 'Chờ audio'}
                                             </span>
                                         </div>
                                     </div>
@@ -439,7 +396,7 @@ export function Dashboard() {
                 <div className="border-border bg-card rounded-xl border">
                     <div className="border-border flex items-center justify-between border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Pending tasks
+                            Công việc cần làm
                         </h2>
                         <Button
                             variant="ghost"
@@ -447,23 +404,37 @@ export function Dashboard() {
                             onClick={() => router.push('/tasks')}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            View all
+                            Xem tất cả
                         </Button>
                     </div>
 
                     <div className="px-5 py-4">
-                        {pendingTasks.length === 0 ? (
+                        {isTasksLoading ? (
+                            <div className="space-y-3 py-4">
+                                <div className="bg-muted/60 h-10 animate-pulse rounded" />
+                                <div className="bg-muted/60 h-10 animate-pulse rounded" />
+                            </div>
+                        ) : tasksError ? (
+                            <div className="text-destructive flex flex-col items-center gap-2 py-6 text-center text-sm">
+                                <AlertCircle className="h-8 w-8" />
+                                <p>Không tải được công việc</p>
+                            </div>
+                        ) : pendingTasks.length === 0 ? (
                             <EmptyState
                                 icon={CheckCircle}
-                                title="All caught up"
-                                description="No pending tasks right now."
+                                title="Không còn việc cần xử lý"
+                                description="Hiện chưa có công việc đang mở."
                             />
                         ) : (
                             <div className="space-y-3">
                                 {pendingTasks.map((task) => (
                                     <div
                                         key={task.id}
-                                        onClick={() => router.push('/tasks')}
+                                        onClick={() =>
+                                            router.push(
+                                                `/meetings/${task.projectId}`,
+                                            )
+                                        }
                                         className="hover:bg-muted/40 -mx-1 cursor-pointer rounded-lg px-2 py-2 transition-colors"
                                         role="button"
                                         tabIndex={0}
@@ -472,12 +443,14 @@ export function Dashboard() {
                                                 e.key === 'Enter' ||
                                                 e.key === ' '
                                             ) {
-                                                router.push('/tasks');
+                                                router.push(
+                                                    `/meetings/${task.projectId}`,
+                                                );
                                             }
                                         }}
                                     >
                                         <div className="flex items-start gap-2.5">
-                                            <Circle
+                                            <ClipboardList
                                                 className={`mt-0.5 h-4 w-4 shrink-0 ${
                                                     task.priority === 'high'
                                                         ? 'text-red-500'
@@ -489,17 +462,11 @@ export function Dashboard() {
                                             />
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-foreground truncate text-sm">
-                                                    {task.title}
+                                                    {task.content}
                                                 </p>
-                                                {task.dueDate && (
-                                                    <p className="text-muted-foreground mt-0.5 text-xs">
-                                                        Due{' '}
-                                                        {format(
-                                                            task.dueDate,
-                                                            'MMM d',
-                                                        )}
-                                                    </p>
-                                                )}
+                                                <p className="text-muted-foreground mt-0.5 truncate text-xs">
+                                                    {task.projectTitle}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -518,10 +485,10 @@ export function Dashboard() {
                 >
                     <div className="border-border border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Getting started
+                            Bắt đầu sử dụng
                         </h2>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                            Complete these steps to set up your workspace.
+                            Hoàn tất các bước chính để thiết lập workspace.
                         </p>
                     </div>
                     <div className="divide-border divide-y">
@@ -574,10 +541,10 @@ export function Dashboard() {
                 <Users className="text-muted-foreground h-3.5 w-3.5" />
                 <p className="text-muted-foreground text-xs">
                     {authRole === 'admin'
-                        ? 'Admin workspace · global access enabled'
+                        ? 'Tài khoản quản trị đang hoạt động'
                         : authRole === 'pro'
-                          ? 'Pro workspace · unlimited meetings and AI review'
-                          : 'Free workspace · 5 meeting limit · upgrade anytime'}
+                          ? 'Tài khoản đang hoạt động'
+                          : 'Tài khoản đang hoạt động'}
                 </p>
             </div>
         </div>

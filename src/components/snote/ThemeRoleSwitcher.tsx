@@ -25,9 +25,9 @@ import { cn } from '@/lib/utils';
 import { useApp, type MockAuthRole } from '@/providers/snote-app-provider';
 
 const themeOptions = [
-    { value: 'system', label: 'System', icon: Monitor },
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
+    { value: 'system', label: 'Theo hệ thống', icon: Monitor },
+    { value: 'light', label: 'Sáng', icon: Sun },
+    { value: 'dark', label: 'Tối', icon: Moon },
 ];
 
 const roleIcons = {
@@ -69,12 +69,12 @@ export function ThemeRoleSwitcher() {
                     >
                         <ActiveRoleIcon className="text-purple-primary h-4 w-4" />
                         <span className="hidden text-xs font-semibold sm:inline">
-                            Dev: {roleProfile.badge}
+                            Vai trò: {roleProfile.badge}
                         </span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
-                    <DropdownMenuLabel>Dev preview role</DropdownMenuLabel>
+                    <DropdownMenuLabel>Vai trò xem thử</DropdownMenuLabel>
                     <DropdownMenuRadioGroup
                         value={authRole}
                         onValueChange={(value) =>
@@ -107,7 +107,7 @@ export function ThemeRoleSwitcher() {
                     </DropdownMenuRadioGroup>
 
                     <DropdownMenuSeparator />
-                    <DropdownMenuLabel>Theme</DropdownMenuLabel>
+                    <DropdownMenuLabel>Giao diện</DropdownMenuLabel>
                     <DropdownMenuRadioGroup
                         value={theme}
                         onValueChange={setTheme}

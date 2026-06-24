@@ -30,21 +30,21 @@ export function Hero() {
                     {/* Badge */}
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-xs font-medium text-violet-300">
                         <Sparkles className="h-3.5 w-3.5" />
-                        AI meeting workspace
+                        Workspace cuộc họp với AI
                     </div>
 
                     {/* Headline */}
                     <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-100 sm:text-5xl lg:text-6xl">
-                        Your meeting transcript,{' '}
+                        Transcript cuộc họp,{' '}
                         <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                            searchable and source-grounded.
+                            dễ tìm kiếm và có nguồn rõ ràng.
                         </span>
                     </h1>
 
                     {/* Subheadline */}
                     <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-                        Upload audio, generate transcripts, and chat with AI
-                        answers that cite the exact transcript segments.
+                        Tải audio lên, tạo transcript và chat với AI kèm nguồn
+                        tham chiếu tới đúng đoạn transcript.
                     </p>
 
                     {/* CTAs */}
@@ -56,7 +56,7 @@ export function Hero() {
                             onClick={() => track('landing_primary_cta_clicked')}
                         >
                             <Link href="/dashboard">
-                                Start transcribing
+                                Bắt đầu tạo transcript
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </Button>
@@ -69,12 +69,12 @@ export function Hero() {
                                 track('landing_secondary_cta_clicked')
                             }
                         >
-                            <Link href="#workflow">View workflow</Link>
+                            <Link href="#workflow">Xem quy trình</Link>
                         </Button>
                     </div>
                 </Reveal>
 
-                {/* Workspace mock — with parallax */}
+                {/* Workspace preview with parallax */}
                 <Reveal y={40} delay={200} className="mt-16 sm:mt-20">
                     <div className="hero-parallax mx-auto max-w-4xl">
                         <HeroWorkspaceMock />

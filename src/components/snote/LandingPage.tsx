@@ -1,15 +1,15 @@
 'use client';
 
 /**
- * Snote Landing Page — Cinematic Dark Design
+ * Snote landing page.
  *
- * Sections (in order):
- *  1. LandingNavbar           — floating glass nav, dark
- *  2. Hero + HeroWorkspaceMock — cinematic hero with command-center mock
- *  3. Workflow                — 4-step agentic pipeline
- *  4. GroundedAnswersSection  — product proof / references
- *  5. UseCases               — 5 use-case cards
- *  6. LandingFooter           — CTA + footer combined
+ * Sections:
+ *  1. LandingNavbar
+ *  2. Hero + workspace preview
+ *  3. Workflow
+ *  4. GroundedAnswersSection
+ *  5. UseCases
+ *  6. LandingFooter
  */
 
 import { LandingNavbar } from './landing/Navbar';

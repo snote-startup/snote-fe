@@ -43,7 +43,7 @@ export function MeetingsList() {
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newTitle.trim()) {
-            toast.error('Project title is required');
+            toast.error('Vui lòng nhập tiêu đề cuộc họp.');
             return;
         }
 
@@ -58,11 +58,11 @@ export function MeetingsList() {
                     setIsCreateOpen(false);
                     setNewTitle('');
                     setNewDescription('');
-                    toast.success('Project created successfully');
+                    toast.success('Đã tạo cuộc họp.');
                     router.push(`/meetings/${projectId}`);
                 },
                 onError: (err) => {
-                    setCreateError(err.message || 'Failed to create project');
+                    setCreateError(err.message || 'Không thể tạo cuộc họp.');
                 },
             },
         );
@@ -85,11 +85,10 @@ export function MeetingsList() {
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div data-tour="projects-header">
                     <h1 className="text-foreground mb-2 text-3xl font-semibold">
-                        Meeting Projects
+                        Cuộc họp
                     </h1>
                     <p className="text-muted-foreground">
-                        Each project represents one meeting or translation
-                        session.
+                        Mỗi dự án tương ứng với một cuộc họp và transcript.
                     </p>
                 </div>
                 <Button
@@ -98,7 +97,7 @@ export function MeetingsList() {
                     className="self-start sm:w-auto"
                 >
                     <Plus className="mr-2 h-4 w-4" />
-                    Create project
+                    Tạo cuộc họp
                 </Button>
             </div>
 
@@ -110,7 +109,7 @@ export function MeetingsList() {
                 <div className="relative">
                     <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                     <Input
-                        placeholder="Search projects by title or description..."
+                        placeholder="Tìm theo tiêu đề hoặc mô tả..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10"
@@ -123,25 +122,27 @@ export function MeetingsList() {
                 <AppLoadingState variant="list" />
             ) : error ? (
                 <AppErrorState
-                    title="Failed to load projects"
+                    title="Không tải được danh sách cuộc họp"
                     error={error}
                     onRetry={() => refetch()}
                 />
             ) : filteredProjects.length === 0 ? (
                 <AppEmptyState
                     title={
-                        searchQuery ? 'No matching projects' : 'No projects yet'
+                        searchQuery
+                            ? 'Không tìm thấy cuộc họp phù hợp'
+                            : 'Chưa có cuộc họp'
                     }
                     description={
                         searchQuery
-                            ? 'Try adjusting your search query'
-                            : 'Create a meeting project to upload audio and review transcripts.'
+                            ? 'Thử đổi từ khóa tìm kiếm.'
+                            : 'Tạo cuộc họp để tải audio và xem transcript.'
                     }
                     icon={searchQuery ? Search : Mic}
                     action={
                         !searchQuery
                             ? {
-                                  label: 'Create project',
+                                  label: 'Tạo cuộc họp',
                                   onClick: () => setIsCreateOpen(true),
                               }
                             : undefined
@@ -164,8 +165,7 @@ export function MeetingsList() {
                                         {project.title}
                                     </h3>
                                     <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
-                                        {project.description ||
-                                            'No description'}
+                                        {project.description || 'Chưa có mô tả'}
                                     </p>
                                     <div className="flex items-center gap-2 text-xs font-medium">
                                         <span
@@ -177,8 +177,8 @@ export function MeetingsList() {
                                         >
                                             <FileAudio className="h-3 w-3" />
                                             {project.audio_url
-                                                ? 'Audio uploaded'
-                                                : 'Waiting for audio'}
+                                                ? 'Đã có audio'
+                                                : 'Chờ audio'}
                                         </span>
                                     </div>
                                 </div>
@@ -187,15 +187,15 @@ export function MeetingsList() {
                                     size="sm"
                                     className="shrink-0 self-end sm:self-center"
                                 >
-                                    Open
+                                    Mở
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     ))}
                     <div className="text-muted-foreground mt-6 text-center text-sm">
-                        Showing {filteredProjects.length} of{' '}
-                        {projects?.length ?? 0} projects
+                        Đang hiển thị {filteredProjects.length} /{' '}
+                        {projects?.length ?? 0} cuộc họp
                     </div>
                 </div>
             )}
@@ -214,11 +214,10 @@ export function MeetingsList() {
             >
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Create Meeting Project</DialogTitle>
+                        <DialogTitle>Tạo cuộc họp</DialogTitle>
                         <DialogDescription>
-                            Create a project for your meeting. Upload audio to
-                            generate a transcript and use AI chat to analyze
-                            your meeting.
+                            Tạo dự án cho cuộc họp. Sau đó tải audio để tạo
+                            transcript và dùng trợ lý AI để phân tích nội dung.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreateSubmit}>
@@ -228,12 +227,12 @@ export function MeetingsList() {
                                     htmlFor="title"
                                     className="text-foreground"
                                 >
-                                    Title{' '}
+                                    Tiêu đề{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="title"
-                                    placeholder="e.g. Sales Sync - Q2 Planning"
+                                    placeholder="Ví dụ: Họp sales - Kế hoạch Q2"
                                     value={newTitle}
                                     onChange={(e) =>
                                         setNewTitle(e.target.value)
@@ -247,11 +246,11 @@ export function MeetingsList() {
                                     htmlFor="description"
                                     className="text-foreground"
                                 >
-                                    Description
+                                    Mô tả
                                 </Label>
                                 <Textarea
                                     id="description"
-                                    placeholder="Brief details about the meeting session..."
+                                    placeholder="Ghi chú ngắn về cuộc họp..."
                                     value={newDescription}
                                     onChange={(e) =>
                                         setNewDescription(e.target.value)
@@ -273,7 +272,7 @@ export function MeetingsList() {
                                 onClick={() => setIsCreateOpen(false)}
                                 disabled={createMutation.isPending}
                             >
-                                Cancel
+                                Hủy
                             </Button>
                             <Button
                                 type="submit"
@@ -282,7 +281,7 @@ export function MeetingsList() {
                                 {createMutation.isPending && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
-                                Create Project
+                                Tạo cuộc họp
                             </Button>
                         </DialogFooter>
                     </form>

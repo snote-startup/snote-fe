@@ -54,7 +54,7 @@ function getDisplayError(error: string | null) {
         normalized.includes('failed to fetch') ||
         normalized.includes('cors')
     ) {
-        return 'Cannot reach the auth server from this browser. Backend CORS may need to allow this frontend origin.';
+        return 'Trình duyệt không kết nối được tới máy chủ xác thực. Backend có thể cần cho phép origin của frontend này.';
     }
 
     return error;
@@ -85,7 +85,7 @@ export function Signup() {
             setSubmitError(
                 error instanceof Error
                     ? error.message
-                    : 'Unable to create your account. Please try again.',
+                    : 'Không thể tạo tài khoản. Vui lòng thử lại.',
             );
         }
     };
@@ -108,7 +108,7 @@ export function Signup() {
                         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Snote
+                        Quay lại Snote
                     </Link>
 
                     <div className="mt-20 max-w-xl">
@@ -121,20 +121,20 @@ export function Signup() {
                             className="h-auto w-[132px]"
                         />
                         <h1 className="mt-10 text-4xl leading-tight font-semibold tracking-normal xl:text-5xl">
-                            Create a workspace for transcript review.
+                            Tạo workspace để xem lại transcript.
                         </h1>
                         <p className="text-muted-foreground mt-5 text-base leading-8">
-                            Start with a clean meeting workflow: upload audio,
-                            review speaker turns, and ask AI questions over the
-                            transcript.
+                            Bắt đầu với quy trình rõ ràng: tải audio lên, xem
+                            transcript theo người nói và hỏi AI trên nội dung
+                            cuộc họp.
                         </p>
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
                         {[
-                            'One account for projects, audio, and transcript review.',
-                            'Focused interface for meeting follow-up work.',
-                            'Admin access appears only for authenticated admins.',
+                            'Một tài khoản cho dự án, audio và transcript.',
+                            'Giao diện tập trung cho việc theo dõi sau họp.',
+                            'Quyền quản trị chỉ hiển thị với tài khoản admin.',
                         ].map((item) => (
                             <div
                                 key={item}
@@ -155,7 +155,7 @@ export function Signup() {
                             className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-2 text-sm transition-colors lg:hidden"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Back to Snote
+                            Quay lại Snote
                         </Link>
 
                         <div className="border-border bg-card/80 rounded-2xl border p-6 shadow-xl backdrop-blur sm:p-8">
@@ -169,10 +169,10 @@ export function Signup() {
                                     className="h-auto w-[128px] lg:hidden"
                                 />
                                 <h2 className="mt-8 text-2xl font-semibold lg:mt-0">
-                                    Create account
+                                    Tạo tài khoản
                                 </h2>
                                 <p className="text-muted-foreground mt-2 text-sm leading-6">
-                                    Enter the basics to start using Snote.
+                                    Nhập thông tin cơ bản để bắt đầu dùng Snote.
                                 </p>
                             </div>
 
@@ -189,14 +189,14 @@ export function Signup() {
                                         htmlFor="name"
                                         className="text-foreground text-sm"
                                     >
-                                        Full name
+                                        Họ và tên
                                     </Label>
                                     <div className="relative">
                                         <UserRound className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                         <Input
                                             id="name"
                                             type="text"
-                                            placeholder="Your name"
+                                            placeholder="Tên của bạn"
                                             value={name}
                                             onChange={(event) =>
                                                 setName(event.target.value)
@@ -237,7 +237,7 @@ export function Signup() {
                                         htmlFor="password"
                                         className="text-foreground text-sm"
                                     >
-                                        Password
+                                        Mật khẩu
                                     </Label>
                                     <div className="relative">
                                         <LockKeyhole className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -248,7 +248,7 @@ export function Signup() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder="At least 8 characters"
+                                            placeholder="Tối thiểu 8 ký tự"
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)
@@ -262,8 +262,8 @@ export function Signup() {
                                             type="button"
                                             aria-label={
                                                 showPassword
-                                                    ? 'Hide password'
-                                                    : 'Show password'
+                                                    ? 'Ẩn mật khẩu'
+                                                    : 'Hiện mật khẩu'
                                             }
                                             onClick={() =>
                                                 setShowPassword(
@@ -289,18 +289,18 @@ export function Signup() {
                                     className="h-11 w-full"
                                 >
                                     {isSubmitting
-                                        ? 'Creating account...'
-                                        : 'Create account'}
+                                        ? 'Đang tạo tài khoản...'
+                                        : 'Tạo tài khoản'}
                                 </Button>
                             </form>
 
                             <p className="text-muted-foreground mt-6 text-center text-sm">
-                                Already have an account?{' '}
+                                Đã có tài khoản?{' '}
                                 <Link
                                     href="/login"
                                     className="text-primary font-medium hover:underline"
                                 >
-                                    Sign in
+                                    Đăng nhập
                                 </Link>
                             </p>
                         </div>

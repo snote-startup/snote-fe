@@ -36,7 +36,7 @@ export async function createProject(
     }
 
     if (!id) {
-        throw new Error('Invalid project ID response from server');
+        throw new Error('Backend trả về ID dự án không hợp lệ.');
     }
 
     return id;
@@ -121,7 +121,9 @@ export async function sendProjectChatMessage(
     const { accessToken } = getStoredAuthTokens();
 
     if (!accessToken) {
-        throw new Error('Active session not found. Please log in to continue.');
+        throw new Error(
+            'Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.',
+        );
     }
 
     const cleanApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
@@ -140,7 +142,7 @@ export async function sendProjectChatMessage(
     if (!response.ok) {
         const errorText = await response.text().catch(() => '');
         throw new Error(
-            errorText || `Chat request failed (${response.status})`,
+            errorText || `Không gửi được câu hỏi (${response.status})`,
         );
     }
 

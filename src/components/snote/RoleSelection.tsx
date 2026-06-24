@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/providers/snote-app-provider';
-import { Users, User } from 'lucide-react';
+import { User, Users } from 'lucide-react';
 
 export function RoleSelection() {
     const router = useRouter();
@@ -20,22 +20,19 @@ export function RoleSelection() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#490aad] to-[#a171ff] p-4">
             <div className="w-full max-w-4xl">
-                {/* Header */}
                 <div className="mb-12 text-center">
                     <h1 className="mb-4 text-5xl font-bold text-white">
                         SNOTE
                     </h1>
                     <p className="text-xl text-white/90">
-                        AI-Powered Meeting Assistant
+                        Trợ lý transcript cuộc họp
                     </p>
                     <p className="mt-2 text-white/70">
-                        Select your role to continue
+                        Chọn vai trò để tiếp tục
                     </p>
                 </div>
 
-                {/* Role Cards */}
                 <div className="grid gap-6 md:grid-cols-2">
-                    {/* User Role Card */}
                     <button
                         onClick={() => handleRoleSelect('user')}
                         className="group rounded-2xl bg-white p-8 text-left transition-all duration-300 hover:scale-105 hover:shadow-2xl"
@@ -45,34 +42,31 @@ export function RoleSelection() {
                                 <User className="h-10 w-10 text-white" />
                             </div>
                             <h2 className="mb-3 text-2xl font-bold text-gray-900">
-                                User
+                                Người dùng
                             </h2>
                             <p className="mb-6 text-gray-600">
-                                Access your meetings, transcripts, tasks, and
-                                AI-powered assistance
+                                Quản lý cuộc họp, transcript, công việc và hỏi
+                                đáp với trợ lý AI.
                             </p>
                             <ul className="w-full space-y-2 text-left">
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    Live meeting assistance
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    Meeting transcripts & translations
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    Task management
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    Calendar integration
-                                </li>
+                                {[
+                                    'Dự án và audio đã tải lên',
+                                    'Transcript theo từng cuộc họp',
+                                    'Công việc từ transcript',
+                                    'Trợ lý AI có nguồn tham chiếu',
+                                ].map((item) => (
+                                    <li
+                                        key={item}
+                                        className="flex items-center text-gray-700"
+                                    >
+                                        <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]" />
+                                        {item}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </button>
 
-                    {/* Admin Role Card */}
                     <button
                         onClick={() => handleRoleSelect('admin')}
                         className="group rounded-2xl bg-white p-8 text-left transition-all duration-300 hover:scale-105 hover:shadow-2xl"
@@ -82,29 +76,27 @@ export function RoleSelection() {
                                 <Users className="h-10 w-10 text-white" />
                             </div>
                             <h2 className="mb-3 text-2xl font-bold text-gray-900">
-                                Admin
+                                Quản trị
                             </h2>
                             <p className="mb-6 text-gray-600">
-                                Manage users, view analytics, and configure
-                                system settings
+                                Truy cập khu vực quản trị khi tài khoản có quyền
+                                admin.
                             </p>
                             <ul className="w-full space-y-2 text-left">
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    User management
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    System analytics
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    Meeting overview
-                                </li>
-                                <li className="flex items-center text-gray-700">
-                                    <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]"></div>
-                                    System configuration
-                                </li>
+                                {[
+                                    'Điều hướng theo vai trò',
+                                    'Trang quản trị chờ API thật',
+                                    'Chờ API thống kê thật',
+                                    'Không dùng số sử dụng giả',
+                                ].map((item) => (
+                                    <li
+                                        key={item}
+                                        className="flex items-center text-gray-700"
+                                    >
+                                        <div className="mr-3 h-1.5 w-1.5 rounded-full bg-[#490aad]" />
+                                        {item}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </button>

@@ -26,24 +26,25 @@ export function ForgotPassword() {
                             <CheckCircle2 className="h-8 w-8 text-green-600" />
                         </div>
                         <h1 className="text-2xl font-semibold text-gray-900">
-                            Check your email
+                            Kiểm tra email
                         </h1>
                         <p className="mt-2 text-gray-600">
-                            We&apos;ve sent a password reset link to <br />
+                            Nếu backend đã bật khôi phục mật khẩu, hướng dẫn sẽ
+                            được gửi tới <br />
                             <span className="font-medium">{email}</span>
                         </p>
                     </div>
 
                     <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
                         <p className="mb-4 text-sm text-gray-600">
-                            Didn&apos;t receive the email? Check your spam
-                            folder or
+                            Tính năng khôi phục mật khẩu cần backend xác nhận
+                            trước khi dùng chính thức.
                         </p>
                         <Button
                             variant="outline"
                             onClick={() => setSubmitted(false)}
                         >
-                            Try another email
+                            Dùng email khác
                         </Button>
                     </div>
 
@@ -53,7 +54,7 @@ export function ForgotPassword() {
                             className="inline-flex items-center gap-2 text-sm text-[#6B4EFF] hover:text-[#4B2AA6]"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Back to login
+                            Quay lại đăng nhập
                         </Link>
                     </div>
                 </div>
@@ -77,10 +78,10 @@ export function ForgotPassword() {
                         />
                     </div>
                     <h1 className="text-2xl font-semibold text-gray-900">
-                        Forgot password?
+                        Quên mật khẩu?
                     </h1>
                     <p className="mt-2 text-gray-600">
-                        No worries, we&apos;ll send you reset instructions
+                        Nhập email để chuẩn bị khôi phục mật khẩu.
                     </p>
                 </div>
 
@@ -101,7 +102,7 @@ export function ForgotPassword() {
                         </div>
 
                         <Button type="submit" className="w-full">
-                            Reset password
+                            Gửi yêu cầu khôi phục
                         </Button>
                     </form>
 
@@ -111,7 +112,7 @@ export function ForgotPassword() {
                             className="inline-flex items-center gap-2 text-sm text-[#6B4EFF] hover:text-[#4B2AA6]"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Back to login
+                            Quay lại đăng nhập
                         </Link>
                     </div>
                 </div>
