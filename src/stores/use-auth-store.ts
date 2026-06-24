@@ -32,7 +32,7 @@ function toErrorMessage(error: unknown) {
         return error.message;
     }
 
-    return 'Authentication request failed. Please try again.';
+    return 'Yêu cầu xác thực thất bại. Vui lòng thử lại.';
 }
 
 function clearSessionState(set: (state: Partial<AuthState>) => void) {

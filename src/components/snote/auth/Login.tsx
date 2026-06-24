@@ -53,7 +53,7 @@ function getDisplayError(error: string | null) {
         normalized.includes('failed to fetch') ||
         normalized.includes('cors')
     ) {
-        return 'Cannot reach the auth server from this browser. Backend CORS may need to allow this frontend origin.';
+        return 'Trình duyệt không kết nối được tới máy chủ xác thực. Backend có thể cần cho phép origin của frontend này.';
     }
 
     return error;
@@ -83,7 +83,7 @@ export function Login() {
             setSubmitError(
                 error instanceof Error
                     ? error.message
-                    : 'Unable to sign in. Please check your credentials.',
+                    : 'Không thể đăng nhập. Vui lòng kiểm tra thông tin tài khoản.',
             );
         }
     };
@@ -106,7 +106,7 @@ export function Login() {
                         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Snote
+                        Quay lại Snote
                     </Link>
 
                     <div className="mt-20 max-w-xl">
@@ -119,20 +119,19 @@ export function Login() {
                             className="h-auto w-[132px]"
                         />
                         <h1 className="mt-10 text-4xl leading-tight font-semibold tracking-normal xl:text-5xl">
-                            Sign in to your transcript workspace.
+                            Đăng nhập vào workspace transcript của bạn.
                         </h1>
                         <p className="text-muted-foreground mt-5 text-base leading-8">
-                            Review meeting audio, search speaker transcripts,
-                            and ask AI questions over project context from one
-                            focused dashboard.
+                            Xem lại audio cuộc họp, tìm kiếm transcript theo
+                            người nói và hỏi trợ lý AI trong cùng một nơi.
                         </p>
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
                         {[
-                            'Upload audio and keep files organized by project.',
-                            'Review timestamped speaker turns without clutter.',
-                            'Ask AI about decisions, risks, and follow-ups.',
+                            'Tải audio lên và quản lý theo từng dự án.',
+                            'Xem transcript có mốc thời gian rõ ràng.',
+                            'Hỏi AI về quyết định, rủi ro và việc cần làm.',
                         ].map((item) => (
                             <div
                                 key={item}
@@ -153,7 +152,7 @@ export function Login() {
                             className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-2 text-sm transition-colors lg:hidden"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Back to Snote
+                            Quay lại Snote
                         </Link>
 
                         <div className="border-border bg-card/80 rounded-2xl border p-6 shadow-xl backdrop-blur sm:p-8">
@@ -167,10 +166,10 @@ export function Login() {
                                     className="h-auto w-[128px] lg:hidden"
                                 />
                                 <h2 className="mt-8 text-2xl font-semibold lg:mt-0">
-                                    Welcome back
+                                    Chào mừng trở lại
                                 </h2>
                                 <p className="text-muted-foreground mt-2 text-sm leading-6">
-                                    Use your Snote account to continue.
+                                    Dùng tài khoản Snote để tiếp tục.
                                 </p>
                             </div>
 
@@ -211,7 +210,7 @@ export function Login() {
                                         htmlFor="password"
                                         className="text-foreground text-sm"
                                     >
-                                        Password
+                                        Mật khẩu
                                     </Label>
                                     <div className="relative">
                                         <LockKeyhole className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -222,7 +221,7 @@ export function Login() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder="Enter your password"
+                                            placeholder="Nhập mật khẩu"
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)
@@ -235,8 +234,8 @@ export function Login() {
                                             type="button"
                                             aria-label={
                                                 showPassword
-                                                    ? 'Hide password'
-                                                    : 'Show password'
+                                                    ? 'Ẩn mật khẩu'
+                                                    : 'Hiện mật khẩu'
                                             }
                                             onClick={() =>
                                                 setShowPassword(
@@ -261,17 +260,19 @@ export function Login() {
                                     disabled={isSubmitting}
                                     className="h-11 w-full"
                                 >
-                                    {isSubmitting ? 'Signing in...' : 'Sign in'}
+                                    {isSubmitting
+                                        ? 'Đang đăng nhập...'
+                                        : 'Đăng nhập'}
                                 </Button>
                             </form>
 
                             <p className="text-muted-foreground mt-6 text-center text-sm">
-                                New to Snote?{' '}
+                                Chưa có tài khoản?{' '}
                                 <Link
                                     href="/register"
                                     className="text-primary font-medium hover:underline"
                                 >
-                                    Create an account
+                                    Tạo tài khoản
                                 </Link>
                             </p>
                         </div>

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     getProjectTasks,
+    getAllProjectTasks,
     generateProjectTasks,
     updateTask,
     deleteTask,
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
 
 export const taskKeys = {
     all: ['tasks'] as const,
+    aggregate: () => [...taskKeys.all, 'aggregate'] as const,
     byProject: (projectId: string) => ['project', projectId, 'tasks'] as const,
 };
 
@@ -25,6 +27,16 @@ export function useProjectTasks(projectId: string) {
 }
 
 /**
+ * Fetch tasks across all projects for the global tasks page.
+ */
+export function useAllProjectTasks() {
+    return useQuery({
+        queryKey: taskKeys.aggregate(),
+        queryFn: getAllProjectTasks,
+    });
+}
+
+/**
  * Generate tasks from project content/transcript.
  * On success: invalidates the tasks query and shows a toast.
  */
@@ -36,10 +48,11 @@ export function useGenerateProjectTasks(projectId: string) {
             queryClient.invalidateQueries({
                 queryKey: taskKeys.byProject(projectId),
             });
-            toast.success('Tasks generated successfully');
+            queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
+            toast.success('Đã tạo công việc từ transcript.');
         },
         onError: (err: Error) => {
-            toast.error(err.message || 'Failed to generate tasks');
+            toast.error(err.message || 'Không thể tạo công việc.');
         },
     });
 }
@@ -100,12 +113,16 @@ export function useUpdateTask(projectId: string) {
                     context.previous,
                 );
             }
-            toast.error(err.message || 'Failed to update task');
+            toast.error(err.message || 'Không thể cập nhật công việc.');
+        },
+        onSuccess: () => {
+            toast.success('Đã cập nhật công việc.');
         },
         onSettled: () => {
             queryClient.invalidateQueries({
                 queryKey: taskKeys.byProject(projectId),
             });
+            queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
         },
     });
 }
@@ -141,15 +158,58 @@ export function useDeleteTask(projectId: string) {
                     context.previous,
                 );
             }
-            toast.error(err.message || 'Failed to delete task');
+            toast.error(err.message || 'Không thể xóa công việc.');
         },
         onSettled: () => {
             queryClient.invalidateQueries({
                 queryKey: taskKeys.byProject(projectId),
             });
+            queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
         },
         onSuccess: () => {
-            toast.success('Task deleted');
+            toast.success('Đã xóa công việc.');
+        },
+    });
+}
+
+export function useUpdateAggregatedTask() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            taskId,
+            body,
+        }: {
+            taskId: string;
+            projectId: string;
+            body: UpdateTaskRequest;
+        }) => updateTask(taskId, body),
+        onSuccess: (_data, vars) => {
+            queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
+            queryClient.invalidateQueries({
+                queryKey: taskKeys.byProject(vars.projectId),
+            });
+            toast.success('Đã cập nhật công việc.');
+        },
+        onError: (err: Error) => {
+            toast.error(err.message || 'Không thể cập nhật công việc.');
+        },
+    });
+}
+
+export function useDeleteAggregatedTask() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ taskId }: { taskId: string; projectId: string }) =>
+            deleteTask(taskId),
+        onSuccess: (_data, vars) => {
+            queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
+            queryClient.invalidateQueries({
+                queryKey: taskKeys.byProject(vars.projectId),
+            });
+            toast.success('Đã xóa công việc.');
+        },
+        onError: (err: Error) => {
+            toast.error(err.message || 'Không thể xóa công việc.');
         },
     });
 }

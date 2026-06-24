@@ -1,34 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from './Reveal';
 
-const tiers = [
+type Tier = {
+    name: string;
+    description: string;
+    highlight: boolean;
+    perks: string[];
+    cta: {
+        label: string;
+        href?: string;
+    };
+};
+
+const tiers: Tier[] = [
     {
-        name: 'Free',
-        description: 'Start with one project and your first recording.',
+        name: 'Truy cập hiện tại',
+        description: 'Tài khoản đang hoạt động.',
         highlight: false,
         perks: [
-            '1 active project',
-            'Up to 60 min/month',
-            'Transcript review',
-            'Basic AI chat',
+            'Tạo dự án cuộc họp',
+            'Tải audio lên',
+            'Xem transcript',
+            'Hỏi đáp với trợ lý AI',
         ],
-        cta: { label: 'Get started free', href: '/register' },
+        cta: { label: 'Bắt đầu', href: '/register' },
     },
     {
-        name: 'Pro',
-        description: 'Unlimited projects, more audio, and full AI access.',
+        name: 'Gói nâng cấp',
+        description:
+            'Thông tin gói dịch vụ sẽ dùng API thật khi backend sẵn sàng.',
         highlight: true,
         perks: [
-            'Unlimited projects',
-            'Extended audio capacity',
-            'Full AI transcript chat',
-            'Priority processing',
+            'Thanh toán thật',
+            'Trạng thái gói dịch vụ thật',
+            'Lịch sử hóa đơn thật',
+            'Không hiển thị số sử dụng giả',
         ],
-        cta: { label: 'Upgrade path coming', href: '/pricing' },
+        cta: { label: 'Chờ API billing' },
     },
 ];
 
@@ -38,14 +50,14 @@ export function PricingTeaser() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <Reveal className="mb-12 max-w-2xl">
                     <p className="text-primary mb-3 text-sm font-semibold">
-                        Pricing
+                        Gói dịch vụ
                     </p>
                     <h2 className="text-foreground text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                        Start free. Upgrade when ready.
+                        Dùng luồng thật, không hiển thị số giả.
                     </h2>
                     <p className="text-muted-foreground mt-4 text-base leading-relaxed">
-                        No credit card required to get started. Full pricing
-                        details coming soon.
+                        Trang billing sẽ được mở đầy đủ khi backend cung cấp API
+                        thanh toán và trạng thái gói dịch vụ.
                     </p>
                 </Reveal>
 
@@ -61,7 +73,7 @@ export function PricingTeaser() {
                             >
                                 {tier.highlight && (
                                     <span className="bg-primary text-primary-foreground absolute top-4 right-4 rounded-full px-2.5 py-0.5 text-[10px] font-semibold">
-                                        Coming soon
+                                        Chờ backend
                                     </span>
                                 )}
                                 <h3 className="text-foreground mb-1 text-lg font-semibold">
@@ -81,34 +93,25 @@ export function PricingTeaser() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Button
-                                    asChild
-                                    variant={
-                                        tier.highlight ? 'default' : 'outline'
-                                    }
-                                    className="w-full"
-                                >
-                                    <Link href={tier.cta.href}>
+                                {tier.cta.href ? (
+                                    <Button asChild className="w-full">
+                                        <Link href={tier.cta.href}>
+                                            {tier.cta.label}
+                                        </Link>
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        disabled
+                                        variant="outline"
+                                        className="w-full"
+                                    >
                                         {tier.cta.label}
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                </Button>
+                                    </Button>
+                                )}
                             </div>
                         </Reveal>
                     ))}
                 </div>
-
-                <Reveal delay={160} className="mt-6">
-                    <p className="text-muted-foreground text-sm">
-                        See full details at{' '}
-                        <Link
-                            href="/pricing"
-                            className="text-primary underline-offset-4 hover:underline"
-                        >
-                            /pricing
-                        </Link>
-                    </p>
-                </Reveal>
             </div>
         </section>
     );

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Snote — AI meeting transcripts with grounded answers',
+    title: 'Snote - Transcript cuộc họp với trợ lý AI',
     description:
-        'Upload meeting audio, generate transcripts, and chat with AI answers linked to transcript references.',
+        'Tải audio cuộc họp lên, tạo transcript và chat với AI có nguồn tham chiếu từ transcript.',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+        <html lang="vi" suppressHydrationWarning data-scroll-behavior="smooth">
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >

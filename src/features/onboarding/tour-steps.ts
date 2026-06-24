@@ -4,9 +4,9 @@ export const dashboardTourSteps: DriveStep[] = [
     {
         element: '[data-tour="sidebar"]',
         popover: {
-            title: 'Sidebar Navigation',
+            title: 'Điều hướng',
             description:
-                'Use the sidebar to move between your workspace, meeting projects, tasks, calendar, billing, and profile.',
+                'Dùng sidebar để mở tổng quan, cuộc họp, công việc, lịch, gói dịch vụ và hồ sơ.',
             side: 'right',
             align: 'start',
         },
@@ -14,9 +14,9 @@ export const dashboardTourSteps: DriveStep[] = [
     {
         element: '[data-tour="dashboard-header"]',
         popover: {
-            title: 'Workspace Overview',
+            title: 'Tổng quan workspace',
             description:
-                'This is your workspace overview. Recent work metrics and projects now come from real backend APIs.',
+                'Đây là màn hình tổng quan. Danh sách cuộc họp và công việc lấy từ API thật.',
             side: 'bottom',
             align: 'start',
         },
@@ -24,9 +24,9 @@ export const dashboardTourSteps: DriveStep[] = [
     {
         element: '[data-tour="dashboard-recent-work"]',
         popover: {
-            title: 'Recent Projects',
+            title: 'Cuộc họp gần đây',
             description:
-                'Your latest meeting projects appear here. Open any card to view transcripts and AI chat history.',
+                'Các cuộc họp mới nhất xuất hiện tại đây. Mở một cuộc họp để xem transcript và lịch sử chat AI.',
             side: 'top',
             align: 'start',
         },
@@ -34,9 +34,9 @@ export const dashboardTourSteps: DriveStep[] = [
     {
         element: '[data-tour="dashboard-create-project"]',
         popover: {
-            title: 'Create Project',
+            title: 'Tạo cuộc họp',
             description:
-                'Start by creating a meeting project. Each project represents one meeting or translation session.',
+                'Bắt đầu bằng cách tạo một dự án cuộc họp. Mỗi dự án chứa audio, transcript, chat và công việc riêng.',
             side: 'left',
             align: 'center',
         },
@@ -44,9 +44,8 @@ export const dashboardTourSteps: DriveStep[] = [
     {
         element: '[data-tour="theme-toggle"]',
         popover: {
-            title: 'Theme Switcher',
-            description:
-                'Switch between light and dark mode any time to suit your workspace preference.',
+            title: 'Đổi giao diện',
+            description: 'Chuyển giữa giao diện sáng, tối hoặc theo hệ thống.',
             side: 'top',
             align: 'end',
         },
@@ -57,9 +56,9 @@ export const meetingsTourSteps: DriveStep[] = [
     {
         element: '[data-tour="projects-header"]',
         popover: {
-            title: 'Projects Workspace',
+            title: 'Workspace cuộc họp',
             description:
-                'Meeting Projects are the core workspace unit in SNote. This list replaces the old mock sessions.',
+                'Dự án cuộc họp là đơn vị chính trong Snote. Danh sách này lấy từ backend.',
             side: 'bottom',
             align: 'start',
         },
@@ -67,9 +66,9 @@ export const meetingsTourSteps: DriveStep[] = [
     {
         element: '[data-tour="create-project-button"]',
         popover: {
-            title: 'Create a Project',
+            title: 'Tạo cuộc họp',
             description:
-                'Create a project before uploading audio or reviewing transcripts.',
+                'Tạo dự án trước khi tải audio lên hoặc xem transcript.',
             side: 'bottom',
             align: 'end',
         },
@@ -77,9 +76,8 @@ export const meetingsTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-search"]',
         popover: {
-            title: 'Search Projects',
-            description:
-                'Filter your projects instantly by title or description details.',
+            title: 'Tìm kiếm cuộc họp',
+            description: 'Lọc cuộc họp theo tiêu đề hoặc mô tả.',
             side: 'bottom',
             align: 'center',
         },
@@ -87,9 +85,9 @@ export const meetingsTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-list"]',
         popover: {
-            title: 'Projects Card list',
+            title: 'Danh sách cuộc họp',
             description:
-                'Each card shows the project metadata and whether audio has been uploaded. Open a card to view its transcripts and chat.',
+                'Mỗi dòng cho biết metadata và trạng thái audio. Mở một cuộc họp để xem transcript và chat.',
             side: 'top',
             align: 'center',
         },
@@ -100,9 +98,9 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-detail-header"]',
         popover: {
-            title: 'Project Details',
+            title: 'Chi tiết cuộc họp',
             description:
-                'This is the project detail workspace. It represents one meeting session and holds all session outputs.',
+                'Đây là workspace của một cuộc họp, bao gồm transcript, chat AI và công việc.',
             side: 'bottom',
             align: 'start',
         },
@@ -110,9 +108,8 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-edit-button"]',
         popover: {
-            title: 'Edit Details',
-            description:
-                'Update the project title and description here at any time.',
+            title: 'Chỉnh sửa thông tin',
+            description: 'Cập nhật tiêu đề và mô tả cuộc họp tại đây.',
             side: 'bottom',
             align: 'end',
         },
@@ -120,9 +117,9 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-tabs"]',
         popover: {
-            title: 'Workspace Tabs',
+            title: 'Các tab workspace',
             description:
-                'Switch tabs to see the project overview details, transcripts, or ask the AI assistant questions.',
+                'Chuyển tab để xem tổng quan, transcript, chat AI hoặc công việc.',
             side: 'bottom',
             align: 'start',
         },
@@ -130,9 +127,9 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="upload-blocker-card"]',
         popover: {
-            title: 'Audio Upload Status',
+            title: 'Trạng thái audio',
             description:
-                'Audio upload is temporarily offline because the backend upload returns a 500 error. The UI is locked until backend upload is resolved.',
+                'Tải audio lên trong tab transcript để backend tạo transcript cho cuộc họp.',
             side: 'left',
             align: 'center',
         },
@@ -140,9 +137,9 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-transcript-tab"]',
         popover: {
-            title: 'Speaker Transcripts',
+            title: 'Transcript theo người nói',
             description:
-                'Speaker transcripts, translation lines, and timestamps will render in this tab once audio processing succeeds.',
+                'Transcript và mốc thời gian sẽ hiển thị tại đây sau khi xử lý audio.',
             side: 'top',
             align: 'center',
         },
@@ -150,9 +147,8 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="project-chat-tab"]',
         popover: {
-            title: 'AI Translation Chat',
-            description:
-                'Interact with your meetings through Q&A. Chat input is disabled here until the backend 502 gateway issue is resolved.',
+            title: 'Trợ lý AI',
+            description: 'Hỏi đáp với AI dựa trên transcript của cuộc họp.',
             side: 'top',
             align: 'center',
         },
@@ -160,9 +156,9 @@ export const projectDetailTourSteps: DriveStep[] = [
     {
         element: '[data-tour="chat-blocker-card"]',
         popover: {
-            title: 'AI References System',
+            title: 'Nguồn tham chiếu AI',
             description:
-                'Assistant answers will include references split by <<<REFERENCES>>> that map back to transcript segments.',
+                'Câu trả lời của trợ lý có thể chứa nguồn tham chiếu trỏ về các đoạn transcript.',
             side: 'top',
             align: 'center',
         },

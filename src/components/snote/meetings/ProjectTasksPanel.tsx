@@ -58,17 +58,17 @@ const statusConfig: Record<
     { label: string; icon: LucideIcon; colorClass: string }
 > = {
     todo: {
-        label: 'To Do',
+        label: 'Cần làm',
         icon: Circle,
         colorClass: 'text-muted-foreground',
     },
     in_progress: {
-        label: 'In Progress',
+        label: 'Đang làm',
         icon: CircleDashed,
         colorClass: 'text-indigo-500 dark:text-indigo-400',
     },
     done: {
-        label: 'Done',
+        label: 'Hoàn tất',
         icon: CheckCircle2,
         colorClass: 'text-emerald-600 dark:text-emerald-500',
     },
@@ -79,17 +79,17 @@ const priorityConfig: Record<
     { label: string; colorClass: string; bgClass: string }
 > = {
     low: {
-        label: 'Low',
+        label: 'Thấp',
         colorClass: 'text-muted-foreground',
         bgClass: 'bg-muted',
     },
     medium: {
-        label: 'Medium',
+        label: 'Vừa',
         colorClass: 'text-amber-600 dark:text-amber-400',
         bgClass: 'bg-amber-500/10 dark:bg-amber-900/20',
     },
     high: {
-        label: 'High',
+        label: 'Cao',
         colorClass: 'text-red-600 dark:text-red-400',
         bgClass: 'bg-red-500/10 dark:bg-red-900/20',
     },
@@ -160,7 +160,7 @@ export function ProjectTasksPanel({
                 <div className="flex items-center gap-2">
                     <ListTodo className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
-                        Action Items
+                        Công việc
                         {tasks && tasks.length > 0 && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
                                 ({tasks.length})
@@ -179,19 +179,19 @@ export function ProjectTasksPanel({
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
-                            Loading tasks…
+                            Đang tải công việc...
                         </p>
                     </div>
                 ) : !tasks || tasks.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
                         <ListTodo className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
                         <h3 className="text-foreground mb-1 text-base font-semibold">
-                            No tasks generated yet
+                            Chưa có công việc
                         </h3>
                         <p className="text-muted-foreground mb-6 max-w-[250px] text-sm">
                             {hasSegments
-                                ? 'Turn this transcript into actionable tasks.'
-                                : 'Generate a transcript before creating tasks.'}
+                                ? 'Tạo công việc hành động từ transcript này.'
+                                : 'Cần có transcript trước khi tạo công việc.'}
                         </p>
                         <Button
                             onClick={handleGenerate}
@@ -203,12 +203,12 @@ export function ProjectTasksPanel({
                             {generateMutation.isPending ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Generating…
+                                    Đang tạo...
                                 </>
                             ) : (
                                 <>
                                     <Wand2 className="mr-2 h-4 w-4" />
-                                    Generate tasks
+                                    Tạo công việc
                                 </>
                             )}
                         </Button>
@@ -272,7 +272,7 @@ export function ProjectTasksPanel({
                                                         className="w-48"
                                                     >
                                                         <DropdownMenuLabel>
-                                                            Task Actions
+                                                            Thao tác
                                                         </DropdownMenuLabel>
                                                         <DropdownMenuItem
                                                             onClick={() => {
@@ -285,13 +285,13 @@ export function ProjectTasksPanel({
                                                             }}
                                                         >
                                                             <Pencil className="mr-2 h-4 w-4" />
-                                                            Edit content
+                                                            Chỉnh sửa nội dung
                                                         </DropdownMenuItem>
 
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <ListTodo className="mr-2 h-4 w-4" />
-                                                                Set status
+                                                                Đổi trạng thái
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -308,14 +308,13 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="todo">
-                                                                        To Do
+                                                                        Cần làm
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="in_progress">
-                                                                        In
-                                                                        Progress
+                                                                        Đang làm
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="done">
-                                                                        Done
+                                                                        Hoàn tất
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -324,7 +323,7 @@ export function ProjectTasksPanel({
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <Flag className="mr-2 h-4 w-4" />
-                                                                Set priority
+                                                                Đổi ưu tiên
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -341,13 +340,13 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="low">
-                                                                        Low
+                                                                        Thấp
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="medium">
-                                                                        Medium
+                                                                        Vừa
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="high">
-                                                                        High
+                                                                        Cao
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -363,7 +362,7 @@ export function ProjectTasksPanel({
                                                             }
                                                         >
                                                             <Trash2 className="mr-2 h-4 w-4" />
-                                                            Delete
+                                                            Xóa
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -379,7 +378,7 @@ export function ProjectTasksPanel({
                                                 <Clock3 className="h-3 w-3" />
                                                 {format(
                                                     new Date(task.created_at),
-                                                    'MMM d, yyyy',
+                                                    'dd/MM/yyyy',
                                                 )}
                                             </div>
                                         </div>
@@ -399,7 +398,7 @@ export function ProjectTasksPanel({
                                 ) : (
                                     <Wand2 className="mr-2 h-4 w-4" />
                                 )}
-                                Regenerate tasks
+                                Tạo lại công việc
                             </Button>
                         </div>
                     </>
@@ -413,7 +412,7 @@ export function ProjectTasksPanel({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Task</DialogTitle>
+                        <DialogTitle>Chỉnh sửa công việc</DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
                         <Textarea
@@ -421,7 +420,7 @@ export function ProjectTasksPanel({
                             onChange={(e) => setEditContent(e.target.value)}
                             rows={4}
                             className="resize-none"
-                            placeholder="Task content..."
+                            placeholder="Nội dung công việc..."
                         />
                     </div>
                     <DialogFooter>
@@ -429,7 +428,7 @@ export function ProjectTasksPanel({
                             variant="outline"
                             onClick={() => setEditingTask(null)}
                         >
-                            Cancel
+                            Hủy
                         </Button>
                         <Button
                             onClick={handleEditSave}
@@ -440,7 +439,7 @@ export function ProjectTasksPanel({
                             {updateMutation.isPending && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            Save Changes
+                            Lưu thay đổi
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -453,10 +452,10 @@ export function ProjectTasksPanel({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Task</DialogTitle>
+                        <DialogTitle>Xóa công việc</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete this task? This
-                            action cannot be undone.
+                            Bạn chắc chắn muốn xóa công việc này? Thao tác này
+                            không thể hoàn tác.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -464,7 +463,7 @@ export function ProjectTasksPanel({
                             variant="outline"
                             onClick={() => setDeletingTaskId(null)}
                         >
-                            Cancel
+                            Hủy
                         </Button>
                         <Button
                             variant="destructive"
@@ -474,7 +473,7 @@ export function ProjectTasksPanel({
                             {deleteMutation.isPending && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            Delete
+                            Xóa
                         </Button>
                     </DialogFooter>
                 </DialogContent>

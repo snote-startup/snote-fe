@@ -2,14 +2,14 @@
 
 import { Reveal } from './Reveal';
 
-const logos = [
-    { name: 'Product teams', abbr: 'PT' },
-    { name: 'Research leads', abbr: 'RL' },
+const useCases = [
+    { name: 'Đội sản phẩm', abbr: 'SP' },
+    { name: 'Nghiên cứu người dùng', abbr: 'NC' },
     { name: 'Customer success', abbr: 'CS' },
-    { name: 'Sales calls', abbr: 'SC' },
-    { name: 'Design reviews', abbr: 'DR' },
-    { name: 'Engineering syncs', abbr: 'ES' },
-    { name: 'Executive briefings', abbr: 'EB' },
+    { name: 'Sales call', abbr: 'SL' },
+    { name: 'Design review', abbr: 'DR' },
+    { name: 'Engineering sync', abbr: 'ES' },
+    { name: 'Executive briefing', abbr: 'EB' },
 ];
 
 export function TrustStrip() {
@@ -18,10 +18,10 @@ export function TrustStrip() {
             <Reveal>
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <p className="text-muted-foreground mb-6 text-center text-xs font-medium tracking-widest uppercase">
-                        Used across teams for
+                        Phù hợp cho
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-2">
-                        {logos.map(({ name, abbr }) => (
+                        {useCases.map(({ name, abbr }) => (
                             <span
                                 key={name}
                                 className="border-border bg-card text-muted-foreground hover:border-primary/20 hover:text-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors"

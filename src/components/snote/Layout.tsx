@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
-    Mic,
     FolderOpen,
     CheckSquare,
     Calendar,
@@ -77,10 +76,6 @@ function NavLinks({ navItems, pathname, onNavigate }: NavLinksProps) {
 // ─── Sidebar Bottom Content ───────────────────────────────────────────────────
 
 interface SidebarBottomProps {
-    quotaPercent: number;
-    meetingLimit: number | null;
-    meetingsUsed: number;
-    meetingsRemaining: number | null;
     initials: string;
     displayName: string;
     displayEmail: string;
@@ -89,10 +84,6 @@ interface SidebarBottomProps {
 }
 
 function SidebarBottom({
-    quotaPercent,
-    meetingLimit,
-    meetingsUsed,
-    meetingsRemaining,
     initials,
     displayName,
     displayEmail,
@@ -101,29 +92,6 @@ function SidebarBottom({
 }: SidebarBottomProps) {
     return (
         <>
-            {/* Quota / usage — only show for free plan */}
-            {meetingLimit !== null && (
-                <div className="border-border border-t px-4 py-3">
-                    <div className="mb-1.5 flex items-center justify-between">
-                        <span className="text-muted-foreground text-xs">
-                            Meetings used
-                        </span>
-                        <span className="text-foreground text-xs font-medium">
-                            {meetingsUsed}/{meetingLimit}
-                        </span>
-                    </div>
-                    <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                        <div
-                            className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${quotaPercent}%` }}
-                        />
-                    </div>
-                    <p className="text-muted-foreground mt-1.5 text-xs">
-                        {meetingsRemaining} remaining
-                    </p>
-                </div>
-            )}
-
             {/* User footer */}
             <div
                 data-tour="user-menu"
@@ -159,7 +127,7 @@ function SidebarBottom({
                             variant="ghost"
                             size="icon"
                             onClick={onLogout}
-                            aria-label="Log out"
+                            aria-label="Đăng xuất"
                             className="h-8 w-8"
                         >
                             <LogOut className="text-muted-foreground h-4 w-4" />
@@ -192,19 +160,18 @@ export function Layout({ children }: LayoutProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { account, authRole, isAdmin, roleProfile, user, logout } = useApp();
+    const { account, authRole, isAdmin, user, logout } = useApp();
     const { startCurrentPageTour } = useProductTour();
 
     const navItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-        { icon: Mic, label: 'Live Assistant', path: '/live-assistant/setup' },
-        { icon: FolderOpen, label: 'Meetings', path: '/meetings' },
-        { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
-        { icon: Calendar, label: 'Calendar', path: '/calendar' },
-        { icon: CreditCard, label: 'Billing', path: '/billing' },
-        { icon: User, label: 'Profile', path: '/profile' },
+        { icon: LayoutDashboard, label: 'Tổng quan', path: '/dashboard' },
+        { icon: FolderOpen, label: 'Cuộc họp', path: '/meetings' },
+        { icon: CheckSquare, label: 'Công việc', path: '/tasks' },
+        { icon: Calendar, label: 'Lịch', path: '/calendar' },
+        { icon: CreditCard, label: 'Gói dịch vụ', path: '/billing' },
+        { icon: User, label: 'Hồ sơ', path: '/profile' },
         ...(isAdmin
-            ? [{ icon: ShieldCheck, label: 'Admin', path: '/admin' }]
+            ? [{ icon: ShieldCheck, label: 'Quản trị', path: '/admin' }]
             : []),
     ];
 
@@ -220,23 +187,14 @@ export function Layout({ children }: LayoutProps) {
     const displayName = account?.name ?? user.name;
     const displayEmail = account?.email ?? user.email;
     const displayRole =
-        authRole === 'admin' ? 'Admin' : authRole === 'pro' ? 'Pro' : 'Free';
+        authRole === 'admin'
+            ? 'Quản trị'
+            : authRole === 'pro'
+              ? 'Thành viên'
+              : 'Đang hoạt động';
     const initials = getInitials(displayName);
 
-    const meetingLimit = roleProfile.meetingLimit;
-    const meetingsUsed = roleProfile.meetingsUsed;
-    const meetingsRemaining =
-        meetingLimit === null ? null : Math.max(meetingLimit - meetingsUsed, 0);
-    const quotaPercent =
-        meetingLimit === null
-            ? 100
-            : Math.min((meetingsUsed / meetingLimit) * 100, 100);
-
     const sidebarBottomProps: SidebarBottomProps = {
-        quotaPercent,
-        meetingLimit,
-        meetingsUsed,
-        meetingsRemaining,
         initials,
         displayName,
         displayEmail,
@@ -284,7 +242,7 @@ export function Layout({ children }: LayoutProps) {
                             className="text-muted-foreground hover:bg-muted/60 hover:text-foreground flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
                         >
                             <CircleHelp className="text-primary h-[18px] w-[18px] shrink-0" />
-                            <span>Quick Tour</span>
+                            <span>Hướng dẫn nhanh</span>
                         </Button>
                     </div>
                 </nav>
@@ -311,7 +269,7 @@ export function Layout({ children }: LayoutProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setMobileMenuOpen(false)}
-                        aria-label="Close menu"
+                        aria-label="Đóng menu"
                         className="h-8 w-8"
                     >
                         <X className="h-4 w-4" />
@@ -338,7 +296,7 @@ export function Layout({ children }: LayoutProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setMobileMenuOpen(true)}
-                        aria-label="Open menu"
+                        aria-label="Mở menu"
                         className="h-8 w-8"
                     >
                         <Menu className="h-5 w-5" />

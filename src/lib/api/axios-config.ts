@@ -77,7 +77,7 @@ function getErrorMessage(error: AxiosError) {
         }
     }
 
-    return error.message || 'Internal Server Error';
+    return error.message || 'Máy chủ đang gặp lỗi. Vui lòng thử lại sau.';
 }
 
 apiClient.interceptors.request.use((config) => {

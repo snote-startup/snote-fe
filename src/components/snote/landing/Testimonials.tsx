@@ -4,15 +4,15 @@ import { Reveal } from './Reveal';
 
 const quotes = [
     {
-        text: 'Instead of digging through recordings, I can ask the transcript directly. It changed how we do post-meeting review.',
-        role: 'Product team lead',
+        text: 'Thay vì nghe lại toàn bộ bản ghi, tôi có thể hỏi trực tiếp trên transcript.',
+        role: 'Trưởng nhóm sản phẩm',
     },
     {
-        text: 'Having speaker labels on every line makes it easy to find exactly who said what. No more scrubbing audio.',
-        role: 'Research lead',
+        text: 'Speaker label và mốc thời gian giúp kiểm tra lại ngữ cảnh nhanh hơn.',
+        role: 'Lead nghiên cứu',
     },
     {
-        text: "The AI doesn't just summarize — it answers specific questions. That's the difference.",
+        text: 'Trợ lý AI hữu ích nhất khi câu trả lời đi kèm nguồn tham chiếu.',
         role: 'Founder',
     },
 ];
@@ -26,10 +26,10 @@ export function Testimonials() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <Reveal className="mb-12 max-w-2xl">
                     <p className="text-primary mb-3 text-sm font-semibold">
-                        What teams say
+                        Nhóm sử dụng
                     </p>
                     <h2 className="text-foreground text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                        What teams use Snote for.
+                        Snote hỗ trợ rà soát sau cuộc họp.
                     </h2>
                 </Reveal>
 

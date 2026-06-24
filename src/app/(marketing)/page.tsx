@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { LandingPage } from '@/components/snote/LandingPage';
 
 export const metadata: Metadata = {
-    title: 'Snote — AI meeting transcripts with grounded answers',
+    title: 'Snote - Transcript cuộc họp với trợ lý AI',
     description:
-        'Upload meeting audio, generate transcripts, and chat with AI answers linked to transcript references. Source-grounded AI for every meeting.',
+        'Tải audio cuộc họp lên, tạo transcript và chat với AI có nguồn tham chiếu từ transcript.',
 };
 
 export default function Home() {

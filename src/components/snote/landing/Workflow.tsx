@@ -12,30 +12,30 @@ const steps = [
     {
         step: '01',
         icon: UploadCloud,
-        title: 'Upload audio',
+        title: 'Tải audio lên',
         description:
-            'Attach the meeting recording to a project. Snote handles any common audio format.',
+            'Gắn bản ghi cuộc họp vào một dự án. Snote hỗ trợ các định dạng audio phổ biến.',
     },
     {
         step: '02',
         icon: FileText,
-        title: 'Generate transcript',
+        title: 'Tạo transcript',
         description:
-            'Get a timestamped, speaker-segmented transcript ready for review in minutes.',
+            'Nhận transcript có mốc thời gian và phân đoạn theo người nói.',
     },
     {
         step: '03',
         icon: MessageSquareText,
-        title: 'Ask AI',
+        title: 'Hỏi trợ lý AI',
         description:
-            'Query the transcript naturally. Ask about decisions, blockers, or follow-ups.',
+            'Hỏi tự nhiên trên transcript về quyết định, điểm nghẽn hoặc việc cần làm.',
     },
     {
         step: '04',
         icon: ScanSearch,
-        title: 'Verify by references',
+        title: 'Kiểm chứng bằng nguồn',
         description:
-            'Every AI answer cites exact transcript segments. Click to jump to the source.',
+            'Mỗi câu trả lời AI có thể trỏ về đoạn transcript gốc để kiểm tra.',
     },
 ];
 
@@ -45,13 +45,15 @@ export function Workflow() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <Reveal className="mb-14 max-w-2xl">
                     <p className="mb-3 text-sm font-semibold text-violet-400">
-                        Workflow
+                        Quy trình
                     </p>
                     <h2 className="text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
-                        From recording to verified review in four steps.
+                        Từ bản ghi tới nội dung có thể kiểm chứng trong bốn
+                        bước.
                     </h2>
                     <p className="mt-4 text-base leading-relaxed text-zinc-500">
-                        A focused pipeline — no scattered tabs, no guesswork.
+                        Quy trình tập trung, rõ nơi tải audio, xem transcript và
+                        kiểm tra nguồn.
                     </p>
                 </Reveal>
 

@@ -29,10 +29,10 @@ export function VerifyEmail() {
                         />
                     </div>
                     <h1 className="text-2xl font-semibold text-gray-900">
-                        Verify your email
+                        Xác minh email
                     </h1>
                     <p className="mt-2 text-gray-600">
-                        We&apos;ve sent a verification link to your email
+                        Kiểm tra email của bạn nếu backend đã bật xác minh.
                     </p>
                 </div>
 
@@ -43,7 +43,7 @@ export function VerifyEmail() {
                         </div>
 
                         <p className="mb-2 text-gray-700">
-                            Verification email sent to:
+                            Email cần xác minh:
                         </p>
                         <p className="mb-6 font-medium text-gray-900">
                             {user?.email || 'your@email.com'}
@@ -51,16 +51,20 @@ export function VerifyEmail() {
 
                         <div className="space-y-3">
                             <Button onClick={handleContinue} className="w-full">
-                                Continue to Dashboard
+                                Tiếp tục tới tổng quan
                             </Button>
-                            <Button variant="outline" className="w-full">
-                                Resend verification email
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                disabled
+                            >
+                                Gửi lại email xác minh
                             </Button>
                         </div>
 
                         <p className="mt-6 text-xs text-gray-500">
-                            You can verify your email later from your profile
-                            settings
+                            Gửi lại email xác minh sẽ được mở sau khi backend
+                            cung cấp API.
                         </p>
                     </div>
                 </div>

@@ -24,10 +24,10 @@ export function AuthLoadingScreen() {
 
             <div className="flex flex-col items-center gap-1.5">
                 <p className="text-foreground text-sm font-medium">
-                    Preparing your workspace
+                    Đang chuẩn bị workspace
                 </p>
                 <p className="text-muted-foreground text-xs">
-                    Checking session…
+                    Đang kiểm tra phiên đăng nhập...
                 </p>
             </div>
 

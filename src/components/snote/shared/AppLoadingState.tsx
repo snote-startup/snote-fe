@@ -25,10 +25,10 @@ export function AppLoadingState({
 
                 <div className="flex flex-col items-center gap-1.5">
                     <p className="text-foreground text-sm font-medium">
-                        {message || 'Preparing your workspace'}
+                        {message || 'Đang chuẩn bị workspace'}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                        Checking session…
+                        Đang kiểm tra phiên đăng nhập...
                     </p>
                 </div>
 
@@ -114,7 +114,7 @@ export function AppLoadingState({
                         <div className="bg-muted h-6 w-24 animate-pulse rounded-lg" />
                         <div className="bg-muted h-8 w-32 animate-pulse rounded-lg" />
                     </div>
-                    {/* Audio upload dropzone mockup / progress */}
+                    {/* Audio upload progress placeholder */}
                     <div className="bg-muted/30 border-border/40 flex h-28 w-full animate-pulse flex-col items-center justify-center gap-2 rounded-xl border">
                         <div className="bg-muted h-8 w-8 rounded-full" />
                         <div className="bg-muted h-4 w-32 rounded" />

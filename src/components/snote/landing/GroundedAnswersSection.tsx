@@ -12,27 +12,26 @@ import { Reveal } from './Reveal';
 const proofPoints = [
     {
         icon: Link2,
-        title: 'Source-grounded answers',
+        title: 'Câu trả lời có nguồn',
         description:
-            'Every AI response links back to exact transcript segments. Click any reference chip to jump to the original speaker turn.',
+            'Mỗi phản hồi AI liên kết về đúng đoạn transcript. Bấm vào nguồn để quay lại lượt nói gốc.',
     },
     {
         icon: Search,
-        title: 'Search the full transcript',
+        title: 'Tìm trong toàn bộ transcript',
         description:
-            'Find any keyword, speaker name, or phrase across the entire meeting. Jump directly to the relevant segment.',
+            'Tìm từ khóa, tên người nói hoặc cụm từ trong toàn bộ cuộc họp.',
     },
     {
         icon: Download,
-        title: 'Download original audio',
-        description:
-            'Access the full recording anytime. Play back specific segments referenced by the AI for verification.',
+        title: 'Tải audio gốc',
+        description: 'Mở lại bản ghi đầy đủ khi cần kiểm chứng nội dung.',
     },
     {
         icon: MessageSquareText,
-        title: 'Conversational AI review',
+        title: 'Review cùng trợ lý AI',
         description:
-            'Ask follow-up questions naturally. The AI maintains context across your conversation and cites different transcript parts.',
+            'Hỏi tiếp tự nhiên trên cùng ngữ cảnh cuộc họp và xem nguồn từ transcript.',
     },
 ];
 
@@ -44,15 +43,14 @@ export function GroundedAnswersSection() {
                     {/* Left — copy */}
                     <Reveal>
                         <p className="mb-3 text-sm font-semibold text-violet-400">
-                            Grounded references
+                            Nguồn tham chiếu
                         </p>
                         <h2 className="mb-4 text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
-                            AI that shows its work.
+                            AI trả lời kèm căn cứ.
                         </h2>
                         <p className="text-base leading-relaxed text-zinc-400">
-                            Not just summaries — every answer traces back to a
-                            timestamped transcript segment. Verify anything the
-                            AI tells you with one click.
+                            Không chỉ tóm tắt. Mỗi câu trả lời có thể truy về
+                            đoạn transcript có mốc thời gian để bạn kiểm chứng.
                         </p>
                     </Reveal>
 
@@ -85,14 +83,17 @@ export function GroundedAnswersSection() {
                 <Reveal delay={320} className="mt-12">
                     <div className="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 sm:p-6">
                         <span className="mr-2 text-xs font-medium text-zinc-500">
-                            Example references:
+                            Ví dụ nguồn:
                         </span>
                         {[
-                            { label: 'Mina · 00:14', topic: 'Onboarding gap' },
-                            { label: 'Ken · 01:02', topic: 'Follow-up tags' },
+                            {
+                                label: 'Mina · 00:14',
+                                topic: 'Lỗ hổng onboarding',
+                            },
+                            { label: 'Ken · 01:02', topic: 'Gắn follow-up' },
                             {
                                 label: 'Ari · 02:21',
-                                topic: 'Searchable summary',
+                                topic: 'Tóm tắt tìm kiếm được',
                             },
                         ].map((ref) => (
                             <span

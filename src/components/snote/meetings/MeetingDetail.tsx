@@ -89,7 +89,7 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
 
     const handleFileSelect = (file: File) => {
         if (!file.type.startsWith('audio/')) {
-            toast.error('Please select an audio file');
+            toast.error('Vui lòng chọn một tệp audio.');
             return;
         }
         setSelectedFile(file);
@@ -116,12 +116,12 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
         if (!selectedFile) return;
         uploadMutation.mutate(selectedFile, {
             onSuccess: () => {
-                toast.success('Audio uploaded. Generating transcript...');
+                toast.success('Đã tải audio lên. Transcript đang được tạo...');
                 setSelectedFile(null);
                 onUploadSuccess();
             },
             onError: (err) => {
-                toast.error(err.message || 'Failed to upload audio');
+                toast.error(err.message || 'Không thể tải audio lên.');
             },
         });
     };
@@ -138,10 +138,10 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                 <FileAudio className="text-muted-foreground h-4 w-4" />
                 <div>
                     <p className="text-foreground text-sm font-medium">
-                        Upload audio to generate transcript
+                        Tải audio lên để tạo transcript
                     </p>
                     <p className="text-muted-foreground text-xs">
-                        The transcript will appear here after processing.
+                        Transcript sẽ xuất hiện tại đây sau khi xử lý.
                     </p>
                 </div>
             </div>
@@ -203,11 +203,11 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                         </div>
                         <div>
                             <p className="text-foreground text-sm font-medium">
-                                Drop audio here or{' '}
-                                <span className="text-primary">browse</span>
+                                Kéo thả audio vào đây hoặc{' '}
+                                <span className="text-primary">chọn tệp</span>
                             </p>
                             <p className="text-muted-foreground mt-0.5 text-xs">
-                                MP3, WAV, M4A, WebM, OGG supported
+                                Hỗ trợ MP3, WAV, M4A, WebM, OGG
                             </p>
                         </div>
                     </div>
@@ -224,12 +224,12 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                     {uploadMutation.isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Uploading…
+                            Đang tải lên...
                         </>
                     ) : (
                         <>
                             <UploadCloud className="mr-2 h-4 w-4" />
-                            Generate transcript
+                            Tạo transcript
                         </>
                     )}
                 </Button>
@@ -302,7 +302,7 @@ function TranscriptPanel({
                         Transcript
                         {hasSegments && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
-                                ({transcript.length} segments)
+                                ({transcript.length} đoạn)
                             </span>
                         )}
                     </h2>
@@ -311,7 +311,7 @@ function TranscriptPanel({
                     <div className="relative w-40">
                         <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
                         <Input
-                            placeholder="Search…"
+                            placeholder="Tìm kiếm..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="h-7 py-1 pr-2 pl-7 text-xs"
@@ -335,7 +335,7 @@ function TranscriptPanel({
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
-                            Loading transcript…
+                            Đang tải transcript...
                         </p>
                     </div>
                 ) : transcriptError ? (
@@ -343,7 +343,7 @@ function TranscriptPanel({
                         <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
                         <p className="text-sm font-medium text-red-700 dark:text-red-400">
                             {transcriptError.message ||
-                                'Failed to load transcript'}
+                                'Không thể tải transcript'}
                         </p>
                         <Button
                             variant="outline"
@@ -351,7 +351,7 @@ function TranscriptPanel({
                             className="mt-3"
                             onClick={() => refetchTranscript()}
                         >
-                            Retry
+                            Thử lại
                         </Button>
                     </div>
                 ) : !hasSegments ? (
@@ -360,39 +360,39 @@ function TranscriptPanel({
                             <>
                                 <Loader2 className="text-primary mb-3 h-8 w-8 animate-spin" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    Generating transcript...
+                                    Đang tạo transcript...
                                 </p>
                                 <p className="text-muted-foreground text-xs">
-                                    This may take a moment. Checking every 3
-                                    seconds.
+                                    Quá trình này có thể mất một lúc. Snote sẽ
+                                    kiểm tra lại mỗi 3 giây.
                                 </p>
                             </>
                         ) : isPolling && pollTimeout ? (
                             <>
                                 <FileText className="text-muted-foreground mb-3 h-10 w-10 opacity-50" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    Still processing…
+                                    Vẫn đang xử lý...
                                 </p>
                                 <p className="text-muted-foreground mb-3 text-xs">
-                                    Audio uploaded. Transcript is still
-                                    processing. Try refreshing in a moment.
+                                    Audio đã được tải lên. Transcript vẫn đang
+                                    xử lý, hãy thử kiểm tra lại sau ít phút.
                                 </p>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => refetchTranscript()}
                                 >
-                                    Check again
+                                    Kiểm tra lại
                                 </Button>
                             </>
                         ) : (
                             <>
                                 <FileText className="text-muted-foreground mb-3 h-10 w-10 opacity-50" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    No transcript yet
+                                    Chưa có transcript
                                 </p>
                                 <p className="text-muted-foreground text-xs">
-                                    Upload audio to generate a transcript.
+                                    Tải audio lên để tạo transcript.
                                 </p>
                             </>
                         )}
@@ -402,7 +402,7 @@ function TranscriptPanel({
                         <div className="space-y-3 pt-1">
                             {filteredSegments.length === 0 ? (
                                 <p className="text-muted-foreground py-6 text-center text-sm">
-                                    No segments match your search.
+                                    Không có đoạn nào khớp với tìm kiếm.
                                 </p>
                             ) : (
                                 filteredSegments.map((segment) => {
@@ -433,7 +433,7 @@ function TranscriptPanel({
                                                 <span className="bg-muted inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-semibold">
                                                     <User className="text-muted-foreground h-3 w-3" />
                                                     {segment.speaker ||
-                                                        'Unknown'}
+                                                        'Chưa rõ'}
                                                 </span>
                                                 <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
                                                     <Clock className="h-3 w-3" />
@@ -447,7 +447,7 @@ function TranscriptPanel({
                                                 </span>
                                                 {isHighlighted && (
                                                     <span className="ml-auto rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
-                                                        cited
+                                                        được trích dẫn
                                                     </span>
                                                 )}
                                             </div>
@@ -635,7 +635,7 @@ function ChatPanel({
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
-        // Accumulate raw text for live display (before delimiter)
+        // Accumulate raw text for streamed reply display.
         let rawAccumulated = '';
 
         try {
@@ -643,12 +643,12 @@ function ChatPanel({
                 signal: controller.signal,
                 onChunk: (chunk) => {
                     rawAccumulated += chunk;
-                    // During streaming: show text before the delimiter only
-                    const delimiterIdx =
+                    // During streaming: show text before the references separator only.
+                    const separatorIdx =
                         rawAccumulated.indexOf('<<<REFERENCES>>>');
                     const liveDisplay =
-                        delimiterIdx !== -1
-                            ? rawAccumulated.slice(0, delimiterIdx).trim()
+                        separatorIdx !== -1
+                            ? rawAccumulated.slice(0, separatorIdx).trim()
                             : rawAccumulated;
 
                     setLiveMessages((prev) =>
@@ -689,8 +689,8 @@ function ChatPanel({
                             ? {
                                   ...m,
                                   content: m.content
-                                      ? `${m.content}\n\n[Stopped]`
-                                      : '[Stopped]',
+                                      ? `${m.content}\n\n[Đã dừng]`
+                                      : '[Đã dừng]',
                                   isStreaming: false,
                               }
                             : m,
@@ -698,7 +698,9 @@ function ChatPanel({
                 );
             } else {
                 const message =
-                    err instanceof Error ? err.message : 'Chat failed';
+                    err instanceof Error
+                        ? err.message
+                        : 'Không gửi được câu hỏi.';
                 setStreamError(message);
                 toast.error(message);
                 setLiveMessages((prev) =>
@@ -729,7 +731,7 @@ function ChatPanel({
                 <div className="flex items-center gap-2">
                     <MessageSquare className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
-                        AI Chat
+                        Trợ lý AI
                     </h2>
                 </div>
                 {isChatLoading && (
@@ -744,12 +746,12 @@ function ChatPanel({
                         <div className="flex flex-col items-center py-8 text-center">
                             <MessageSquare className="text-muted-foreground mb-3 h-10 w-10 opacity-40" />
                             <p className="text-foreground text-sm font-medium">
-                                No messages yet
+                                Chưa có tin nhắn
                             </p>
                             <p className="text-muted-foreground mt-1 text-xs">
                                 {hasSegments
-                                    ? 'Ask anything about this meeting.'
-                                    : 'Upload audio and wait for transcript first.'}
+                                    ? 'Hỏi bất cứ điều gì về cuộc họp này.'
+                                    : 'Tải audio lên và chờ transcript trước.'}
                             </p>
                         </div>
                     )}
@@ -764,7 +766,7 @@ function ChatPanel({
                             }`}
                         >
                             <span className="text-muted-foreground mb-1 px-1 text-[10px] font-semibold tracking-wider uppercase">
-                                {msg.role === 'user' ? 'You' : 'AI Assistant'}
+                                {msg.role === 'user' ? 'Bạn' : 'Trợ lý AI'}
                             </span>
                             <div
                                 className={`max-w-[90%] rounded-xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
@@ -777,7 +779,7 @@ function ChatPanel({
                                 msg.isStreaming &&
                                 !msg.content ? (
                                     <span className="text-muted-foreground flex items-center gap-1.5 italic">
-                                        Thinking
+                                        Đang suy nghĩ
                                         <span className="inline-flex gap-0.5">
                                             <span
                                                 className="animate-pulse"
@@ -822,7 +824,7 @@ function ChatPanel({
                                 msg.references.length > 0 && (
                                     <div className="mt-2 flex max-w-[90%] flex-wrap gap-1.5">
                                         <span className="text-muted-foreground self-center text-xs">
-                                            Sources:
+                                            Nguồn:
                                         </span>
                                         {msg.references.map((ref) => {
                                             const isKnown =
@@ -839,14 +841,14 @@ function ChatPanel({
                                                             );
                                                         } else {
                                                             toast.info(
-                                                                'Reference segment not found in current transcript.',
+                                                                'Không tìm thấy đoạn tham chiếu trong transcript hiện tại.',
                                                             );
                                                         }
                                                     }}
                                                     title={
                                                         isKnown
-                                                            ? `Jump to segment ${ref}`
-                                                            : 'Reference not found in current transcript'
+                                                            ? `Chuyển tới đoạn ${ref}`
+                                                            : 'Không tìm thấy tham chiếu trong transcript hiện tại'
                                                     }
                                                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors ${
                                                         isKnown
@@ -878,7 +880,7 @@ function ChatPanel({
                 {!hasSegments && (
                     <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
                         <Info className="h-3.5 w-3.5" />
-                        Upload audio and wait for transcript to enable chat.
+                        Tải audio lên và chờ transcript để bật chat.
                     </p>
                 )}
                 <div className="flex gap-2">
@@ -889,8 +891,8 @@ function ChatPanel({
                         onKeyDown={handleKeyDown}
                         placeholder={
                             hasSegments
-                                ? 'Ask about this meeting… (Ctrl+Enter to send)'
-                                : 'Upload audio and wait for transcript first.'
+                                ? 'Hỏi về cuộc họp này... (Ctrl+Enter để gửi)'
+                                : 'Tải audio lên và chờ transcript trước.'
                         }
                         disabled={!hasSegments || isStreaming}
                         rows={2}
@@ -962,7 +964,9 @@ export function MeetingDetail() {
                     block: 'center',
                 });
             } else {
-                toast.info('Segment not found in current transcript.');
+                toast.info(
+                    'Không tìm thấy đoạn này trong transcript hiện tại.',
+                );
             }
         }, 50);
     }, []);
@@ -982,11 +986,13 @@ export function MeetingDetail() {
         return (
             <AppErrorState
                 title={
-                    !project ? 'Project not found' : 'Failed to load project'
+                    !project
+                        ? 'Không tìm thấy cuộc họp'
+                        : 'Không tải được cuộc họp'
                 }
                 error={error}
                 onBack={() => router.push('/meetings')}
-                backText="Back to Projects"
+                backText="Quay lại danh sách cuộc họp"
             />
         );
     }
@@ -994,7 +1000,7 @@ export function MeetingDetail() {
     const handleCopyId = () => {
         navigator.clipboard.writeText(project.id);
         setCopiedId(true);
-        toast.success('Project ID copied to clipboard');
+        toast.success('Đã sao chép ID dự án.');
         setTimeout(() => setCopiedId(false), 2000);
     };
 
@@ -1013,7 +1019,7 @@ export function MeetingDetail() {
     const handleEditSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editTitle.trim()) {
-            toast.error('Project title is required');
+            toast.error('Vui lòng nhập tiêu đề cuộc họp.');
             return;
         }
 
@@ -1026,11 +1032,11 @@ export function MeetingDetail() {
             {
                 onSuccess: () => {
                     setIsEditing(false);
-                    toast.success('Project details updated successfully');
+                    toast.success('Đã cập nhật thông tin cuộc họp.');
                 },
                 onError: (err) => {
                     setEditError(
-                        err.message || 'Failed to update project details',
+                        err.message || 'Không thể cập nhật thông tin cuộc họp.',
                     );
                 },
             },
@@ -1048,7 +1054,7 @@ export function MeetingDetail() {
                         className="hover:bg-muted text-muted-foreground hover:text-foreground mb-4 self-start"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Projects
+                        Quay lại danh sách cuộc họp
                     </Button>
 
                     {/* Header Card */}
@@ -1065,7 +1071,7 @@ export function MeetingDetail() {
                                     <button
                                         onClick={handleCopyId}
                                         className="bg-muted hover:bg-muted/80 inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono transition-colors"
-                                        title="Click to copy ID"
+                                        title="Bấm để sao chép ID"
                                     >
                                         {copiedId ? (
                                             <Check className="h-3 w-3 text-emerald-500" />
@@ -1084,8 +1090,8 @@ export function MeetingDetail() {
                                     >
                                         <FileAudio className="h-3 w-3" />
                                         {project.audio_url
-                                            ? 'Audio uploaded'
-                                            : 'Waiting for audio'}
+                                            ? 'Đã có audio'
+                                            : 'Chờ audio'}
                                     </span>
                                     {hasSegments && (
                                         <>
@@ -1093,7 +1099,7 @@ export function MeetingDetail() {
                                                 •
                                             </span>
                                             <span className="text-muted-foreground">
-                                                {transcript!.length} segments
+                                                {transcript!.length} đoạn
                                             </span>
                                         </>
                                     )}
@@ -1118,7 +1124,7 @@ export function MeetingDetail() {
                                         className="shrink-0"
                                     >
                                         <Download className="mr-2 h-3.5 w-3.5" />
-                                        Download audio
+                                        Tải audio
                                     </Button>
                                 )}
                                 <Button
@@ -1129,7 +1135,7 @@ export function MeetingDetail() {
                                     className="shrink-0"
                                 >
                                     <Edit className="mr-2 h-3.5 w-3.5" />
-                                    Edit
+                                    Chỉnh sửa
                                 </Button>
                             </div>
                         </div>
@@ -1167,10 +1173,10 @@ export function MeetingDetail() {
                                 <div className="border-border/60 shrink-0 border-b px-4 py-2">
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger value="chat">
-                                            AI Chat
+                                            Trợ lý AI
                                         </TabsTrigger>
                                         <TabsTrigger value="tasks">
-                                            Action Items
+                                            Công việc
                                         </TabsTrigger>
                                     </TabsList>
                                 </div>
@@ -1216,7 +1222,7 @@ export function MeetingDetail() {
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <Info className="mr-1.5 h-3.5 w-3.5" />
-                                    Overview
+                                    Tổng quan
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="transcript"
@@ -1238,19 +1244,19 @@ export function MeetingDetail() {
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <ListTodo className="mr-1.5 h-3.5 w-3.5" />
-                                    Tasks
+                                    Công việc
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="overview" className="mt-0">
                                 <div className="border-border bg-card rounded-xl border p-5 shadow-sm">
                                     <h2 className="text-foreground mb-4 text-base font-semibold">
-                                        Project Overview
+                                        Tổng quan dự án
                                     </h2>
                                     <div className="space-y-3">
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                Project ID
+                                                ID dự án
                                             </span>
                                             <div className="bg-muted/60 flex flex-1 items-center gap-2 rounded px-2 py-1 font-mono text-xs">
                                                 <span className="min-w-0 flex-1 truncate select-all">
@@ -1272,16 +1278,16 @@ export function MeetingDetail() {
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                Audio status
+                                                Trạng thái audio
                                             </span>
                                             <div className="flex flex-1 flex-wrap items-center gap-2">
                                                 {project.audio_url ? (
                                                     <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                                                        Uploaded
+                                                        Đã tải lên
                                                     </span>
                                                 ) : (
                                                     <span className="font-medium text-amber-600 dark:text-amber-400">
-                                                        Not uploaded yet
+                                                        Chưa tải lên
                                                     </span>
                                                 )}
                                                 {project.audio_url && (
@@ -1294,14 +1300,14 @@ export function MeetingDetail() {
                                                         className="h-8"
                                                     >
                                                         <Download className="mr-2 h-3.5 w-3.5" />
-                                                        Download audio
+                                                        Tải audio
                                                     </Button>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                Segments
+                                                Số đoạn
                                             </span>
                                             <span className="text-foreground text-sm font-medium">
                                                 {transcript?.length ?? 0}
@@ -1310,7 +1316,7 @@ export function MeetingDetail() {
                                         {project.description && (
                                             <div className="flex items-start gap-4">
                                                 <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                    Description
+                                                    Mô tả
                                                 </span>
                                                 <span className="text-muted-foreground text-sm whitespace-pre-wrap">
                                                     {project.description}
@@ -1384,10 +1390,10 @@ export function MeetingDetail() {
             >
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Edit Project Details</DialogTitle>
+                        <DialogTitle>Chỉnh sửa thông tin cuộc họp</DialogTitle>
                         <DialogDescription>
-                            Modify the title and description for this meeting
-                            project. Other properties are preserved.
+                            Cập nhật tiêu đề và mô tả cho cuộc họp này. Các
+                            thông tin khác được giữ nguyên.
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleEditSave}>
@@ -1397,7 +1403,7 @@ export function MeetingDetail() {
                                     htmlFor="edit-title"
                                     className="text-foreground"
                                 >
-                                    Title{' '}
+                                    Tiêu đề{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
@@ -1415,7 +1421,7 @@ export function MeetingDetail() {
                                     htmlFor="edit-description"
                                     className="text-foreground"
                                 >
-                                    Description
+                                    Mô tả
                                 </Label>
                                 <Textarea
                                     id="edit-description"
@@ -1441,7 +1447,7 @@ export function MeetingDetail() {
                                 onClick={() => setIsEditing(false)}
                                 disabled={updateMutation.isPending}
                             >
-                                Cancel
+                                Hủy
                             </Button>
                             <Button
                                 type="submit"
@@ -1450,7 +1456,7 @@ export function MeetingDetail() {
                                 {updateMutation.isPending && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
-                                Save Changes
+                                Lưu thay đổi
                             </Button>
                         </DialogFooter>
                     </form>

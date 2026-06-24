@@ -31,50 +31,42 @@ type RoleProfile = {
     badgeTone: 'standard' | 'pro' | 'admin';
     isAdmin: boolean;
     isPro: boolean;
-    hasUnlimitedMinutes: boolean;
-    meetingLimit: number | null;
-    meetingsUsed: number;
+    hasExtendedAccess: boolean;
     insightLevel: 'standard' | 'advanced' | 'global';
 };
 
 const roleProfiles: Record<MockAuthRole, RoleProfile> = {
     free: {
         role: 'free',
-        label: 'Free User',
-        description: 'Limited minutes and standard insights',
-        badge: 'Free',
+        label: 'Tài khoản đang hoạt động',
+        description: 'Quyền truy cập workspace tiêu chuẩn',
+        badge: 'Hoạt động',
         badgeTone: 'standard',
         isAdmin: false,
         isPro: false,
-        hasUnlimitedMinutes: false,
-        meetingLimit: 5,
-        meetingsUsed: 3,
+        hasExtendedAccess: false,
         insightLevel: 'standard',
     },
     pro: {
         role: 'pro',
-        label: 'Pro User',
-        description: 'Unlimited usage and advanced insights',
+        label: 'Thành viên',
+        description: 'Quyền truy cập mở rộng cho demo nội bộ',
         badge: 'PRO',
         badgeTone: 'pro',
         isAdmin: false,
         isPro: true,
-        hasUnlimitedMinutes: true,
-        meetingLimit: null,
-        meetingsUsed: 18,
+        hasExtendedAccess: true,
         insightLevel: 'advanced',
     },
     admin: {
         role: 'admin',
-        label: 'Admin',
-        description: 'Global access and command controls',
+        label: 'Quản trị',
+        description: 'Quyền truy cập quản trị',
         badge: 'Admin',
         badgeTone: 'admin',
         isAdmin: true,
         isPro: true,
-        hasUnlimitedMinutes: true,
-        meetingLimit: null,
-        meetingsUsed: 128,
+        hasExtendedAccess: true,
         insightLevel: 'global',
     },
 };
@@ -91,7 +83,6 @@ interface AppContextType {
     roleProfiles: Record<MockAuthRole, RoleProfile>;
     isAdmin: boolean;
     isPro: boolean;
-    isFree: boolean;
     meetings: Meeting[];
     setMeetings: (meetings: Meeting[]) => void;
     tasks: Task[];
@@ -157,8 +148,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
             id: authUser.email,
             email: authUser.email,
             name: authUser.name,
-            subscription:
-                matchingOverride?.subscription ?? mockUser.subscription,
         };
     }, [authUser, userOverride]);
 
@@ -225,7 +214,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 roleProfiles,
                 isAdmin: authUser?.role === 'admin',
                 isPro: roleProfile.isPro,
-                isFree: effectiveAuthRole === 'free',
                 meetings,
                 setMeetings,
                 tasks,

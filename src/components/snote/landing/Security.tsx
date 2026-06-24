@@ -6,27 +6,27 @@ import { Reveal } from './Reveal';
 const points = [
     {
         icon: KeyRound,
-        title: 'Token-based session flow',
+        title: 'Phiên đăng nhập bằng token',
         description:
-            'Every workspace session is protected by authenticated tokens. No anonymous access to project data.',
+            'Mỗi phiên làm việc cần token xác thực. Dữ liệu dự án không mở cho người dùng ẩn danh.',
     },
     {
         icon: UserCheck,
-        title: 'Role-aware navigation',
+        title: 'Điều hướng theo vai trò',
         description:
-            'Interface elements are scoped to your account role. Admin tools only appear for verified admin accounts.',
+            'Giao diện hiển thị theo quyền tài khoản. Khu vực quản trị chỉ dành cho tài khoản admin.',
     },
     {
         icon: FolderLock,
-        title: 'Project-based organization',
+        title: 'Tổ chức theo dự án',
         description:
-            'Audio files, transcripts, and AI chat are isolated per project. No cross-project data leakage in the UI.',
+            'Audio, transcript và chat AI được tách theo từng dự án để tránh lẫn dữ liệu.',
     },
     {
         icon: ShieldCheck,
-        title: 'Authenticated workspace',
+        title: 'Không gian cần xác thực',
         description:
-            'All routes are guarded. Accessing any workspace page without an active session redirects to sign-in.',
+            'Các route trong ứng dụng yêu cầu phiên đăng nhập hợp lệ trước khi truy cập.',
     },
 ];
 
@@ -37,15 +37,14 @@ export function Security() {
                 <div className="grid gap-12 lg:grid-cols-[380px_1fr] lg:items-center">
                     <Reveal>
                         <p className="text-primary mb-3 text-sm font-semibold">
-                            Security
+                            Bảo mật
                         </p>
                         <h2 className="text-foreground mb-4 text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                            Designed for authenticated workspaces.
+                            Thiết kế cho không gian làm việc cần xác thực.
                         </h2>
                         <p className="text-muted-foreground text-base leading-relaxed">
-                            Snote is built with role-aware access and
-                            project-scoped isolation. Your meeting data is only
-                            visible to authenticated users.
+                            Snote giữ dữ liệu cuộc họp trong phạm vi tài khoản,
+                            dự án và phiên đăng nhập hợp lệ.
                         </p>
                     </Reveal>
 
