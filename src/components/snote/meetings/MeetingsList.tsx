@@ -28,9 +28,11 @@ import { toast } from 'sonner';
 import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
 import { AppErrorState } from '@/components/snote/shared/AppErrorState';
 import { AppEmptyState } from '@/components/snote/shared/AppEmptyState';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 export function MeetingsList() {
     const router = useRouter();
+    const { t } = useI18n();
     const { data: projects, isLoading, error, refetch } = useProjects();
     const createMutation = useCreateProject();
 
@@ -43,7 +45,7 @@ export function MeetingsList() {
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newTitle.trim()) {
-            toast.error('Vui lòng nhập tiêu đề cuộc họp.');
+            toast.error(t('meetings.errorTitleRequired'));
             return;
         }
 
@@ -58,11 +60,11 @@ export function MeetingsList() {
                     setIsCreateOpen(false);
                     setNewTitle('');
                     setNewDescription('');
-                    toast.success('Đã tạo cuộc họp.');
+                    toast.success(t('meetings.dialog.success'));
                     router.push(`/meetings/${projectId}`);
                 },
                 onError: (err) => {
-                    setCreateError(err.message || 'Không thể tạo cuộc họp.');
+                    setCreateError(err.message || t('meetings.dialog.error'));
                 },
             },
         );
@@ -85,10 +87,10 @@ export function MeetingsList() {
             <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div data-tour="projects-header">
                     <h1 className="text-foreground mb-2 text-3xl font-semibold">
-                        Cuộc họp
+                        {t('meetings.title')}
                     </h1>
                     <p className="text-muted-foreground">
-                        Mỗi dự án tương ứng với một cuộc họp và transcript.
+                        {t('meetings.subtitle')}
                     </p>
                 </div>
                 <Button
@@ -97,7 +99,7 @@ export function MeetingsList() {
                     className="self-start sm:w-auto"
                 >
                     <Plus className="mr-2 h-4 w-4" />
-                    Tạo cuộc họp
+                    {t('meetings.create')}
                 </Button>
             </div>
 
@@ -109,7 +111,7 @@ export function MeetingsList() {
                 <div className="relative">
                     <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
                     <Input
-                        placeholder="Tìm theo tiêu đề hoặc mô tả..."
+                        placeholder={t('meetings.searchPlaceholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10"
@@ -122,7 +124,7 @@ export function MeetingsList() {
                 <AppLoadingState variant="list" />
             ) : error ? (
                 <AppErrorState
-                    title="Không tải được danh sách cuộc họp"
+                    title={t('meetings.loadError')}
                     error={error}
                     onRetry={() => refetch()}
                 />
@@ -130,19 +132,19 @@ export function MeetingsList() {
                 <AppEmptyState
                     title={
                         searchQuery
-                            ? 'Không tìm thấy cuộc họp phù hợp'
-                            : 'Chưa có cuộc họp'
+                            ? t('meetings.noMatch')
+                            : t('meetings.noMeetings')
                     }
                     description={
                         searchQuery
-                            ? 'Thử đổi từ khóa tìm kiếm.'
-                            : 'Tạo cuộc họp để tải audio và xem transcript.'
+                            ? t('meetings.noMatchDesc')
+                            : t('meetings.noMeetingsDesc')
                     }
                     icon={searchQuery ? Search : Mic}
                     action={
                         !searchQuery
                             ? {
-                                  label: 'Tạo cuộc họp',
+                                  label: t('meetings.create'),
                                   onClick: () => setIsCreateOpen(true),
                               }
                             : undefined
@@ -165,7 +167,7 @@ export function MeetingsList() {
                                         {project.title}
                                     </h3>
                                     <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
-                                        {project.description || 'Chưa có mô tả'}
+                                        {project.description || t('common.noDescription')}
                                     </p>
                                     <div className="flex items-center gap-2 text-xs font-medium">
                                         <span
@@ -177,8 +179,8 @@ export function MeetingsList() {
                                         >
                                             <FileAudio className="h-3 w-3" />
                                             {project.audio_url
-                                                ? 'Đã có audio'
-                                                : 'Chờ audio'}
+                                                ? t('dashboard.hasAudio')
+                                                : t('dashboard.waitingAudio')}
                                         </span>
                                     </div>
                                 </div>
@@ -187,15 +189,16 @@ export function MeetingsList() {
                                     size="sm"
                                     className="shrink-0 self-end sm:self-center"
                                 >
-                                    Mở
+                                    {t('common.open')}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     ))}
                     <div className="text-muted-foreground mt-6 text-center text-sm">
-                        Đang hiển thị {filteredProjects.length} /{' '}
-                        {projects?.length ?? 0} cuộc họp
+                        {t('meetings.showing')} {filteredProjects.length}{' '}
+                        {t('meetings.of')} {projects?.length ?? 0}{' '}
+                        {t('meetings.meetingsLabel')}
                     </div>
                 </div>
             )}
@@ -214,10 +217,9 @@ export function MeetingsList() {
             >
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Tạo cuộc họp</DialogTitle>
+                        <DialogTitle>{t('meetings.dialog.title')}</DialogTitle>
                         <DialogDescription>
-                            Tạo dự án cho cuộc họp. Sau đó tải audio để tạo
-                            transcript và dùng trợ lý AI để phân tích nội dung.
+                            {t('meetings.dialog.desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreateSubmit}>
@@ -227,12 +229,12 @@ export function MeetingsList() {
                                     htmlFor="title"
                                     className="text-foreground"
                                 >
-                                    Tiêu đề{' '}
+                                    {t('meetings.dialog.titleLabel')}{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="title"
-                                    placeholder="Ví dụ: Họp sales - Kế hoạch Q2"
+                                    placeholder={t('meetings.dialog.titlePlaceholder')}
                                     value={newTitle}
                                     onChange={(e) =>
                                         setNewTitle(e.target.value)
@@ -246,11 +248,11 @@ export function MeetingsList() {
                                     htmlFor="description"
                                     className="text-foreground"
                                 >
-                                    Mô tả
+                                    {t('meetings.dialog.descLabel')}
                                 </Label>
                                 <Textarea
                                     id="description"
-                                    placeholder="Ghi chú ngắn về cuộc họp..."
+                                    placeholder={t('meetings.dialog.descPlaceholder')}
                                     value={newDescription}
                                     onChange={(e) =>
                                         setNewDescription(e.target.value)
@@ -272,7 +274,7 @@ export function MeetingsList() {
                                 onClick={() => setIsCreateOpen(false)}
                                 disabled={createMutation.isPending}
                             >
-                                Hủy
+                                {t('common.cancel')}
                             </Button>
                             <Button
                                 type="submit"
@@ -281,7 +283,7 @@ export function MeetingsList() {
                                 {createMutation.isPending && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
-                                Tạo cuộc họp
+                                {t('meetings.create')}
                             </Button>
                         </DialogFooter>
                     </form>

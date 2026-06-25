@@ -15,10 +15,12 @@ import {
     Upload,
     AlertCircle,
     Sparkles,
+    Radio,
 } from 'lucide-react';
 import { useProjects } from '@/features/projects/hooks';
 import { useAllProjectTasks } from '@/features/tasks/hooks';
 import { useProductTour } from '@/features/onboarding/use-product-tour';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -56,6 +58,7 @@ function EmptyState({
 export function Dashboard() {
     const router = useRouter();
     const { authRole, user } = useApp();
+    const { t } = useI18n();
 
     const {
         data: projects,
@@ -102,25 +105,25 @@ export function Dashboard() {
     const gettingStartedItems = [
         {
             id: 'project',
-            label: 'Tạo cuộc họp đầu tiên',
+            label: t('dashboard.step.createMeeting'),
             done: projects !== undefined && projects.length > 0,
             path: '/meetings',
         },
         {
             id: 'upload',
-            label: 'Tải audio cuộc họp lên',
+            label: t('dashboard.step.uploadAudio'),
             done: false,
             path: '/meetings',
         },
         {
             id: 'transcript',
-            label: 'Xem lại transcript',
+            label: t('dashboard.step.viewTranscript'),
             done: false,
             path: '/meetings',
         },
         {
             id: 'ai',
-            label: 'Hỏi trợ lý AI về cuộc họp',
+            label: t('dashboard.step.askAI'),
             done: false,
             path: '/meetings',
         },
@@ -135,11 +138,10 @@ export function Dashboard() {
             >
                 <div>
                     <h1 className="text-foreground mb-1 text-2xl font-semibold tracking-tight">
-                        Chào mừng trở lại, {firstName}
+                        {t('dashboard.welcome')} {firstName}
                     </h1>
                     <p className="text-muted-foreground text-sm">
-                        Quản lý cuộc họp, transcript và trợ lý AI trong một
-                        workspace.
+                        {t('dashboard.subtitle')}
                     </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
@@ -149,11 +151,11 @@ export function Dashboard() {
                         onClick={() => router.push('/meetings')}
                     >
                         <FolderOpen className="h-4 w-4" />
-                        Tất cả cuộc họp
+                        {t('dashboard.allMeetings')}
                     </Button>
                     <Button size="sm" onClick={() => router.push('/meetings')}>
                         <Plus className="h-4 w-4" />
-                        Tạo cuộc họp
+                        {t('dashboard.createMeeting')}
                     </Button>
                 </div>
             </div>
@@ -165,11 +167,10 @@ export function Dashboard() {
                         <Sparkles className="text-primary mt-0.5 h-5 w-5 shrink-0" />
                         <div>
                             <h4 className="text-foreground text-sm font-semibold">
-                                Mới dùng Snote?
+                                {t('dashboard.newToSnote')}
                             </h4>
                             <p className="text-muted-foreground mt-0.5 text-xs">
-                                Xem hướng dẫn ngắn để hiểu dự án, transcript và
-                                trợ lý AI.
+                                {t('dashboard.tourDesc')}
                             </p>
                         </div>
                     </div>
@@ -187,7 +188,7 @@ export function Dashboard() {
                                 setShowTourBanner(false);
                             }}
                         >
-                            Bỏ qua
+                            {t('common.skip')}
                         </Button>
                         <Button
                             size="sm"
@@ -196,29 +197,28 @@ export function Dashboard() {
                                 startDashboardTour();
                             }}
                         >
-                            Bắt đầu
+                            {t('common.start')}
                         </Button>
                     </div>
                 </div>
             )}
 
-            {/* ── Primary Action Card ──────────────────────────────────── */}
+            {/* ── Stream Feature Card ──────────────────────────────────── */}
             <div
                 data-tour="dashboard-create-project"
                 className="border-border bg-card animate-fade-in-up-delay-1 mb-6 rounded-xl border p-6"
             >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-4">
-                        <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                            <Mic className="text-primary h-5 w-5" />
+                        <div className="from-violet-500/20 to-indigo-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
+                            <Radio className="text-primary h-5 w-5" />
                         </div>
                         <div>
                             <h2 className="text-foreground mb-0.5 text-base font-semibold">
-                                Bắt đầu transcript mới
+                                {t('dashboard.stream.title')}
                             </h2>
                             <p className="text-muted-foreground text-sm">
-                                Tạo cuộc họp, tải audio lên và xem transcript
-                                kèm trợ lý AI.
+                                {t('dashboard.stream.desc')}
                             </p>
                         </div>
                     </div>
@@ -229,13 +229,13 @@ export function Dashboard() {
                             onClick={() => router.push('/meetings')}
                         >
                             <Upload className="h-4 w-4" />
-                            Tải audio lên
+                            {t('dashboard.uploadAudio')}
                         </Button>
                         <Button
                             size="sm"
                             onClick={() => router.push('/meetings')}
                         >
-                            Tạo cuộc họp
+                            {t('dashboard.stream.button')}
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </div>
@@ -249,14 +249,14 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <Mic className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Cuộc họp
+                            {t('dashboard.metric.meetings')}
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
                         {projects?.length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        tổng số cuộc họp trong workspace
+                        {t('dashboard.metric.meetingsDesc')}
                     </p>
                 </div>
 
@@ -268,14 +268,14 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <FolderOpen className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Dự án
+                            {t('dashboard.metric.projects')}
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
                         {projects?.length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        dự án cuộc họp đã tạo
+                        {t('dashboard.metric.projectsDesc')}
                     </p>
                 </div>
 
@@ -284,15 +284,16 @@ export function Dashboard() {
                     <div className="mb-1 flex items-center gap-2">
                         <ClipboardList className="text-muted-foreground h-4 w-4" />
                         <span className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                            Công việc
+                            {t('dashboard.metric.tasks')}
                         </span>
                     </div>
                     <p className="text-foreground text-2xl font-semibold">
-                        {allTaskData?.tasks.filter((t) => t.status !== 'done')
-                            .length ?? 0}
+                        {allTaskData?.tasks.filter(
+                            (task) => task.status !== 'done',
+                        ).length ?? 0}
                     </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
-                        việc chưa hoàn tất từ transcript
+                        {t('dashboard.metric.tasksDesc')}
                     </p>
                 </div>
             </div>
@@ -306,7 +307,7 @@ export function Dashboard() {
                 >
                     <div className="border-border flex items-center justify-between border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Cuộc họp gần đây
+                            {t('dashboard.recentMeetings')}
                         </h2>
                         <Button
                             variant="ghost"
@@ -314,7 +315,7 @@ export function Dashboard() {
                             onClick={() => router.push('/meetings')}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            Xem tất cả
+                            {t('common.viewAll')}
                             <ArrowRight className="h-3.5 w-3.5" />
                         </Button>
                     </div>
@@ -329,14 +330,14 @@ export function Dashboard() {
                         ) : projectsError ? (
                             <div className="text-destructive flex flex-col items-center gap-2 py-6 text-center text-sm">
                                 <AlertCircle className="h-8 w-8" />
-                                <p>Không tải được cuộc họp gần đây</p>
+                                <p>{t('dashboard.loadError')}</p>
                             </div>
                         ) : recentProjects.length === 0 ? (
                             <EmptyState
                                 icon={Mic}
-                                title="Chưa có cuộc họp"
-                                description="Tạo cuộc họp để tải audio và xem transcript."
-                                actionLabel="Tạo cuộc họp"
+                                title={t('dashboard.noMeetings')}
+                                description={t('dashboard.noMeetingsDesc')}
+                                actionLabel={t('dashboard.createMeeting')}
                                 onAction={() => router.push('/meetings')}
                             />
                         ) : (
@@ -370,7 +371,7 @@ export function Dashboard() {
                                                 </p>
                                                 <p className="text-muted-foreground mt-0.5 truncate text-xs">
                                                     {project.description ||
-                                                        'Chưa có mô tả'}
+                                                        t('common.noDescription')}
                                                 </p>
                                             </div>
                                             <span
@@ -381,8 +382,8 @@ export function Dashboard() {
                                                 }`}
                                             >
                                                 {project.audio_url
-                                                    ? 'Có audio'
-                                                    : 'Chờ audio'}
+                                                    ? t('dashboard.hasAudio')
+                                                    : t('dashboard.waitingAudio')}
                                             </span>
                                         </div>
                                     </div>
@@ -396,7 +397,7 @@ export function Dashboard() {
                 <div className="border-border bg-card rounded-xl border">
                     <div className="border-border flex items-center justify-between border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Công việc cần làm
+                            {t('dashboard.pendingTasks')}
                         </h2>
                         <Button
                             variant="ghost"
@@ -404,7 +405,7 @@ export function Dashboard() {
                             onClick={() => router.push('/tasks')}
                             className="text-muted-foreground hover:text-foreground"
                         >
-                            Xem tất cả
+                            {t('common.viewAll')}
                         </Button>
                     </div>
 
@@ -417,13 +418,13 @@ export function Dashboard() {
                         ) : tasksError ? (
                             <div className="text-destructive flex flex-col items-center gap-2 py-6 text-center text-sm">
                                 <AlertCircle className="h-8 w-8" />
-                                <p>Không tải được công việc</p>
+                                <p>{t('dashboard.loadTasksError')}</p>
                             </div>
                         ) : pendingTasks.length === 0 ? (
                             <EmptyState
                                 icon={CheckCircle}
-                                title="Không còn việc cần xử lý"
-                                description="Hiện chưa có công việc đang mở."
+                                title={t('dashboard.noTasks')}
+                                description={t('dashboard.noTasksDesc')}
                             />
                         ) : (
                             <div className="space-y-3">
@@ -485,10 +486,10 @@ export function Dashboard() {
                 >
                     <div className="border-border border-b px-5 py-4">
                         <h2 className="text-foreground text-sm font-semibold">
-                            Bắt đầu sử dụng
+                            {t('dashboard.gettingStarted')}
                         </h2>
                         <p className="text-muted-foreground mt-0.5 text-xs">
-                            Hoàn tất các bước chính để thiết lập workspace.
+                            {t('dashboard.gettingStartedDesc')}
                         </p>
                     </div>
                     <div className="divide-border divide-y">
@@ -541,10 +542,8 @@ export function Dashboard() {
                 <Users className="text-muted-foreground h-3.5 w-3.5" />
                 <p className="text-muted-foreground text-xs">
                     {authRole === 'admin'
-                        ? 'Tài khoản quản trị đang hoạt động'
-                        : authRole === 'pro'
-                          ? 'Tài khoản đang hoạt động'
-                          : 'Tài khoản đang hoạt động'}
+                        ? t('role.adminAccount')
+                        : t('role.activeAccount')}
                 </p>
             </div>
         </div>

@@ -46,57 +46,9 @@ import type {
 } from '@/features/tasks/types';
 import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
 import { AppErrorState } from '@/components/snote/shared/AppErrorState';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 type TaskFilter = 'all' | TaskStatus | `priority:${TaskPriority}`;
-
-const statusConfig: Record<
-    TaskStatus,
-    { label: string; icon: typeof Circle; className: string }
-> = {
-    todo: {
-        label: 'Cần làm',
-        icon: Circle,
-        className: 'text-muted-foreground',
-    },
-    in_progress: {
-        label: 'Đang làm',
-        icon: CircleDashed,
-        className: 'text-indigo-600 dark:text-indigo-400',
-    },
-    done: {
-        label: 'Hoàn tất',
-        icon: CheckCircle2,
-        className: 'text-emerald-600 dark:text-emerald-500',
-    },
-};
-
-const priorityConfig: Record<
-    TaskPriority,
-    { label: string; className: string }
-> = {
-    low: {
-        label: 'Thấp',
-        className: 'bg-muted text-muted-foreground',
-    },
-    medium: {
-        label: 'Vừa',
-        className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
-    },
-    high: {
-        label: 'Cao',
-        className: 'bg-red-500/10 text-red-700 dark:text-red-400',
-    },
-};
-
-const filters: Array<{ value: TaskFilter; label: string }> = [
-    { value: 'all', label: 'Tất cả' },
-    { value: 'todo', label: 'Cần làm' },
-    { value: 'in_progress', label: 'Đang làm' },
-    { value: 'done', label: 'Hoàn tất' },
-    { value: 'priority:low', label: 'Ưu tiên thấp' },
-    { value: 'priority:medium', label: 'Ưu tiên vừa' },
-    { value: 'priority:high', label: 'Ưu tiên cao' },
-];
 
 function matchesFilter(task: AggregatedTask, filter: TaskFilter) {
     if (filter === 'all') return true;
@@ -120,6 +72,7 @@ function sortTasks(a: AggregatedTask, b: AggregatedTask) {
 
 export function TaskBoard() {
     const router = useRouter();
+    const { t } = useI18n();
     const { data, isLoading, error, refetch } = useAllProjectTasks();
     const updateMutation = useUpdateAggregatedTask();
     const deleteMutation = useDeleteAggregatedTask();
@@ -131,6 +84,55 @@ export function TaskBoard() {
     const [deletingTask, setDeletingTask] = useState<AggregatedTask | null>(
         null,
     );
+
+    const statusConfig: Record<
+        TaskStatus,
+        { label: string; icon: typeof Circle; className: string }
+    > = {
+        todo: {
+            label: t('tasks.status.todo'),
+            icon: Circle,
+            className: 'text-muted-foreground',
+        },
+        in_progress: {
+            label: t('tasks.status.inProgress'),
+            icon: CircleDashed,
+            className: 'text-indigo-600 dark:text-indigo-400',
+        },
+        done: {
+            label: t('tasks.status.done'),
+            icon: CheckCircle2,
+            className: 'text-emerald-600 dark:text-emerald-500',
+        },
+    };
+
+    const priorityConfig: Record<
+        TaskPriority,
+        { label: string; className: string }
+    > = {
+        low: {
+            label: t('tasks.priority.low'),
+            className: 'bg-muted text-muted-foreground',
+        },
+        medium: {
+            label: t('tasks.priority.medium'),
+            className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+        },
+        high: {
+            label: t('tasks.priority.high'),
+            className: 'bg-red-500/10 text-red-700 dark:text-red-400',
+        },
+    };
+
+    const filters: Array<{ value: TaskFilter; label: string }> = [
+        { value: 'all', label: t('tasks.filter.all') },
+        { value: 'todo', label: t('tasks.filter.todo') },
+        { value: 'in_progress', label: t('tasks.filter.inProgress') },
+        { value: 'done', label: t('tasks.filter.done') },
+        { value: 'priority:low', label: t('tasks.filter.lowPriority') },
+        { value: 'priority:medium', label: t('tasks.filter.medPriority') },
+        { value: 'priority:high', label: t('tasks.filter.highPriority') },
+    ];
 
     const tasks = useMemo(() => data?.tasks ?? [], [data?.tasks]);
     const failedProjects = data?.failedProjects ?? [];
@@ -208,7 +210,7 @@ export function TaskBoard() {
     if (error) {
         return (
             <AppErrorState
-                title="Không tải được công việc"
+                title={t('tasks.loadError')}
                 error={error}
                 onRetry={() => refetch()}
             />
@@ -220,10 +222,10 @@ export function TaskBoard() {
             <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                     <h1 className="text-foreground mb-2 text-3xl font-semibold">
-                        Tất cả công việc
+                        {t('tasks.title')}
                     </h1>
                     <p className="text-muted-foreground">
-                        Công việc được tạo từ transcript của từng cuộc họp.
+                        {t('tasks.subtitle')}
                     </p>
                 </div>
                 <Button
@@ -231,7 +233,7 @@ export function TaskBoard() {
                     onClick={() => router.push('/meetings')}
                     className="self-start md:self-auto"
                 >
-                    Mở danh sách cuộc họp
+                    {t('tasks.openMeetings')}
                     <ArrowRight className="h-4 w-4" />
                 </Button>
             </div>
@@ -241,11 +243,10 @@ export function TaskBoard() {
                     <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                     <div className="text-sm">
                         <p className="font-medium">
-                            Một số dự án chưa tải được công việc.
+                            {t('tasks.failedProjects')}
                         </p>
                         <p className="mt-1">
-                            Đã bỏ qua {failedProjects.length} dự án trong lần
-                            tải này. Bạn có thể thử tải lại sau.
+                            {t('tasks.failedProjectsDesc').replace('{count}', String(failedProjects.length))}
                         </p>
                     </div>
                 </div>
@@ -257,7 +258,7 @@ export function TaskBoard() {
                     <Input
                         value={searchQuery}
                         onChange={(event) => setSearchQuery(event.target.value)}
-                        placeholder="Tìm theo nội dung công việc hoặc tên cuộc họp..."
+                        placeholder={t('tasks.searchPlaceholder')}
                         className="pl-10"
                     />
                 </div>
@@ -284,24 +285,23 @@ export function TaskBoard() {
                 <div className="border-border bg-card rounded-xl border p-10 text-center">
                     <CheckCircle2 className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
                     <h2 className="text-foreground mb-2 text-lg font-semibold">
-                        Chưa có công việc nào
+                        {t('tasks.noTasks')}
                     </h2>
                     <p className="text-muted-foreground mx-auto mb-5 max-w-md text-sm">
-                        Mở một cuộc họp đã có transcript rồi dùng nút tạo công
-                        việc để sinh danh sách việc cần làm.
+                        {t('tasks.noTasksDesc')}
                     </p>
                     <Button onClick={() => router.push('/meetings')}>
-                        Chọn cuộc họp
+                        {t('tasks.selectMeeting')}
                     </Button>
                 </div>
             ) : filteredTasks.length === 0 ? (
                 <div className="border-border bg-card rounded-xl border p-10 text-center">
                     <Search className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
                     <h2 className="text-foreground mb-2 text-lg font-semibold">
-                        Không tìm thấy công việc phù hợp
+                        {t('tasks.noMatch')}
                     </h2>
                     <p className="text-muted-foreground text-sm">
-                        Thử đổi từ khóa tìm kiếm hoặc bộ lọc.
+                        {t('tasks.noMatchDesc')}
                     </p>
                 </div>
             ) : (
@@ -375,13 +375,13 @@ export function TaskBoard() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="todo">
-                                                    Cần làm
+                                                    {t('tasks.status.todo')}
                                                 </SelectItem>
                                                 <SelectItem value="in_progress">
-                                                    Đang làm
+                                                    {t('tasks.status.inProgress')}
                                                 </SelectItem>
                                                 <SelectItem value="done">
-                                                    Hoàn tất
+                                                    {t('tasks.status.done')}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -401,13 +401,13 @@ export function TaskBoard() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="low">
-                                                    Thấp
+                                                    {t('tasks.priority.low')}
                                                 </SelectItem>
                                                 <SelectItem value="medium">
-                                                    Vừa
+                                                    {t('tasks.priority.medium')}
                                                 </SelectItem>
                                                 <SelectItem value="high">
-                                                    Cao
+                                                    {t('tasks.priority.high')}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -420,7 +420,7 @@ export function TaskBoard() {
                                             }}
                                         >
                                             <Pencil className="h-4 w-4" />
-                                            Chỉnh sửa
+                                            {t('tasks.editTask')}
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -430,7 +430,7 @@ export function TaskBoard() {
                                                 )
                                             }
                                         >
-                                            Mở cuộc họp
+                                            {t('tasks.openMeeting')}
                                             <ArrowRight className="h-4 w-4" />
                                         </Button>
                                         <Button
@@ -441,7 +441,7 @@ export function TaskBoard() {
                                             className="sm:col-span-2"
                                         >
                                             <Trash2 className="h-4 w-4" />
-                                            Xóa công việc
+                                            {t('tasks.deleteTask')}
                                         </Button>
                                     </div>
                                 </div>
@@ -462,9 +462,9 @@ export function TaskBoard() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Chỉnh sửa công việc</DialogTitle>
+                        <DialogTitle>{t('tasks.editDialog.title')}</DialogTitle>
                         <DialogDescription>
-                            Cập nhật nội dung công việc đã tạo từ transcript.
+                            {t('tasks.editDialog.desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <Textarea
@@ -472,14 +472,14 @@ export function TaskBoard() {
                         onChange={(event) => setEditContent(event.target.value)}
                         rows={5}
                         className="resize-none"
-                        placeholder="Nội dung công việc..."
+                        placeholder={t('tasks.editDialog.placeholder')}
                     />
                     <DialogFooter>
                         <Button
                             variant="outline"
                             onClick={() => setEditingTask(null)}
                         >
-                            Hủy
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             onClick={handleEditSave}
@@ -490,7 +490,7 @@ export function TaskBoard() {
                             {updateMutation.isPending && (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             )}
-                            Lưu thay đổi
+                            {t('tasks.editDialog.save')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -504,10 +504,9 @@ export function TaskBoard() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Xóa công việc</DialogTitle>
+                        <DialogTitle>{t('tasks.deleteDialog.title')}</DialogTitle>
                         <DialogDescription>
-                            Công việc này sẽ bị xóa vĩnh viễn. Thao tác này
-                            không thể hoàn tác.
+                            {t('tasks.deleteDialog.desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -515,7 +514,7 @@ export function TaskBoard() {
                             variant="outline"
                             onClick={() => setDeletingTask(null)}
                         >
-                            Hủy
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant="destructive"
@@ -525,7 +524,7 @@ export function TaskBoard() {
                             {deleteMutation.isPending && (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             )}
-                            Xóa
+                            {t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

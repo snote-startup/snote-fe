@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/snote/ThemeToggle';
+import { LanguageToggle } from '@/features/i18n/LanguageToggle';
+import { useI18n } from '@/features/i18n/use-i18n';
 import { useAuthStore } from '@/stores/use-auth-store';
 
 function getSafeNextPath(nextPath: string | null) {
@@ -42,26 +44,9 @@ function getNextPathFromLocation() {
     );
 }
 
-function getDisplayError(error: string | null) {
-    if (!error) {
-        return null;
-    }
-
-    const normalized = error.toLowerCase();
-
-    if (
-        normalized.includes('network error') ||
-        normalized.includes('failed to fetch') ||
-        normalized.includes('cors')
-    ) {
-        return 'Trình duyệt không kết nối được tới máy chủ xác thực. Backend có thể cần cho phép origin của frontend này.';
-    }
-
-    return error;
-}
-
 export function Signup() {
     const router = useRouter();
+    const { t } = useI18n();
     const register = useAuthStore((state) => state.register);
     const authError = useAuthStore((state) => state.authError);
     const isSubmitting = useAuthStore((state) => state.isSubmitting);
@@ -71,7 +56,13 @@ export function Signup() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
-    const displayError = getDisplayError(submitError ?? authError);
+
+    const rawError = submitError ?? authError;
+    const displayError = rawError
+        ? /network error|failed to fetch|cors/i.test(rawError)
+            ? t('login.errorNetwork')
+            : rawError
+        : null;
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -85,7 +76,7 @@ export function Signup() {
             setSubmitError(
                 error instanceof Error
                     ? error.message
-                    : 'Không thể tạo tài khoản. Vui lòng thử lại.',
+                    : t('register.errorGeneric'),
             );
         }
     };
@@ -95,8 +86,9 @@ export function Signup() {
             {/* Subtle gradient */}
             <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--brand-primary)_8%,transparent),transparent_32%),radial-gradient(circle_at_80%_20%,color-mix(in_oklab,var(--brand-blue)_5%,transparent),transparent_26%)]" />
 
-            {/* Theme toggle — top right */}
-            <div className="absolute top-4 right-4 z-50">
+            {/* Theme + Language toggle — top right */}
+            <div className="absolute top-4 right-4 z-50 flex items-center gap-1">
+                <LanguageToggle variant="ghost" />
                 <ThemeToggle variant="ghost" />
             </div>
 
@@ -108,7 +100,7 @@ export function Signup() {
                         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Quay lại Snote
+                        {t('common.backToSnote')}
                     </Link>
 
                     <div className="mt-20 max-w-xl">
@@ -121,21 +113,19 @@ export function Signup() {
                             className="h-auto w-[132px]"
                         />
                         <h1 className="mt-10 text-4xl leading-tight font-semibold tracking-normal xl:text-5xl">
-                            Tạo workspace để xem lại transcript.
+                            {t('register.title')}
                         </h1>
                         <p className="text-muted-foreground mt-5 text-base leading-8">
-                            Bắt đầu với quy trình rõ ràng: tải audio lên, xem
-                            transcript theo người nói và hỏi AI trên nội dung
-                            cuộc họp.
+                            {t('register.subtitle')}
                         </p>
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
-                        {[
-                            'Một tài khoản cho dự án, audio và transcript.',
-                            'Giao diện tập trung cho việc theo dõi sau họp.',
-                            'Quyền quản trị chỉ hiển thị với tài khoản admin.',
-                        ].map((item) => (
+                        {([
+                            t('register.feature1'),
+                            t('register.feature2'),
+                            t('register.feature3'),
+                        ] as const).map((item) => (
                             <div
                                 key={item}
                                 className="border-border bg-muted/30 text-muted-foreground flex items-start gap-3 rounded-xl border p-4 text-sm"
@@ -155,7 +145,7 @@ export function Signup() {
                             className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-2 text-sm transition-colors lg:hidden"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Quay lại Snote
+                            {t('common.backToSnote')}
                         </Link>
 
                         <div className="border-border bg-card/80 rounded-2xl border p-6 shadow-xl backdrop-blur sm:p-8">
@@ -169,10 +159,10 @@ export function Signup() {
                                     className="h-auto w-[128px] lg:hidden"
                                 />
                                 <h2 className="mt-8 text-2xl font-semibold lg:mt-0">
-                                    Tạo tài khoản
+                                    {t('register.heading')}
                                 </h2>
                                 <p className="text-muted-foreground mt-2 text-sm leading-6">
-                                    Nhập thông tin cơ bản để bắt đầu dùng Snote.
+                                    {t('register.subheading')}
                                 </p>
                             </div>
 
@@ -189,14 +179,14 @@ export function Signup() {
                                         htmlFor="name"
                                         className="text-foreground text-sm"
                                     >
-                                        Họ và tên
+                                        {t('register.name')}
                                     </Label>
                                     <div className="relative">
                                         <UserRound className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                                         <Input
                                             id="name"
                                             type="text"
-                                            placeholder="Tên của bạn"
+                                            placeholder={t('register.namePlaceholder')}
                                             value={name}
                                             onChange={(event) =>
                                                 setName(event.target.value)
@@ -213,7 +203,7 @@ export function Signup() {
                                         htmlFor="email"
                                         className="text-foreground text-sm"
                                     >
-                                        Email
+                                        {t('login.email')}
                                     </Label>
                                     <div className="relative">
                                         <Mail className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -237,7 +227,7 @@ export function Signup() {
                                         htmlFor="password"
                                         className="text-foreground text-sm"
                                     >
-                                        Mật khẩu
+                                        {t('login.password')}
                                     </Label>
                                     <div className="relative">
                                         <LockKeyhole className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -248,7 +238,7 @@ export function Signup() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder="Tối thiểu 8 ký tự"
+                                            placeholder={t('register.passwordPlaceholder')}
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)
@@ -262,8 +252,8 @@ export function Signup() {
                                             type="button"
                                             aria-label={
                                                 showPassword
-                                                    ? 'Ẩn mật khẩu'
-                                                    : 'Hiện mật khẩu'
+                                                    ? t('login.hidePassword')
+                                                    : t('login.showPassword')
                                             }
                                             onClick={() =>
                                                 setShowPassword(
@@ -289,18 +279,18 @@ export function Signup() {
                                     className="h-11 w-full"
                                 >
                                     {isSubmitting
-                                        ? 'Đang tạo tài khoản...'
-                                        : 'Tạo tài khoản'}
+                                        ? t('register.submitting')
+                                        : t('register.submit')}
                                 </Button>
                             </form>
 
                             <p className="text-muted-foreground mt-6 text-center text-sm">
-                                Đã có tài khoản?{' '}
+                                {t('register.hasAccount')}{' '}
                                 <Link
                                     href="/login"
                                     className="text-primary font-medium hover:underline"
                                 >
-                                    Đăng nhập
+                                    {t('register.login')}
                                 </Link>
                             </p>
                         </div>

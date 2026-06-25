@@ -2,6 +2,7 @@
 
 import { AlertCircle, ArrowLeft, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 interface AppErrorStateProps {
     title?: string;
@@ -13,18 +14,24 @@ interface AppErrorStateProps {
 }
 
 export function AppErrorState({
-    title = 'Đã xảy ra lỗi',
+    title,
     description,
     error,
     onRetry,
     onBack,
-    backText = 'Quay lại tổng quan',
+    backText,
 }: AppErrorStateProps) {
+    const { t } = useI18n();
+
+    const displayTitle = title || t('error.title');
+    const displayBackText = backText || t('error.backText');
+    const defaultDesc = t('error.defaultDesc');
+
     const message =
         description ||
         (error && 'message' in error && typeof error.message === 'string'
             ? error.message
-            : 'Không thể tải màn hình này. Vui lòng thử lại hoặc liên hệ hỗ trợ.');
+            : defaultDesc);
 
     return (
         <div className="animate-fade-in mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center p-8 text-center">
@@ -35,7 +42,7 @@ export function AppErrorState({
 
             {/* Error message */}
             <h2 className="text-foreground mb-2 text-xl font-semibold tracking-tight">
-                {title}
+                {displayTitle}
             </h2>
             <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
                 {message}
@@ -50,7 +57,7 @@ export function AppErrorState({
                         className="gap-2"
                     >
                         <RotateCcw className="h-4 w-4" />
-                        Thử lại
+                        {t('common.retry')}
                     </Button>
                 )}
                 {onBack && (
@@ -60,7 +67,7 @@ export function AppErrorState({
                         className="gap-2"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        {backText}
+                        {displayBackText}
                     </Button>
                 )}
             </div>

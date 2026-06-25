@@ -47,58 +47,18 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 interface ProjectTasksPanelProps {
     projectId: string;
     hasSegments: boolean;
 }
 
-const statusConfig: Record<
-    TaskStatus,
-    { label: string; icon: LucideIcon; colorClass: string }
-> = {
-    todo: {
-        label: 'Cần làm',
-        icon: Circle,
-        colorClass: 'text-muted-foreground',
-    },
-    in_progress: {
-        label: 'Đang làm',
-        icon: CircleDashed,
-        colorClass: 'text-indigo-500 dark:text-indigo-400',
-    },
-    done: {
-        label: 'Hoàn tất',
-        icon: CheckCircle2,
-        colorClass: 'text-emerald-600 dark:text-emerald-500',
-    },
-};
-
-const priorityConfig: Record<
-    TaskPriority,
-    { label: string; colorClass: string; bgClass: string }
-> = {
-    low: {
-        label: 'Thấp',
-        colorClass: 'text-muted-foreground',
-        bgClass: 'bg-muted',
-    },
-    medium: {
-        label: 'Vừa',
-        colorClass: 'text-amber-600 dark:text-amber-400',
-        bgClass: 'bg-amber-500/10 dark:bg-amber-900/20',
-    },
-    high: {
-        label: 'Cao',
-        colorClass: 'text-red-600 dark:text-red-400',
-        bgClass: 'bg-red-500/10 dark:bg-red-900/20',
-    },
-};
-
 export function ProjectTasksPanel({
     projectId,
     hasSegments,
 }: ProjectTasksPanelProps) {
+    const { t } = useI18n();
     const { data: tasks, isLoading: isTasksLoading } =
         useProjectTasks(projectId);
     const generateMutation = useGenerateProjectTasks(projectId);
@@ -108,6 +68,48 @@ export function ProjectTasksPanel({
     const [editingTask, setEditingTask] = useState<ProjectTask | null>(null);
     const [editContent, setEditContent] = useState('');
     const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+
+    const statusConfig: Record<
+        TaskStatus,
+        { label: string; icon: LucideIcon; colorClass: string }
+    > = {
+        todo: {
+            label: t('tasks.status.todo'),
+            icon: Circle,
+            colorClass: 'text-muted-foreground',
+        },
+        in_progress: {
+            label: t('tasks.status.inProgress'),
+            icon: CircleDashed,
+            colorClass: 'text-indigo-500 dark:text-indigo-400',
+        },
+        done: {
+            label: t('tasks.status.done'),
+            icon: CheckCircle2,
+            colorClass: 'text-emerald-600 dark:text-emerald-500',
+        },
+    };
+
+    const priorityConfig: Record<
+        TaskPriority,
+        { label: string; colorClass: string; bgClass: string }
+    > = {
+        low: {
+            label: t('tasks.priority.low'),
+            colorClass: 'text-muted-foreground',
+            bgClass: 'bg-muted',
+        },
+        medium: {
+            label: t('tasks.priority.medium'),
+            colorClass: 'text-amber-600 dark:text-amber-400',
+            bgClass: 'bg-amber-500/10 dark:bg-amber-900/20',
+        },
+        high: {
+            label: t('tasks.priority.high'),
+            colorClass: 'text-red-600 dark:text-red-400',
+            bgClass: 'bg-red-500/10 dark:bg-red-900/20',
+        },
+    };
 
     const handleGenerate = () => {
         generateMutation.mutate();
@@ -160,7 +162,7 @@ export function ProjectTasksPanel({
                 <div className="flex items-center gap-2">
                     <ListTodo className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
-                        Công việc
+                        {t('tasks.title')}
                         {tasks && tasks.length > 0 && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
                                 ({tasks.length})
@@ -179,19 +181,19 @@ export function ProjectTasksPanel({
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
-                            Đang tải công việc...
+                            {t('projectTasks.loading')}
                         </p>
                     </div>
                 ) : !tasks || tasks.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
                         <ListTodo className="text-muted-foreground mb-4 h-12 w-12 opacity-40" />
                         <h3 className="text-foreground mb-1 text-base font-semibold">
-                            Chưa có công việc
+                            {t('projectTasks.emptyTitle')}
                         </h3>
                         <p className="text-muted-foreground mb-6 max-w-[250px] text-sm">
                             {hasSegments
-                                ? 'Tạo công việc hành động từ transcript này.'
-                                : 'Cần có transcript trước khi tạo công việc.'}
+                                ? t('projectTasks.emptyDescReady')
+                                : t('projectTasks.emptyDescNotReady')}
                         </p>
                         <Button
                             onClick={handleGenerate}
@@ -203,12 +205,12 @@ export function ProjectTasksPanel({
                             {generateMutation.isPending ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Đang tạo...
+                                    {t('projectTasks.generating')}
                                 </>
                             ) : (
                                 <>
                                     <Wand2 className="mr-2 h-4 w-4" />
-                                    Tạo công việc
+                                    {t('projectTasks.generateBtn')}
                                 </>
                             )}
                         </Button>
@@ -272,7 +274,7 @@ export function ProjectTasksPanel({
                                                         className="w-48"
                                                     >
                                                         <DropdownMenuLabel>
-                                                            Thao tác
+                                                            {t('projectTasks.action')}
                                                         </DropdownMenuLabel>
                                                         <DropdownMenuItem
                                                             onClick={() => {
@@ -285,13 +287,13 @@ export function ProjectTasksPanel({
                                                             }}
                                                         >
                                                             <Pencil className="mr-2 h-4 w-4" />
-                                                            Chỉnh sửa nội dung
+                                                            {t('tasks.editTask')}
                                                         </DropdownMenuItem>
 
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <ListTodo className="mr-2 h-4 w-4" />
-                                                                Đổi trạng thái
+                                                                {t('projectTasks.changeStatus')}
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -308,13 +310,13 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="todo">
-                                                                        Cần làm
+                                                                        {t('tasks.status.todo')}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="in_progress">
-                                                                        Đang làm
+                                                                        {t('tasks.status.inProgress')}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="done">
-                                                                        Hoàn tất
+                                                                        {t('tasks.status.done')}
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -323,7 +325,7 @@ export function ProjectTasksPanel({
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <Flag className="mr-2 h-4 w-4" />
-                                                                Đổi ưu tiên
+                                                                {t('projectTasks.changePriority')}
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -340,13 +342,13 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="low">
-                                                                        Thấp
+                                                                        {t('tasks.priority.low')}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="medium">
-                                                                        Vừa
+                                                                        {t('tasks.priority.medium')}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="high">
-                                                                        Cao
+                                                                        {t('tasks.priority.high')}
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -362,7 +364,7 @@ export function ProjectTasksPanel({
                                                             }
                                                         >
                                                             <Trash2 className="mr-2 h-4 w-4" />
-                                                            Xóa
+                                                            {t('common.delete')}
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -398,7 +400,7 @@ export function ProjectTasksPanel({
                                 ) : (
                                     <Wand2 className="mr-2 h-4 w-4" />
                                 )}
-                                Tạo lại công việc
+                                {t('projectTasks.regenerate')}
                             </Button>
                         </div>
                     </>
@@ -412,7 +414,7 @@ export function ProjectTasksPanel({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Chỉnh sửa công việc</DialogTitle>
+                        <DialogTitle>{t('tasks.editDialog.title')}</DialogTitle>
                     </DialogHeader>
                     <div className="py-4">
                         <Textarea
@@ -420,7 +422,7 @@ export function ProjectTasksPanel({
                             onChange={(e) => setEditContent(e.target.value)}
                             rows={4}
                             className="resize-none"
-                            placeholder="Nội dung công việc..."
+                            placeholder={t('tasks.editDialog.placeholder')}
                         />
                     </div>
                     <DialogFooter>
@@ -428,7 +430,7 @@ export function ProjectTasksPanel({
                             variant="outline"
                             onClick={() => setEditingTask(null)}
                         >
-                            Hủy
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             onClick={handleEditSave}
@@ -439,7 +441,7 @@ export function ProjectTasksPanel({
                             {updateMutation.isPending && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            Lưu thay đổi
+                            {t('tasks.editDialog.save')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -452,10 +454,9 @@ export function ProjectTasksPanel({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Xóa công việc</DialogTitle>
+                        <DialogTitle>{t('tasks.deleteDialog.title')}</DialogTitle>
                         <DialogDescription>
-                            Bạn chắc chắn muốn xóa công việc này? Thao tác này
-                            không thể hoàn tác.
+                            {t('tasks.deleteDialog.desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -463,7 +464,7 @@ export function ProjectTasksPanel({
                             variant="outline"
                             onClick={() => setDeletingTaskId(null)}
                         >
-                            Hủy
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             variant="destructive"
@@ -473,7 +474,7 @@ export function ProjectTasksPanel({
                             {deleteMutation.isPending && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            Xóa
+                            {t('common.delete')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
