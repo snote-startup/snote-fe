@@ -85,18 +85,38 @@ We discovered the schemas and behavior of the new quota APIs at runtime:
 ### 3. GET /quota/payment/return
 
 - **Command (no query):**
+
     ```bash
     curl -sS -i "https://snote-api.akagiyuu.dev/quota/payment/return"
     ```
 
     - **Result:** `400 Bad Request` with body `Failed to deserialize query string: missing field orderCode`.
+
 - **Command (with orderCode):**
+
     ```bash
     curl -sS -i "https://snote-api.akagiyuu.dev/quota/payment/return?orderCode=123"
     ```
 
     - **Result:** `403 Forbidden` with body `{"message":"Invalid payment","detail":null}`.
+
 - **Inferred Schema:** Expects `orderCode` as a query parameter (and potentially other PayOS return signature params). It acts as a public transaction validation webhook/endpoint.
+
+---
+
+## Payment Flow Decision
+
+Frontend follows Flow A:
+
+- FE calls `POST /quota/buy`.
+- Backend returns PayOS checkout URL.
+- FE redirects user to PayOS.
+- PayOS redirects back to backend `/quota/payment/return`.
+- Backend verifies payment and updates quota.
+- Backend redirects user to FE `/billing/success`.
+- FE only calls `GET /quota` to refresh current quota.
+
+The frontend does not parse or forward PayOS return query params in this flow.
 
 ---
 

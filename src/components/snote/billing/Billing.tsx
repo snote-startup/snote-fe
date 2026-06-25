@@ -1,6 +1,6 @@
 'use client';
 
-import { CreditCard, Info, UserCheck, Loader2 } from 'lucide-react';
+import { CreditCard, UserCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/providers/snote-app-provider';
 import { useQuota, useBuyQuota } from '@/features/quota/hooks';
@@ -138,16 +138,9 @@ export function Billing() {
                         </h2>
                         <p className="text-muted-foreground mb-4 text-sm">
                             {isPremium
-                                ? 'Cảm ơn bạn đã nâng cấp gói Premium! Tài khoản của bạn hiện có hạn mức tạo tối đa 20 dự án.'
+                                ? t('billing.planPremiumActiveDesc')
                                 : t('billing.upgradeDesc')}
                         </p>
-
-                        {!isPremium && (
-                            <div className="border-border bg-muted/40 text-muted-foreground mb-5 flex items-start gap-2 rounded-lg border p-3 text-sm">
-                                <Info className="mt-0.5 h-4 w-4 shrink-0" />
-                                <span>{t('common.comingSoon')}</span>
-                            </div>
-                        )}
 
                         <div className="flex flex-wrap gap-3">
                             {!isPremium && (

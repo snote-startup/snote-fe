@@ -1034,6 +1034,10 @@ export const dictionaries = {
         vi: 'Nâng cấp lên gói Premium để tăng hạn mức tạo dự án lên 20 dự án chỉ với 70.000đ.',
         en: 'Upgrade to Premium plan to increase project limit to 20 projects for only 70,000 VND.',
     },
+    'billing.planPremiumActiveDesc': {
+        vi: 'Cảm ơn bạn đã nâng cấp gói Premium! Tài khoản của bạn hiện có hạn mức tạo tối đa 20 dự án.',
+        en: 'Thank you for upgrading to Premium! Your account now has a maximum limit of 20 projects.',
+    },
     'billing.updatePayment': {
         vi: 'Cập nhật thanh toán',
         en: 'Update payment',
@@ -1061,6 +1065,26 @@ export const dictionaries = {
     'payment.success.back': {
         vi: 'Quay lại gói dịch vụ',
         en: 'Back to Billing Plans',
+    },
+    'payment.success.updating': {
+        vi: 'Đang cập nhật gói Premium...',
+        en: 'Updating your Premium plan...',
+    },
+    'payment.success.upgradedDesc': {
+        vi: 'Tài khoản của bạn đã được nâng cấp lên Premium. Bạn hiện có thể tạo tối đa 20 project.',
+        en: 'Your account has been upgraded to Premium. You can now create up to 20 projects.',
+    },
+    'payment.success.pending': {
+        vi: 'Thanh toán đã hoàn tất, hệ thống đang cập nhật quota...',
+        en: 'Payment completed. We are updating your quota...',
+    },
+    'payment.success.timeoutDesc': {
+        vi: 'Thanh toán đã được ghi nhận nhưng quota chưa cập nhật. Vui lòng thử tải lại sau ít phút.',
+        en: 'Payment was received, but your quota has not been updated yet. Please refresh again in a few minutes.',
+    },
+    'payment.success.retryBtn': {
+        vi: 'Kiểm tra lại quota',
+        en: 'Check quota again',
     },
 } as const satisfies Dict;
 
