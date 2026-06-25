@@ -4,6 +4,7 @@
 !/docs/final-web-polish-button-api-smoke-report.md
 !/docs/task-api-integration-report.md
 !/docs/landing-analytics-final-report.md
+!/docs/audio-websocket-stream-integration-report.md
 # dependencies
 /node_modules
 /.pnp
@@ -47,3 +48,5 @@ next-env.d.ts
 #AGENTS
 AGENTS.md
 CLAUDE.md
+!/docs/final-ui-i18n-stream-polish-report.md
+!/docs/api-discovery-quota-task-sync-report.md

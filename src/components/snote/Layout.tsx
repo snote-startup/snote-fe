@@ -19,8 +19,10 @@ import {
 } from 'lucide-react';
 import { useProductTour } from '@/features/onboarding/use-product-tour';
 import { useApp } from '@/providers/snote-app-provider';
+import { useI18n } from '@/features/i18n/use-i18n';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/snote/ThemeToggle';
+import { LanguageToggle } from '@/features/i18n/LanguageToggle';
 import { PageTransition } from '@/components/snote/shared/PageTransition';
 
 // ─── Nav Links ────────────────────────────────────────────────────────────────
@@ -80,6 +82,7 @@ interface SidebarBottomProps {
     displayName: string;
     displayEmail: string;
     displayRole: string;
+    logoutLabel: string;
     onLogout: () => void;
 }
 
@@ -88,6 +91,7 @@ function SidebarBottom({
     displayName,
     displayEmail,
     displayRole,
+    logoutLabel,
     onLogout,
 }: SidebarBottomProps) {
     return (
@@ -116,6 +120,12 @@ function SidebarBottom({
                     </div>
                     {/* Actions */}
                     <div className="flex shrink-0 items-center">
+                        <LanguageToggle
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            iconOnly
+                        />
                         <span data-tour="theme-toggle">
                             <ThemeToggle
                                 variant="ghost"
@@ -127,7 +137,7 @@ function SidebarBottom({
                             variant="ghost"
                             size="icon"
                             onClick={onLogout}
-                            aria-label="Đăng xuất"
+                            aria-label={logoutLabel}
                             className="h-8 w-8"
                         >
                             <LogOut className="text-muted-foreground h-4 w-4" />
@@ -162,16 +172,21 @@ export function Layout({ children }: LayoutProps) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { account, authRole, isAdmin, user, logout } = useApp();
     const { startCurrentPageTour } = useProductTour();
+    const { t } = useI18n();
 
     const navItems = [
-        { icon: LayoutDashboard, label: 'Tổng quan', path: '/dashboard' },
-        { icon: FolderOpen, label: 'Cuộc họp', path: '/meetings' },
-        { icon: CheckSquare, label: 'Công việc', path: '/tasks' },
-        { icon: Calendar, label: 'Lịch', path: '/calendar' },
-        { icon: CreditCard, label: 'Gói dịch vụ', path: '/billing' },
-        { icon: User, label: 'Hồ sơ', path: '/profile' },
+        {
+            icon: LayoutDashboard,
+            label: t('nav.dashboard'),
+            path: '/dashboard',
+        },
+        { icon: FolderOpen, label: t('nav.meetings'), path: '/meetings' },
+        { icon: CheckSquare, label: t('nav.tasks'), path: '/tasks' },
+        { icon: Calendar, label: t('nav.calendar'), path: '/calendar' },
+        { icon: CreditCard, label: t('nav.billing'), path: '/billing' },
+        { icon: User, label: t('nav.profile'), path: '/profile' },
         ...(isAdmin
-            ? [{ icon: ShieldCheck, label: 'Quản trị', path: '/admin' }]
+            ? [{ icon: ShieldCheck, label: t('nav.admin'), path: '/admin' }]
             : []),
     ];
 
@@ -188,10 +203,10 @@ export function Layout({ children }: LayoutProps) {
     const displayEmail = account?.email ?? user.email;
     const displayRole =
         authRole === 'admin'
-            ? 'Quản trị'
+            ? t('role.admin')
             : authRole === 'pro'
-              ? 'Thành viên'
-              : 'Đang hoạt động';
+              ? t('role.pro')
+              : t('role.active');
     const initials = getInitials(displayName);
 
     const sidebarBottomProps: SidebarBottomProps = {
@@ -199,6 +214,7 @@ export function Layout({ children }: LayoutProps) {
         displayName,
         displayEmail,
         displayRole,
+        logoutLabel: t('nav.logout'),
         onLogout: handleLogout,
     };
 
@@ -242,7 +258,7 @@ export function Layout({ children }: LayoutProps) {
                             className="text-muted-foreground hover:bg-muted/60 hover:text-foreground flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
                         >
                             <CircleHelp className="text-primary h-[18px] w-[18px] shrink-0" />
-                            <span>Hướng dẫn nhanh</span>
+                            <span>{t('nav.quickGuide')}</span>
                         </Button>
                     </div>
                 </nav>
@@ -269,7 +285,7 @@ export function Layout({ children }: LayoutProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setMobileMenuOpen(false)}
-                        aria-label="Đóng menu"
+                        aria-label={t('nav.closeMenu')}
                         className="h-8 w-8"
                     >
                         <X className="h-4 w-4" />
@@ -296,7 +312,7 @@ export function Layout({ children }: LayoutProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => setMobileMenuOpen(true)}
-                        aria-label="Mở menu"
+                        aria-label={t('nav.openMenu')}
                         className="h-8 w-8"
                     >
                         <Menu className="h-5 w-5" />
@@ -309,11 +325,19 @@ export function Layout({ children }: LayoutProps) {
                         priority
                         style={{ width: 'auto', height: 'auto' }}
                     />
-                    <ThemeToggle
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                    />
+                    <div className="flex items-center gap-1">
+                        <LanguageToggle
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            iconOnly
+                        />
+                        <ThemeToggle
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                        />
+                    </div>
                 </header>
 
                 {/* Page content */}

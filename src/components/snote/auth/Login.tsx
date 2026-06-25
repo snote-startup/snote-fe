@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/snote/ThemeToggle';
+import { LanguageToggle } from '@/features/i18n/LanguageToggle';
+import { useI18n } from '@/features/i18n/use-i18n';
 import { useAuthStore } from '@/stores/use-auth-store';
 
 function getSafeNextPath(nextPath: string | null) {
@@ -41,26 +43,9 @@ function getNextPathFromLocation() {
     );
 }
 
-function getDisplayError(error: string | null) {
-    if (!error) {
-        return null;
-    }
-
-    const normalized = error.toLowerCase();
-
-    if (
-        normalized.includes('network error') ||
-        normalized.includes('failed to fetch') ||
-        normalized.includes('cors')
-    ) {
-        return 'Trình duyệt không kết nối được tới máy chủ xác thực. Backend có thể cần cho phép origin của frontend này.';
-    }
-
-    return error;
-}
-
 export function Login() {
     const router = useRouter();
+    const { t } = useI18n();
     const login = useAuthStore((state) => state.login);
     const authError = useAuthStore((state) => state.authError);
     const isSubmitting = useAuthStore((state) => state.isSubmitting);
@@ -69,7 +54,13 @@ export function Login() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
-    const displayError = getDisplayError(submitError ?? authError);
+
+    const rawError = submitError ?? authError;
+    const displayError = rawError
+        ? /network error|failed to fetch|cors/i.test(rawError)
+            ? t('login.errorNetwork')
+            : rawError
+        : null;
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -83,7 +74,7 @@ export function Login() {
             setSubmitError(
                 error instanceof Error
                     ? error.message
-                    : 'Không thể đăng nhập. Vui lòng kiểm tra thông tin tài khoản.',
+                    : t('login.errorGeneric'),
             );
         }
     };
@@ -93,8 +84,9 @@ export function Login() {
             {/* Subtle gradient */}
             <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--brand-primary)_8%,transparent),transparent_32%),radial-gradient(circle_at_80%_20%,color-mix(in_oklab,var(--brand-blue)_5%,transparent),transparent_26%)]" />
 
-            {/* Theme toggle — top right */}
-            <div className="absolute top-4 right-4 z-50">
+            {/* Theme + Language toggle — top right */}
+            <div className="absolute top-4 right-4 z-50 flex items-center gap-1">
+                <LanguageToggle variant="ghost" />
                 <ThemeToggle variant="ghost" />
             </div>
 
@@ -106,7 +98,7 @@ export function Login() {
                         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Quay lại Snote
+                        {t('common.backToSnote')}
                     </Link>
 
                     <div className="mt-20 max-w-xl">
@@ -119,20 +111,21 @@ export function Login() {
                             className="h-auto w-[132px]"
                         />
                         <h1 className="mt-10 text-4xl leading-tight font-semibold tracking-normal xl:text-5xl">
-                            Đăng nhập vào workspace transcript của bạn.
+                            {t('login.title')}
                         </h1>
                         <p className="text-muted-foreground mt-5 text-base leading-8">
-                            Xem lại audio cuộc họp, tìm kiếm transcript theo
-                            người nói và hỏi trợ lý AI trong cùng một nơi.
+                            {t('login.subtitle')}
                         </p>
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
-                        {[
-                            'Tải audio lên và quản lý theo từng dự án.',
-                            'Xem transcript có mốc thời gian rõ ràng.',
-                            'Hỏi AI về quyết định, rủi ro và việc cần làm.',
-                        ].map((item) => (
+                        {(
+                            [
+                                t('login.feature1'),
+                                t('login.feature2'),
+                                t('login.feature3'),
+                            ] as const
+                        ).map((item) => (
                             <div
                                 key={item}
                                 className="border-border bg-muted/30 text-muted-foreground flex items-start gap-3 rounded-xl border p-4 text-sm"
@@ -152,7 +145,7 @@ export function Login() {
                             className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-2 text-sm transition-colors lg:hidden"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            Quay lại Snote
+                            {t('common.backToSnote')}
                         </Link>
 
                         <div className="border-border bg-card/80 rounded-2xl border p-6 shadow-xl backdrop-blur sm:p-8">
@@ -166,10 +159,10 @@ export function Login() {
                                     className="h-auto w-[128px] lg:hidden"
                                 />
                                 <h2 className="mt-8 text-2xl font-semibold lg:mt-0">
-                                    Chào mừng trở lại
+                                    {t('login.welcome')}
                                 </h2>
                                 <p className="text-muted-foreground mt-2 text-sm leading-6">
-                                    Dùng tài khoản Snote để tiếp tục.
+                                    {t('login.continueWith')}
                                 </p>
                             </div>
 
@@ -186,7 +179,7 @@ export function Login() {
                                         htmlFor="email"
                                         className="text-foreground text-sm"
                                     >
-                                        Email
+                                        {t('login.email')}
                                     </Label>
                                     <div className="relative">
                                         <Mail className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -210,7 +203,7 @@ export function Login() {
                                         htmlFor="password"
                                         className="text-foreground text-sm"
                                     >
-                                        Mật khẩu
+                                        {t('login.password')}
                                     </Label>
                                     <div className="relative">
                                         <LockKeyhole className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -221,7 +214,9 @@ export function Login() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder="Nhập mật khẩu"
+                                            placeholder={t(
+                                                'login.passwordPlaceholder',
+                                            )}
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)
@@ -234,8 +229,8 @@ export function Login() {
                                             type="button"
                                             aria-label={
                                                 showPassword
-                                                    ? 'Ẩn mật khẩu'
-                                                    : 'Hiện mật khẩu'
+                                                    ? t('login.hidePassword')
+                                                    : t('login.showPassword')
                                             }
                                             onClick={() =>
                                                 setShowPassword(
@@ -261,18 +256,18 @@ export function Login() {
                                     className="h-11 w-full"
                                 >
                                     {isSubmitting
-                                        ? 'Đang đăng nhập...'
-                                        : 'Đăng nhập'}
+                                        ? t('login.submitting')
+                                        : t('login.submit')}
                                 </Button>
                             </form>
 
                             <p className="text-muted-foreground mt-6 text-center text-sm">
-                                Chưa có tài khoản?{' '}
+                                {t('login.noAccount')}{' '}
                                 <Link
                                     href="/register"
                                     className="text-primary font-medium hover:underline"
                                 >
-                                    Tạo tài khoản
+                                    {t('login.createAccount')}
                                 </Link>
                             </p>
                         </div>

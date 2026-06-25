@@ -8,34 +8,39 @@ import {
     MessageSquareText,
 } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { useI18n } from '@/features/i18n/use-i18n';
+import type { TranslationKey } from '@/features/i18n/use-i18n';
 
-const proofPoints = [
+const proofPoints: Array<{
+    icon: typeof Link2;
+    titleKey: TranslationKey;
+    descKey: TranslationKey;
+}> = [
     {
         icon: Link2,
-        title: 'Câu trả lời có nguồn',
-        description:
-            'Mỗi phản hồi AI liên kết về đúng đoạn transcript. Bấm vào nguồn để quay lại lượt nói gốc.',
+        titleKey: 'grounded.card1.title',
+        descKey: 'grounded.card1.desc',
     },
     {
         icon: Search,
-        title: 'Tìm trong toàn bộ transcript',
-        description:
-            'Tìm từ khóa, tên người nói hoặc cụm từ trong toàn bộ cuộc họp.',
+        titleKey: 'grounded.card2.title',
+        descKey: 'grounded.card2.desc',
     },
     {
         icon: Download,
-        title: 'Tải audio gốc',
-        description: 'Mở lại bản ghi đầy đủ khi cần kiểm chứng nội dung.',
+        titleKey: 'grounded.card3.title',
+        descKey: 'grounded.card3.desc',
     },
     {
         icon: MessageSquareText,
-        title: 'Review cùng trợ lý AI',
-        description:
-            'Hỏi tiếp tự nhiên trên cùng ngữ cảnh cuộc họp và xem nguồn từ transcript.',
+        titleKey: 'grounded.card4.title',
+        descKey: 'grounded.card4.desc',
     },
 ];
 
 export function GroundedAnswersSection() {
+    const { t } = useI18n();
+
     return (
         <section id="references" className="relative z-10 py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -43,14 +48,13 @@ export function GroundedAnswersSection() {
                     {/* Left — copy */}
                     <Reveal>
                         <p className="mb-3 text-sm font-semibold text-violet-400">
-                            Nguồn tham chiếu
+                            {t('grounded.label')}
                         </p>
                         <h2 className="mb-4 text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
-                            AI trả lời kèm căn cứ.
+                            {t('grounded.title')}
                         </h2>
                         <p className="text-base leading-relaxed text-zinc-400">
-                            Không chỉ tóm tắt. Mỗi câu trả lời có thể truy về
-                            đoạn transcript có mốc thời gian để bạn kiểm chứng.
+                            {t('grounded.subtitle')}
                         </p>
                     </Reveal>
 
@@ -59,17 +63,17 @@ export function GroundedAnswersSection() {
                         {proofPoints.map((p, i) => {
                             const Icon = p.icon;
                             return (
-                                <Reveal key={p.title} delay={i * 80}>
+                                <Reveal key={p.titleKey} delay={i * 80}>
                                     <article className="group flex h-full gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 transition-all duration-300 hover:border-violet-500/20 hover:bg-white/[0.05]">
                                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10">
                                             <Icon className="h-4 w-4 text-violet-400" />
                                         </div>
                                         <div>
                                             <h3 className="mb-1.5 text-sm font-semibold text-zinc-200">
-                                                {p.title}
+                                                {t(p.titleKey)}
                                             </h3>
                                             <p className="text-sm leading-6 text-zinc-500">
-                                                {p.description}
+                                                {t(p.descKey)}
                                             </p>
                                         </div>
                                     </article>
@@ -83,7 +87,7 @@ export function GroundedAnswersSection() {
                 <Reveal delay={320} className="mt-12">
                     <div className="flex flex-wrap items-center justify-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 sm:p-6">
                         <span className="mr-2 text-xs font-medium text-zinc-500">
-                            Ví dụ nguồn:
+                            {t('grounded.exampleLabel')}
                         </span>
                         {[
                             {

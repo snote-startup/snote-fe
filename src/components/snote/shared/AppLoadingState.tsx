@@ -1,5 +1,7 @@
 'use client';
 
+import { useI18n } from '@/features/i18n/use-i18n';
+
 interface AppLoadingStateProps {
     variant?: 'brand' | 'list' | 'detail';
     message?: string;
@@ -9,6 +11,8 @@ export function AppLoadingState({
     variant = 'brand',
     message,
 }: AppLoadingStateProps) {
+    const { t } = useI18n();
+
     if (variant === 'brand') {
         return (
             <div className="bg-background text-foreground flex min-h-[50vh] flex-col items-center justify-center gap-5 p-8">
@@ -25,10 +29,10 @@ export function AppLoadingState({
 
                 <div className="flex flex-col items-center gap-1.5">
                     <p className="text-foreground text-sm font-medium">
-                        {message || 'Đang chuẩn bị workspace'}
+                        {message || t('loading.workspace')}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                        Đang kiểm tra phiên đăng nhập...
+                        {t('loading.session')}
                     </p>
                 </div>
 

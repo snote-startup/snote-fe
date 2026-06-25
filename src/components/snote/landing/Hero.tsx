@@ -7,8 +7,11 @@ import { HeroWorkspaceMock } from './HeroWorkspaceMock';
 import { Reveal } from './Reveal';
 import { CursorReactiveBackground } from './CursorReactiveBackground';
 import { track } from '@vercel/analytics';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 export function Hero() {
+    const { t } = useI18n();
+
     return (
         <CursorReactiveBackground className="landing-grid-bg relative z-10 overflow-hidden pt-28 sm:pt-32">
             {/* Horizontal beam */}
@@ -30,21 +33,20 @@ export function Hero() {
                     {/* Badge */}
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-xs font-medium text-violet-300">
                         <Sparkles className="h-3.5 w-3.5" />
-                        Workspace cuộc họp với AI
+                        {t('hero.badge')}
                     </div>
 
                     {/* Headline */}
                     <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-100 sm:text-5xl lg:text-6xl">
-                        Transcript cuộc họp,{' '}
+                        {t('hero.title.line1')}{' '}
                         <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                            dễ tìm kiếm và có nguồn rõ ràng.
+                            {t('hero.title.line2')}
                         </span>
                     </h1>
 
                     {/* Subheadline */}
                     <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-                        Tải audio lên, tạo transcript và chat với AI kèm nguồn
-                        tham chiếu tới đúng đoạn transcript.
+                        {t('hero.subtitle')}
                     </p>
 
                     {/* CTAs */}
@@ -55,8 +57,8 @@ export function Hero() {
                             className="h-12 bg-violet-600 px-8 text-white hover:bg-violet-500"
                             onClick={() => track('landing_primary_cta_clicked')}
                         >
-                            <Link href="/dashboard">
-                                Bắt đầu tạo transcript
+                            <Link href="/meetings">
+                                {t('hero.cta.primary')}
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </Button>
@@ -69,7 +71,9 @@ export function Hero() {
                                 track('landing_secondary_cta_clicked')
                             }
                         >
-                            <Link href="#workflow">Xem quy trình</Link>
+                            <Link href="/meetings">
+                                {t('hero.cta.secondary')}
+                            </Link>
                         </Button>
                     </div>
                 </Reveal>

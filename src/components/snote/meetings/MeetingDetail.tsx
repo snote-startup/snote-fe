@@ -58,13 +58,11 @@ import { toast } from 'sonner';
 import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
 import { AppErrorState } from '@/components/snote/shared/AppErrorState';
 import { ProjectTasksPanel } from './ProjectTasksPanel';
+import { ProjectAudioStreamDebugPanel } from '@/components/snote/dev/ProjectAudioStreamDebugPanel';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 // ─── Timestamp formatter ──────────────────────────────────────────────────────
 
-/**
- * Formats a transcript timestamp to MM:SS format.
- * Heuristic: if value > 60000, treat as milliseconds; otherwise treat as seconds.
- */
 function formatTimestamp(value: number): string {
     if (value === undefined || value === null || isNaN(value)) return '0:00';
     const totalSeconds =
@@ -82,6 +80,7 @@ interface UploadSectionProps {
 }
 
 function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
+    const { t } = useI18n();
     const uploadMutation = useUploadProjectAudio(projectId);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -89,7 +88,7 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
 
     const handleFileSelect = (file: File) => {
         if (!file.type.startsWith('audio/')) {
-            toast.error('Vui lòng chọn một tệp audio.');
+            toast.error(t('meeting.upload.errorInvalidFile'));
             return;
         }
         setSelectedFile(file);
@@ -116,12 +115,12 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
         if (!selectedFile) return;
         uploadMutation.mutate(selectedFile, {
             onSuccess: () => {
-                toast.success('Đã tải audio lên. Transcript đang được tạo...');
+                toast.success(t('meeting.upload.success'));
                 setSelectedFile(null);
                 onUploadSuccess();
             },
             onError: (err) => {
-                toast.error(err.message || 'Không thể tải audio lên.');
+                toast.error(err.message || t('meeting.upload.errorGeneric'));
             },
         });
     };
@@ -138,10 +137,10 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                 <FileAudio className="text-muted-foreground h-4 w-4" />
                 <div>
                     <p className="text-foreground text-sm font-medium">
-                        Tải audio lên để tạo transcript
+                        {t('meeting.upload.title')}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                        Transcript sẽ xuất hiện tại đây sau khi xử lý.
+                        {t('meeting.upload.subtitle')}
                     </p>
                 </div>
             </div>
@@ -203,11 +202,13 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                         </div>
                         <div>
                             <p className="text-foreground text-sm font-medium">
-                                Kéo thả audio vào đây hoặc{' '}
-                                <span className="text-primary">chọn tệp</span>
+                                {t('meeting.upload.dragDrop')}{' '}
+                                <span className="text-primary">
+                                    {t('meeting.upload.browse')}
+                                </span>
                             </p>
                             <p className="text-muted-foreground mt-0.5 text-xs">
-                                Hỗ trợ MP3, WAV, M4A, WebM, OGG
+                                {t('meeting.upload.formats')}
                             </p>
                         </div>
                     </div>
@@ -224,12 +225,12 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                     {uploadMutation.isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Đang tải lên...
+                            {t('meeting.upload.uploading')}
                         </>
                     ) : (
                         <>
                             <UploadCloud className="mr-2 h-4 w-4" />
-                            Tạo transcript
+                            {t('meeting.upload.button')}
                         </>
                     )}
                 </Button>
@@ -257,6 +258,7 @@ function TranscriptPanel({
     onPollingStarted,
     segmentRefs,
 }: TranscriptPanelProps) {
+    const { t } = useI18n();
     const [searchQuery, setSearchQuery] = useState('');
     const [pollTimeout, setPollTimeout] = useState(false);
 
@@ -269,7 +271,6 @@ function TranscriptPanel({
         refetchInterval: isPolling && !pollTimeout ? 3000 : false,
     });
 
-    // Stop polling after 60 seconds — only ever set to true inside the timer
     useEffect(() => {
         if (!isPolling) return;
         const timer = setTimeout(() => setPollTimeout(true), 60_000);
@@ -299,10 +300,15 @@ function TranscriptPanel({
                 <div className="flex items-center gap-2">
                     <FileText className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
-                        Transcript
+                        {t('meeting.transcript.title')}
                         {hasSegments && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
-                                ({transcript.length} đoạn)
+                                (
+                                {t('meeting.transcript.segments').replace(
+                                    '{count}',
+                                    String(transcript.length),
+                                )}
+                                )
                             </span>
                         )}
                     </h2>
@@ -311,7 +317,7 @@ function TranscriptPanel({
                     <div className="relative w-40">
                         <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2" />
                         <Input
-                            placeholder="Tìm kiếm..."
+                            placeholder={t('meeting.transcript.search')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="h-7 py-1 pr-2 pl-7 text-xs"
@@ -335,7 +341,7 @@ function TranscriptPanel({
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
-                            Đang tải transcript...
+                            {t('meeting.transcript.loading')}
                         </p>
                     </div>
                 ) : transcriptError ? (
@@ -343,7 +349,7 @@ function TranscriptPanel({
                         <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
                         <p className="text-sm font-medium text-red-700 dark:text-red-400">
                             {transcriptError.message ||
-                                'Không thể tải transcript'}
+                                t('meeting.transcript.error')}
                         </p>
                         <Button
                             variant="outline"
@@ -351,7 +357,7 @@ function TranscriptPanel({
                             className="mt-3"
                             onClick={() => refetchTranscript()}
                         >
-                            Thử lại
+                            {t('common.retry')}
                         </Button>
                     </div>
                 ) : !hasSegments ? (
@@ -360,39 +366,37 @@ function TranscriptPanel({
                             <>
                                 <Loader2 className="text-primary mb-3 h-8 w-8 animate-spin" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    Đang tạo transcript...
+                                    {t('meeting.transcript.generating')}
                                 </p>
                                 <p className="text-muted-foreground text-xs">
-                                    Quá trình này có thể mất một lúc. Snote sẽ
-                                    kiểm tra lại mỗi 3 giây.
+                                    {t('meeting.transcript.generatingDesc')}
                                 </p>
                             </>
                         ) : isPolling && pollTimeout ? (
                             <>
                                 <FileText className="text-muted-foreground mb-3 h-10 w-10 opacity-50" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    Vẫn đang xử lý...
+                                    {t('meeting.transcript.processing')}
                                 </p>
                                 <p className="text-muted-foreground mb-3 text-xs">
-                                    Audio đã được tải lên. Transcript vẫn đang
-                                    xử lý, hãy thử kiểm tra lại sau ít phút.
+                                    {t('meeting.transcript.processingDesc')}
                                 </p>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => refetchTranscript()}
                                 >
-                                    Kiểm tra lại
+                                    {t('meeting.transcript.checkAgain')}
                                 </Button>
                             </>
                         ) : (
                             <>
                                 <FileText className="text-muted-foreground mb-3 h-10 w-10 opacity-50" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
-                                    Chưa có transcript
+                                    {t('meeting.transcript.empty')}
                                 </p>
                                 <p className="text-muted-foreground text-xs">
-                                    Tải audio lên để tạo transcript.
+                                    {t('meeting.transcript.emptyDesc')}
                                 </p>
                             </>
                         )}
@@ -402,7 +406,7 @@ function TranscriptPanel({
                         <div className="space-y-3 pt-1">
                             {filteredSegments.length === 0 ? (
                                 <p className="text-muted-foreground py-6 text-center text-sm">
-                                    Không có đoạn nào khớp với tìm kiếm.
+                                    {t('meeting.transcript.noMatch')}
                                 </p>
                             ) : (
                                 filteredSegments.map((segment) => {
@@ -433,7 +437,9 @@ function TranscriptPanel({
                                                 <span className="bg-muted inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-semibold">
                                                     <User className="text-muted-foreground h-3 w-3" />
                                                     {segment.speaker ||
-                                                        'Chưa rõ'}
+                                                        t(
+                                                            'meeting.transcript.unknownSpeaker',
+                                                        )}
                                                 </span>
                                                 <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
                                                     <Clock className="h-3 w-3" />
@@ -447,7 +453,9 @@ function TranscriptPanel({
                                                 </span>
                                                 {isHighlighted && (
                                                     <span className="ml-auto rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
-                                                        được trích dẫn
+                                                        {t(
+                                                            'meeting.transcript.referenced',
+                                                        )}
                                                     </span>
                                                 )}
                                             </div>
@@ -489,7 +497,7 @@ function ChatPanel({
     transcriptSegmentIds,
     onReferenceClick,
 }: ChatPanelProps) {
-    // Live streaming messages (user + streaming assistant) layered on top of history
+    const { t } = useI18n();
     const [liveMessages, setLiveMessages] = useState<DisplayMessage[]>([]);
     const [input, setInput] = useState('');
     const [isStreaming, setIsStreaming] = useState(false);
@@ -504,7 +512,6 @@ function ChatPanel({
         refetch: refetchChat,
     } = useProjectChatMessages(projectId);
 
-    // Derive display messages: history (parsed) + live streaming messages appended
     const historyMessages: DisplayMessage[] = (chatHistory?.data ?? []).map(
         (msg) => {
             if (msg.role === 'assistant') {
@@ -524,7 +531,6 @@ function ChatPanel({
         },
     );
 
-    // Merge: hide history items that are already present in liveMessages
     const messages = useMemo(() => {
         const historyUserPrompts = new Set(
             historyMessages
@@ -537,12 +543,11 @@ function ChatPanel({
             const msg = liveMessages[i];
             if (msg.role === 'user') {
                 if (historyUserPrompts.has(msg.content)) {
-                    // Skip this user message and the subsequent assistant message in liveMessages
                     if (
                         i + 1 < liveMessages.length &&
                         liveMessages[i + 1].role === 'assistant'
                     ) {
-                        i++; // skip assistant response
+                        i++;
                     }
                     continue;
                 }
@@ -553,7 +558,6 @@ function ChatPanel({
         return [...historyMessages, ...filteredLive];
     }, [historyMessages, liveMessages]);
 
-    // Clear liveMessages if their prompts have successfully made it to history
     useEffect(() => {
         if (liveMessages.length === 0) return;
 
@@ -588,12 +592,11 @@ function ChatPanel({
         [],
     );
 
-    // Auto-scroll logic (smart scrolling: only if user is already near bottom or just sent a message)
     useEffect(() => {
         const container = scrollRef.current;
         if (!container) return;
 
-        const threshold = 180; // px from bottom
+        const threshold = 180;
         const isNearBottom =
             container.scrollHeight -
                 container.scrollTop -
@@ -635,7 +638,6 @@ function ChatPanel({
         const controller = new AbortController();
         abortControllerRef.current = controller;
 
-        // Accumulate raw text for streamed reply display.
         let rawAccumulated = '';
 
         try {
@@ -643,7 +645,6 @@ function ChatPanel({
                 signal: controller.signal,
                 onChunk: (chunk) => {
                     rawAccumulated += chunk;
-                    // During streaming: show text before the references separator only.
                     const separatorIdx =
                         rawAccumulated.indexOf('<<<REFERENCES>>>');
                     const liveDisplay =
@@ -661,7 +662,6 @@ function ChatPanel({
                 },
             });
 
-            // Replace streaming message with final parsed result
             setLiveMessages((prev) =>
                 prev.map((m) =>
                     m.id === streamingAssistantId
@@ -678,19 +678,17 @@ function ChatPanel({
                 ),
             );
 
-            // After refetch, history will contain the new message; the useEffect handles clearing liveMessages
             await refetchChat();
         } catch (err: unknown) {
             if (err instanceof Error && err.name === 'AbortError') {
-                // User cancelled — finalize current content with Stopped tag
                 setLiveMessages((prev) =>
                     prev.map((m) =>
                         m.id === streamingAssistantId
                             ? {
                                   ...m,
                                   content: m.content
-                                      ? `${m.content}\n\n[Đã dừng]`
-                                      : '[Đã dừng]',
+                                      ? `${m.content}\n\n[${t('meeting.chat.stopped')}]`
+                                      : `[${t('meeting.chat.stopped')}]`,
                                   isStreaming: false,
                               }
                             : m,
@@ -700,7 +698,7 @@ function ChatPanel({
                 const message =
                     err instanceof Error
                         ? err.message
-                        : 'Không gửi được câu hỏi.';
+                        : t('meeting.chat.errorSend');
                 setStreamError(message);
                 toast.error(message);
                 setLiveMessages((prev) =>
@@ -711,7 +709,7 @@ function ChatPanel({
             setIsStreaming(false);
             abortControllerRef.current = null;
         }
-    }, [input, isStreaming, projectId, refetchChat]);
+    }, [input, isStreaming, projectId, refetchChat, t]);
 
     const handleStop = () => {
         abortControllerRef.current?.abort();
@@ -731,7 +729,7 @@ function ChatPanel({
                 <div className="flex items-center gap-2">
                     <MessageSquare className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
-                        Trợ lý AI
+                        {t('meeting.chat.title')}
                     </h2>
                 </div>
                 {isChatLoading && (
@@ -746,12 +744,12 @@ function ChatPanel({
                         <div className="flex flex-col items-center py-8 text-center">
                             <MessageSquare className="text-muted-foreground mb-3 h-10 w-10 opacity-40" />
                             <p className="text-foreground text-sm font-medium">
-                                Chưa có tin nhắn
+                                {t('meeting.chat.empty')}
                             </p>
                             <p className="text-muted-foreground mt-1 text-xs">
                                 {hasSegments
-                                    ? 'Hỏi bất cứ điều gì về cuộc họp này.'
-                                    : 'Tải audio lên và chờ transcript trước.'}
+                                    ? t('meeting.chat.emptyDescReady')
+                                    : t('meeting.chat.emptyDescNotReady')}
                             </p>
                         </div>
                     )}
@@ -766,7 +764,9 @@ function ChatPanel({
                             }`}
                         >
                             <span className="text-muted-foreground mb-1 px-1 text-[10px] font-semibold tracking-wider uppercase">
-                                {msg.role === 'user' ? 'Bạn' : 'Trợ lý AI'}
+                                {msg.role === 'user'
+                                    ? t('meeting.chat.you')
+                                    : t('meeting.chat.assistant')}
                             </span>
                             <div
                                 className={`max-w-[90%] rounded-xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
@@ -779,7 +779,7 @@ function ChatPanel({
                                 msg.isStreaming &&
                                 !msg.content ? (
                                     <span className="text-muted-foreground flex items-center gap-1.5 italic">
-                                        Đang suy nghĩ
+                                        {t('meeting.chat.thinking')}
                                         <span className="inline-flex gap-0.5">
                                             <span
                                                 className="animate-pulse"
@@ -824,7 +824,7 @@ function ChatPanel({
                                 msg.references.length > 0 && (
                                     <div className="mt-2 flex max-w-[90%] flex-wrap gap-1.5">
                                         <span className="text-muted-foreground self-center text-xs">
-                                            Nguồn:
+                                            {t('meeting.chat.source')}:
                                         </span>
                                         {msg.references.map((ref) => {
                                             const isKnown =
@@ -841,14 +841,23 @@ function ChatPanel({
                                                             );
                                                         } else {
                                                             toast.info(
-                                                                'Không tìm thấy đoạn tham chiếu trong transcript hiện tại.',
+                                                                t(
+                                                                    'meeting.chat.sourceNotFound',
+                                                                ),
                                                             );
                                                         }
                                                     }}
                                                     title={
                                                         isKnown
-                                                            ? `Chuyển tới đoạn ${ref}`
-                                                            : 'Không tìm thấy tham chiếu trong transcript hiện tại'
+                                                            ? t(
+                                                                  'meeting.chat.jumpToSource',
+                                                              ).replace(
+                                                                  '{ref}',
+                                                                  ref,
+                                                              )
+                                                            : t(
+                                                                  'meeting.chat.sourceNotFound',
+                                                              )
                                                     }
                                                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors ${
                                                         isKnown
@@ -880,7 +889,7 @@ function ChatPanel({
                 {!hasSegments && (
                     <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs">
                         <Info className="h-3.5 w-3.5" />
-                        Tải audio lên và chờ transcript để bật chat.
+                        {t('meeting.chat.waitNotice')}
                     </p>
                 )}
                 <div className="flex gap-2">
@@ -891,8 +900,8 @@ function ChatPanel({
                         onKeyDown={handleKeyDown}
                         placeholder={
                             hasSegments
-                                ? 'Hỏi về cuộc họp này... (Ctrl+Enter để gửi)'
-                                : 'Tải audio lên và chờ transcript trước.'
+                                ? t('meeting.chat.inputPlaceholder')
+                                : t('meeting.chat.inputDisabled')
                         }
                         disabled={!hasSegments || isStreaming}
                         rows={2}
@@ -927,6 +936,7 @@ function ChatPanel({
 
 export function MeetingDetail() {
     const router = useRouter();
+    const { t } = useI18n();
     const { id } = useParams<{ id: string }>();
 
     // API Hooks
@@ -951,27 +961,26 @@ export function MeetingDetail() {
     const hasSegments = !!(transcript && transcript.length > 0);
     const transcriptSegmentIds = new Set((transcript ?? []).map((s) => s.id));
 
-    const handleReferenceClick = useCallback((segmentId: string) => {
-        setActiveReferences((prev) =>
-            prev.includes(segmentId) ? prev : [...prev, segmentId],
-        );
-        // Scroll to segment in transcript panel
-        setTimeout(() => {
-            const el = segmentRefs.current.get(segmentId);
-            if (el) {
-                el.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
-            } else {
-                toast.info(
-                    'Không tìm thấy đoạn này trong transcript hiện tại.',
-                );
-            }
-        }, 50);
-    }, []);
+    const handleReferenceClick = useCallback(
+        (segmentId: string) => {
+            setActiveReferences((prev) =>
+                prev.includes(segmentId) ? prev : [...prev, segmentId],
+            );
+            setTimeout(() => {
+                const el = segmentRefs.current.get(segmentId);
+                if (el) {
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                    });
+                } else {
+                    toast.info(t('meeting.chat.sourceNotFound'));
+                }
+            }, 50);
+        },
+        [t],
+    );
 
-    // Clear highlights after 5 seconds
     useEffect(() => {
         if (activeReferences.length === 0) return;
         const timer = setTimeout(() => setActiveReferences([]), 5000);
@@ -987,12 +996,12 @@ export function MeetingDetail() {
             <AppErrorState
                 title={
                     !project
-                        ? 'Không tìm thấy cuộc họp'
-                        : 'Không tải được cuộc họp'
+                        ? t('meeting.errorNotFound')
+                        : t('meeting.errorLoad')
                 }
                 error={error}
                 onBack={() => router.push('/meetings')}
-                backText="Quay lại danh sách cuộc họp"
+                backText={t('meeting.backToList')}
             />
         );
     }
@@ -1000,7 +1009,7 @@ export function MeetingDetail() {
     const handleCopyId = () => {
         navigator.clipboard.writeText(project.id);
         setCopiedId(true);
-        toast.success('Đã sao chép ID dự án.');
+        toast.success(t('meeting.copyIdSuccess'));
         setTimeout(() => setCopiedId(false), 2000);
     };
 
@@ -1019,7 +1028,7 @@ export function MeetingDetail() {
     const handleEditSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editTitle.trim()) {
-            toast.error('Vui lòng nhập tiêu đề cuộc họp.');
+            toast.error(t('meetings.errorTitleRequired'));
             return;
         }
 
@@ -1032,12 +1041,10 @@ export function MeetingDetail() {
             {
                 onSuccess: () => {
                     setIsEditing(false);
-                    toast.success('Đã cập nhật thông tin cuộc họp.');
+                    toast.success(t('meeting.editSuccess'));
                 },
                 onError: (err) => {
-                    setEditError(
-                        err.message || 'Không thể cập nhật thông tin cuộc họp.',
-                    );
+                    setEditError(err.message || t('meeting.editError'));
                 },
             },
         );
@@ -1054,7 +1061,7 @@ export function MeetingDetail() {
                         className="hover:bg-muted text-muted-foreground hover:text-foreground mb-4 self-start"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Quay lại danh sách cuộc họp
+                        {t('meeting.backToList')}
                     </Button>
 
                     {/* Header Card */}
@@ -1071,7 +1078,7 @@ export function MeetingDetail() {
                                     <button
                                         onClick={handleCopyId}
                                         className="bg-muted hover:bg-muted/80 inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono transition-colors"
-                                        title="Bấm để sao chép ID"
+                                        title={t('meeting.copyId')}
                                     >
                                         {copiedId ? (
                                             <Check className="h-3 w-3 text-emerald-500" />
@@ -1090,8 +1097,8 @@ export function MeetingDetail() {
                                     >
                                         <FileAudio className="h-3 w-3" />
                                         {project.audio_url
-                                            ? 'Đã có audio'
-                                            : 'Chờ audio'}
+                                            ? t('dashboard.hasAudio')
+                                            : t('dashboard.waitingAudio')}
                                     </span>
                                     {hasSegments && (
                                         <>
@@ -1099,7 +1106,12 @@ export function MeetingDetail() {
                                                 •
                                             </span>
                                             <span className="text-muted-foreground">
-                                                {transcript!.length} đoạn
+                                                {t(
+                                                    'meeting.transcript.segments',
+                                                ).replace(
+                                                    '{count}',
+                                                    String(transcript!.length),
+                                                )}
                                             </span>
                                         </>
                                     )}
@@ -1124,7 +1136,7 @@ export function MeetingDetail() {
                                         className="shrink-0"
                                     >
                                         <Download className="mr-2 h-3.5 w-3.5" />
-                                        Tải audio
+                                        {t('meeting.downloadAudio')}
                                     </Button>
                                 )}
                                 <Button
@@ -1135,11 +1147,14 @@ export function MeetingDetail() {
                                     className="shrink-0"
                                 >
                                     <Edit className="mr-2 h-3.5 w-3.5" />
-                                    Chỉnh sửa
+                                    {t('common.edit')}
                                 </Button>
                             </div>
                         </div>
                     </div>
+
+                    {/* Audio stream debug panel. Connects directly to direct WS endpoint without browser auth */}
+                    <ProjectAudioStreamDebugPanel projectId={project.id} />
 
                     {/* ── Desktop: Split Workspace ──────────────────────────── */}
                     <div className="hidden flex-1 gap-4 lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)]">
@@ -1173,10 +1188,10 @@ export function MeetingDetail() {
                                 <div className="border-border/60 shrink-0 border-b px-4 py-2">
                                     <TabsList className="grid w-full grid-cols-2">
                                         <TabsTrigger value="chat">
-                                            Trợ lý AI
+                                            {t('meeting.tabs.chat')}
                                         </TabsTrigger>
                                         <TabsTrigger value="tasks">
-                                            Công việc
+                                            {t('meeting.tabs.tasks')}
                                         </TabsTrigger>
                                     </TabsList>
                                 </div>
@@ -1222,14 +1237,14 @@ export function MeetingDetail() {
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <Info className="mr-1.5 h-3.5 w-3.5" />
-                                    Tổng quan
+                                    {t('meeting.tabs.overview')}
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="transcript"
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <FileText className="mr-1.5 h-3.5 w-3.5" />
-                                    Transcript
+                                    {t('meeting.tabs.transcript')}
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="chat"
@@ -1237,26 +1252,26 @@ export function MeetingDetail() {
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
-                                    Chat
+                                    {t('meeting.tabs.chat')}
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="tasks"
                                     className="data-[state=active]:bg-card data-[state=active]:text-foreground flex-1"
                                 >
                                     <ListTodo className="mr-1.5 h-3.5 w-3.5" />
-                                    Công việc
+                                    {t('meeting.tabs.tasks')}
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="overview" className="mt-0">
                                 <div className="border-border bg-card rounded-xl border p-5 shadow-sm">
                                     <h2 className="text-foreground mb-4 text-base font-semibold">
-                                        Tổng quan dự án
+                                        {t('meeting.overview.title')}
                                     </h2>
                                     <div className="space-y-3">
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                ID dự án
+                                                {t('meeting.overview.id')}
                                             </span>
                                             <div className="bg-muted/60 flex flex-1 items-center gap-2 rounded px-2 py-1 font-mono text-xs">
                                                 <span className="min-w-0 flex-1 truncate select-all">
@@ -1278,16 +1293,22 @@ export function MeetingDetail() {
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                Trạng thái audio
+                                                {t(
+                                                    'meeting.overview.audioStatus',
+                                                )}
                                             </span>
                                             <div className="flex flex-1 flex-wrap items-center gap-2">
                                                 {project.audio_url ? (
                                                     <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                                                        Đã tải lên
+                                                        {t(
+                                                            'meeting.overview.audioUploaded',
+                                                        )}
                                                     </span>
                                                 ) : (
                                                     <span className="font-medium text-amber-600 dark:text-amber-400">
-                                                        Chưa tải lên
+                                                        {t(
+                                                            'meeting.overview.audioPending',
+                                                        )}
                                                     </span>
                                                 )}
                                                 {project.audio_url && (
@@ -1300,14 +1321,18 @@ export function MeetingDetail() {
                                                         className="h-8"
                                                     >
                                                         <Download className="mr-2 h-3.5 w-3.5" />
-                                                        Tải audio
+                                                        {t(
+                                                            'meeting.downloadAudio',
+                                                        )}
                                                     </Button>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                Số đoạn
+                                                {t(
+                                                    'meeting.overview.segmentsCount',
+                                                )}
                                             </span>
                                             <span className="text-foreground text-sm font-medium">
                                                 {transcript?.length ?? 0}
@@ -1316,7 +1341,9 @@ export function MeetingDetail() {
                                         {project.description && (
                                             <div className="flex items-start gap-4">
                                                 <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                    Mô tả
+                                                    {t(
+                                                        'meetings.dialog.descLabel',
+                                                    )}
                                                 </span>
                                                 <span className="text-muted-foreground text-sm whitespace-pre-wrap">
                                                     {project.description}
@@ -1390,10 +1417,11 @@ export function MeetingDetail() {
             >
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Chỉnh sửa thông tin cuộc họp</DialogTitle>
+                        <DialogTitle>
+                            {t('meeting.editDialog.title')}
+                        </DialogTitle>
                         <DialogDescription>
-                            Cập nhật tiêu đề và mô tả cho cuộc họp này. Các
-                            thông tin khác được giữ nguyên.
+                            {t('meeting.editDialog.desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleEditSave}>
@@ -1403,7 +1431,7 @@ export function MeetingDetail() {
                                     htmlFor="edit-title"
                                     className="text-foreground"
                                 >
-                                    Tiêu đề{' '}
+                                    {t('meetings.dialog.titleLabel')}{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
@@ -1421,7 +1449,7 @@ export function MeetingDetail() {
                                     htmlFor="edit-description"
                                     className="text-foreground"
                                 >
-                                    Mô tả
+                                    {t('meetings.dialog.descLabel')}
                                 </Label>
                                 <Textarea
                                     id="edit-description"
@@ -1447,7 +1475,7 @@ export function MeetingDetail() {
                                 onClick={() => setIsEditing(false)}
                                 disabled={updateMutation.isPending}
                             >
-                                Hủy
+                                {t('common.cancel')}
                             </Button>
                             <Button
                                 type="submit"
@@ -1456,7 +1484,7 @@ export function MeetingDetail() {
                                 {updateMutation.isPending && (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
-                                Lưu thay đổi
+                                {t('meeting.editDialog.save')}
                             </Button>
                         </DialogFooter>
                     </form>

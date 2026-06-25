@@ -5,16 +5,19 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const navLinks = [
-    { href: '#workspace', label: 'Sản phẩm' },
-    { href: '#workflow', label: 'Quy trình' },
-    { href: '#references', label: 'Nguồn tham chiếu' },
-    { href: '/pricing', label: 'Gói dịch vụ' },
-];
+import { LanguageToggle } from '@/features/i18n/LanguageToggle';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 export function LandingNavbar() {
     const [open, setOpen] = useState(false);
+    const { t } = useI18n();
+
+    const navLinks = [
+        { href: '#workspace', label: t('landing.nav.product') },
+        { href: '#workflow', label: t('landing.nav.workflow') },
+        { href: '#references', label: t('landing.nav.references') },
+        { href: '/pricing', label: t('landing.nav.pricing') },
+    ];
 
     return (
         <header className="fixed top-0 right-0 left-0 z-50">
@@ -47,13 +50,18 @@ export function LandingNavbar() {
 
                     {/* Desktop actions */}
                     <div className="hidden items-center gap-2 md:flex">
+                        <LanguageToggle
+                            variant="ghost"
+                            size="sm"
+                            className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                        />
                         <Button
                             asChild
                             variant="ghost"
                             size="sm"
                             className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                         >
-                            <Link href="/login">Đăng nhập</Link>
+                            <Link href="/login">{t('landing.nav.login')}</Link>
                         </Button>
                         <Button
                             asChild
@@ -61,18 +69,26 @@ export function LandingNavbar() {
                             className="bg-violet-600 text-white hover:bg-violet-500"
                         >
                             <Link href="/dashboard">
-                                Mở ứng dụng
+                                {t('landing.nav.openApp')}
                                 <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                         </Button>
                     </div>
 
                     {/* Mobile hamburger */}
-                    <div className="flex items-center md:hidden">
+                    <div className="flex items-center gap-1 md:hidden">
+                        <LanguageToggle
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                            iconOnly
+                        />
                         <Button
                             variant="ghost"
                             size="icon"
-                            aria-label={open ? 'Đóng menu' : 'Mở menu'}
+                            aria-label={
+                                open ? t('nav.closeMenu') : t('nav.openMenu')
+                            }
                             onClick={() => setOpen((v) => !v)}
                             className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                         >
@@ -110,7 +126,7 @@ export function LandingNavbar() {
                                     href="/login"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Đăng nhập
+                                    {t('landing.nav.login')}
                                 </Link>
                             </Button>
                             <Button
@@ -121,7 +137,7 @@ export function LandingNavbar() {
                                     href="/dashboard"
                                     onClick={() => setOpen(false)}
                                 >
-                                    Mở ứng dụng
+                                    {t('landing.nav.openApp')}
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                             </Button>

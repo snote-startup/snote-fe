@@ -6,34 +6,37 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from './Reveal';
 import { track } from '@vercel/analytics';
-
-const footerLinks = [
-    {
-        section: 'Sản phẩm',
-        links: [
-            { label: 'Tính năng', href: '#workspace' },
-            { label: 'Quy trình', href: '#workflow' },
-            { label: 'Nguồn tham chiếu', href: '#references' },
-            { label: 'Gói dịch vụ', href: '/pricing' },
-        ],
-    },
-    {
-        section: 'Workspace',
-        links: [
-            { label: 'Tổng quan', href: '/dashboard' },
-            { label: 'Cuộc họp', href: '/meetings' },
-        ],
-    },
-    {
-        section: 'Tài khoản',
-        links: [
-            { label: 'Đăng nhập', href: '/login' },
-            { label: 'Đăng ký', href: '/register' },
-        ],
-    },
-];
+import { useI18n } from '@/features/i18n/use-i18n';
 
 export function LandingFooter() {
+    const { t } = useI18n();
+
+    const footerLinks = [
+        {
+            section: t('footer.section.product'),
+            links: [
+                { label: t('footer.link.features'), href: '#workspace' },
+                { label: t('footer.link.workflow'), href: '#workflow' },
+                { label: t('footer.link.references'), href: '#references' },
+                { label: t('footer.link.pricing'), href: '/pricing' },
+            ],
+        },
+        {
+            section: t('footer.section.workspace'),
+            links: [
+                { label: t('footer.link.dashboard'), href: '/dashboard' },
+                { label: t('footer.link.meetings'), href: '/meetings' },
+            ],
+        },
+        {
+            section: t('footer.section.account'),
+            links: [
+                { label: t('footer.link.login'), href: '/login' },
+                { label: t('footer.link.register'), href: '/register' },
+            ],
+        },
+    ];
+
     return (
         <footer className="relative z-10">
             {/* ── CTA Section ── */}
@@ -45,14 +48,13 @@ export function LandingFooter() {
                             <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(124_58_237_/_0.08),transparent_60%)]" />
 
                             <p className="mb-4 text-sm font-semibold text-violet-400">
-                                Bắt đầu
+                                {t('footer.cta.label')}
                             </p>
                             <h2 className="mb-5 text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl lg:text-5xl">
-                                Sẵn sàng xem lại cuộc họp tiếp theo?
+                                {t('footer.cta.title')}
                             </h2>
                             <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-zinc-400">
-                                Tạo dự án và tải audio đầu tiên lên. Không cần
-                                thẻ thanh toán.
+                                {t('footer.cta.subtitle')}
                             </p>
                             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                                 <Button
@@ -64,7 +66,7 @@ export function LandingFooter() {
                                     }
                                 >
                                     <Link href="/dashboard">
-                                        Mở ứng dụng
+                                        {t('footer.cta.openApp')}
                                         <ArrowRight className="h-4 w-4" />
                                     </Link>
                                 </Button>
@@ -74,7 +76,9 @@ export function LandingFooter() {
                                     variant="ghost"
                                     className="h-12 border border-white/[0.1] px-8 text-zinc-300 hover:bg-white/[0.06] hover:text-zinc-100"
                                 >
-                                    <Link href="/login">Đăng nhập</Link>
+                                    <Link href="/login">
+                                        {t('footer.cta.login')}
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
@@ -98,8 +102,7 @@ export function LandingFooter() {
                                 />
                             </Link>
                             <p className="mt-3 max-w-xs text-sm leading-6 text-zinc-500">
-                                Workspace cuộc họp với AI. Tải audio, xem
-                                transcript và nhận câu trả lời có nguồn.
+                                {t('footer.brand')}
                             </p>
                         </div>
 
@@ -131,11 +134,11 @@ export function LandingFooter() {
                             className="text-xs text-zinc-600"
                             suppressHydrationWarning
                         >
-                            © {new Date().getFullYear()} Snote. Workspace cuộc
-                            họp với AI.
+                            © {new Date().getFullYear()} Snote.{' '}
+                            {t('footer.copyright')}
                         </p>
                         <p className="text-xs text-zinc-600">
-                            Xây dựng cho transcript có thể kiểm chứng.
+                            {t('footer.tagline')}
                         </p>
                     </div>
                 </div>

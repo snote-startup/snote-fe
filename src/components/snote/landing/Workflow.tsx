@@ -1,59 +1,57 @@
 'use client';
 
-import {
-    UploadCloud,
-    FileText,
-    MessageSquareText,
-    ScanSearch,
-} from 'lucide-react';
+import { Mic, FileText, MessageSquareText, ListTodo } from 'lucide-react';
 import { Reveal } from './Reveal';
+import { useI18n } from '@/features/i18n/use-i18n';
+import type { TranslationKey } from '@/features/i18n/use-i18n';
 
-const steps = [
+const steps: Array<{
+    step: string;
+    icon: typeof Mic;
+    titleKey: TranslationKey;
+    descKey: TranslationKey;
+}> = [
     {
         step: '01',
-        icon: UploadCloud,
-        title: 'Tải audio lên',
-        description:
-            'Gắn bản ghi cuộc họp vào một dự án. Snote hỗ trợ các định dạng audio phổ biến.',
+        icon: Mic,
+        titleKey: 'workflow.step1.title',
+        descKey: 'workflow.step1.desc',
     },
     {
         step: '02',
         icon: FileText,
-        title: 'Tạo transcript',
-        description:
-            'Nhận transcript có mốc thời gian và phân đoạn theo người nói.',
+        titleKey: 'workflow.step2.title',
+        descKey: 'workflow.step2.desc',
     },
     {
         step: '03',
         icon: MessageSquareText,
-        title: 'Hỏi trợ lý AI',
-        description:
-            'Hỏi tự nhiên trên transcript về quyết định, điểm nghẽn hoặc việc cần làm.',
+        titleKey: 'workflow.step3.title',
+        descKey: 'workflow.step3.desc',
     },
     {
         step: '04',
-        icon: ScanSearch,
-        title: 'Kiểm chứng bằng nguồn',
-        description:
-            'Mỗi câu trả lời AI có thể trỏ về đoạn transcript gốc để kiểm tra.',
+        icon: ListTodo,
+        titleKey: 'workflow.step4.title',
+        descKey: 'workflow.step4.desc',
     },
 ];
 
 export function Workflow() {
+    const { t } = useI18n();
+
     return (
         <section id="workflow" className="relative z-10 py-20 sm:py-28">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <Reveal className="mb-14 max-w-2xl">
                     <p className="mb-3 text-sm font-semibold text-violet-400">
-                        Quy trình
+                        {t('workflow.label')}
                     </p>
                     <h2 className="text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl">
-                        Từ bản ghi tới nội dung có thể kiểm chứng trong bốn
-                        bước.
+                        {t('workflow.title')}
                     </h2>
                     <p className="mt-4 text-base leading-relaxed text-zinc-500">
-                        Quy trình tập trung, rõ nơi tải audio, xem transcript và
-                        kiểm tra nguồn.
+                        {t('workflow.subtitle')}
                     </p>
                 </Reveal>
 
@@ -76,10 +74,10 @@ export function Workflow() {
                                         {s.step}
                                     </span>
                                     <h3 className="mb-2 text-base font-semibold text-zinc-200">
-                                        {s.title}
+                                        {t(s.titleKey)}
                                     </h3>
                                     <p className="text-sm leading-6 text-zinc-500">
-                                        {s.description}
+                                        {t(s.descKey)}
                                     </p>
                                 </article>
                             </Reveal>

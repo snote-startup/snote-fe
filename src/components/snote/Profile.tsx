@@ -8,21 +8,21 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApp } from '@/providers/snote-app-provider';
-
-const unavailableMessage =
-    'Tính năng này sẽ được mở sau khi backend hoàn thiện.';
+import { useI18n } from '@/features/i18n/use-i18n';
 
 function DisabledNotice() {
+    const { t } = useI18n();
     return (
         <div className="border-border bg-muted/40 text-muted-foreground flex items-start gap-2 rounded-lg border p-3 text-sm">
             <Info className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>{unavailableMessage}</span>
+            <span>{t('common.comingSoon')}</span>
         </div>
     );
 }
 
 export function Profile() {
     const { user } = useApp();
+    const { t } = useI18n();
 
     if (!user) return null;
 
@@ -37,11 +37,9 @@ export function Profile() {
         <div className="mx-auto max-w-4xl p-8">
             <div className="mb-8">
                 <h1 className="text-foreground mb-2 text-3xl font-semibold">
-                    Hồ sơ
+                    {t('profile.title')}
                 </h1>
-                <p className="text-muted-foreground">
-                    Xem thông tin tài khoản và các thiết lập cá nhân.
-                </p>
+                <p className="text-muted-foreground">{t('profile.subtitle')}</p>
             </div>
 
             <div className="border-border bg-card mb-6 rounded-xl border p-6">
@@ -58,7 +56,7 @@ export function Profile() {
                         <p className="text-muted-foreground">{user.email}</p>
                         <div className="mt-2">
                             <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-3 py-1 text-sm font-medium">
-                                Tài khoản đang hoạt động
+                                {t('profile.accountActive')}
                             </span>
                         </div>
                     </div>
@@ -69,27 +67,29 @@ export function Profile() {
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="account">
                         <User className="mr-2 h-4 w-4" />
-                        Tài khoản
+                        {t('profile.tab.account')}
                     </TabsTrigger>
                     <TabsTrigger value="security">
                         <Lock className="mr-2 h-4 w-4" />
-                        Bảo mật
+                        {t('profile.tab.security')}
                     </TabsTrigger>
                     <TabsTrigger value="notifications">
                         <Bell className="mr-2 h-4 w-4" />
-                        Thông báo
+                        {t('profile.tab.notifications')}
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="account">
                     <div className="border-border bg-card rounded-xl border p-6">
                         <h2 className="text-foreground mb-6 text-lg font-semibold">
-                            Thông tin tài khoản
+                            {t('profile.accountInfo')}
                         </h2>
 
                         <div className="space-y-5">
                             <div>
-                                <Label htmlFor="name">Họ và tên</Label>
+                                <Label htmlFor="name">
+                                    {t('profile.name')}
+                                </Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -101,7 +101,9 @@ export function Profile() {
                             </div>
 
                             <div>
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">
+                                    {t('login.email')}
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -117,23 +119,22 @@ export function Profile() {
                             <div className="pt-2">
                                 <Button type="button" disabled>
                                     <Save className="mr-2 h-4 w-4" />
-                                    Lưu thay đổi
+                                    {t('profile.saveChanges')}
                                 </Button>
                             </div>
                         </div>
 
                         <div className="border-border mt-8 border-t pt-8">
                             <h3 className="text-foreground mb-4 text-lg font-semibold">
-                                Khu vực nguy hiểm
+                                {t('profile.dangerZone')}
                             </h3>
                             <div className="border-destructive/20 bg-destructive/5 rounded-lg border p-4">
                                 <p className="text-destructive mb-3 text-sm">
-                                    Xóa tài khoản cần backend cung cấp API để
-                                    đảm bảo dữ liệu được xử lý đúng.
+                                    {t('profile.deleteAccountDesc')}
                                 </p>
                                 <Button variant="destructive" disabled>
                                     <ShieldAlert className="mr-2 h-4 w-4" />
-                                    Xóa tài khoản
+                                    {t('profile.deleteAccount')}
                                 </Button>
                             </div>
                         </div>
@@ -143,13 +144,13 @@ export function Profile() {
                 <TabsContent value="security">
                     <div className="border-border bg-card rounded-xl border p-6">
                         <h2 className="text-foreground mb-6 text-lg font-semibold">
-                            Đổi mật khẩu
+                            {t('profile.changePassword')}
                         </h2>
 
                         <div className="space-y-5">
                             <div>
                                 <Label htmlFor="current-password">
-                                    Mật khẩu hiện tại
+                                    {t('profile.currentPassword')}
                                 </Label>
                                 <Input
                                     id="current-password"
@@ -161,7 +162,7 @@ export function Profile() {
 
                             <div>
                                 <Label htmlFor="new-password">
-                                    Mật khẩu mới
+                                    {t('profile.newPassword')}
                                 </Label>
                                 <Input
                                     id="new-password"
@@ -170,13 +171,13 @@ export function Profile() {
                                     disabled
                                 />
                                 <p className="text-muted-foreground mt-1.5 text-sm">
-                                    Tối thiểu 8 ký tự.
+                                    {t('profile.minChars')}
                                 </p>
                             </div>
 
                             <div>
                                 <Label htmlFor="confirm-password">
-                                    Xác nhận mật khẩu mới
+                                    {t('profile.confirmPassword')}
                                 </Label>
                                 <Input
                                     id="confirm-password"
@@ -191,20 +192,20 @@ export function Profile() {
                             <div className="pt-2">
                                 <Button type="button" disabled>
                                     <Lock className="mr-2 h-4 w-4" />
-                                    Cập nhật mật khẩu
+                                    {t('profile.updatePassword')}
                                 </Button>
                             </div>
                         </div>
 
                         <div className="border-border mt-8 border-t pt-8">
                             <h3 className="text-foreground mb-4 text-lg font-semibold">
-                                Xác thực hai lớp
+                                {t('profile.twoFactor')}
                             </h3>
                             <p className="text-muted-foreground mb-4">
-                                Tăng cường bảo mật cho tài khoản của bạn.
+                                {t('profile.twoFactorDesc')}
                             </p>
                             <Button variant="outline" disabled>
-                                Bật 2FA
+                                {t('profile.enable2FA')}
                             </Button>
                         </div>
                     </div>
@@ -213,33 +214,31 @@ export function Profile() {
                 <TabsContent value="notifications">
                     <div className="border-border bg-card rounded-xl border p-6">
                         <h2 className="text-foreground mb-6 text-lg font-semibold">
-                            Tùy chọn thông báo
+                            {t('profile.notifTitle')}
                         </h2>
 
                         <div className="space-y-6">
                             {[
                                 {
-                                    title: 'Thông báo email',
-                                    description:
-                                        'Nhận cập nhật liên quan đến tài khoản.',
+                                    title: t('profile.notif.email'),
+                                    description: t('profile.notif.emailDesc'),
                                     checked: true,
                                 },
                                 {
-                                    title: 'Nhắc lịch cuộc họp',
-                                    description:
-                                        'Nhận nhắc nhở cho sự kiện sắp tới.',
+                                    title: t('profile.notif.calendar'),
+                                    description: t(
+                                        'profile.notif.calendarDesc',
+                                    ),
                                     checked: true,
                                 },
                                 {
-                                    title: 'Thông báo công việc',
-                                    description:
-                                        'Nhận cập nhật khi công việc thay đổi.',
+                                    title: t('profile.notif.tasks'),
+                                    description: t('profile.notif.tasksDesc'),
                                     checked: true,
                                 },
                                 {
-                                    title: 'Tổng hợp hằng tuần',
-                                    description:
-                                        'Nhận tóm tắt các cuộc họp và công việc.',
+                                    title: t('profile.notif.weekly'),
+                                    description: t('profile.notif.weeklyDesc'),
                                     checked: false,
                                 },
                             ].map((item) => (
@@ -264,7 +263,7 @@ export function Profile() {
                             <div className="pt-2">
                                 <Button disabled>
                                     <Save className="mr-2 h-4 w-4" />
-                                    Lưu tùy chọn
+                                    {t('profile.saveNotif')}
                                 </Button>
                             </div>
                         </div>
