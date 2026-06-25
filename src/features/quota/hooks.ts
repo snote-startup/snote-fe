@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getQuota, buyQuota } from './api';
-import { toast } from 'sonner';
 
 export const quotaKeys = {
     all: ['quota'] as const,
@@ -19,9 +18,6 @@ export function useBuyQuota() {
         mutationFn: buyQuota,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: quotaKeys.all });
-        },
-        onError: (err: Error) => {
-            toast.error(err.message || 'Không thể tạo liên kết thanh toán.');
         },
     });
 }

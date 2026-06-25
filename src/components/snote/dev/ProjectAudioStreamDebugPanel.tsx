@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
     AlertTriangle,
     ChevronDown,
@@ -8,7 +8,6 @@ import {
     FileAudio,
     Loader2,
     Mic,
-    PlugZap,
     Square,
     UploadCloud,
 } from 'lucide-react';
@@ -25,22 +24,12 @@ import { Input } from '@/components/ui/input';
 
 import { projectKeys } from '@/features/projects/hooks';
 import { useProjectAudioWebSocketStream } from '@/features/audio-stream/hooks';
-import { createProjectAudioStreamClient } from '@/features/audio-stream/project-stream-client';
 import { streamAudioFileToProject } from '@/features/audio-stream/test-utils';
-import type {
-    BrowserStreamAuthMode,
-    ProjectAudioStreamStatus,
-} from '@/features/audio-stream/types';
+import type { ProjectAudioStreamStatus } from '@/features/audio-stream/types';
 import { useI18n } from '@/features/i18n/use-i18n';
 
 interface ProjectAudioStreamDebugPanelProps {
     projectId: string;
-}
-
-function formatBytes(bytes: number) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function useStatusLabel() {
@@ -51,6 +40,21 @@ function useStatusLabel() {
     };
 }
 
+function getFriendlyStreamError(
+    error: string | null,
+    t: ReturnType<typeof useI18n>['t'],
+) {
+    switch (error) {
+        case 'stream.errorScreenCancelled':
+        case 'stream.errorNoTabAudio':
+        case 'stream.errorMicDenied':
+        case 'stream.errorGeneric':
+            return t(error);
+        default:
+            return t('stream.errorGeneric');
+    }
+}
+
 export function ProjectAudioStreamDebugPanel({
     projectId,
 }: ProjectAudioStreamDebugPanelProps) {
@@ -58,14 +62,11 @@ export function ProjectAudioStreamDebugPanel({
     const { t } = useI18n();
     const statusLabel = useStatusLabel();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [open, setOpen] = useState(false);
-    const authMode: BrowserStreamAuthMode = 'cookie';
+    const [open, setOpen] = useState(true);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [fileStatus, setFileStatus] =
         useState<ProjectAudioStreamStatus>('idle');
-    const [fileBytesSent, setFileBytesSent] = useState(0);
-    const [fileChunksSent, setFileChunksSent] = useState(0);
-    const [testMessage, setTestMessage] = useState<string | null>(null);
+    const [fileError, setFileError] = useState<string | null>(null);
     const [fileAudioUrl, setFileAudioUrl] = useState<string | null>(null);
 
     const stream = useProjectAudioWebSocketStream(projectId);
@@ -77,49 +78,6 @@ export function ProjectAudioStreamDebugPanel({
         await queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
     };
 
-    useEffect(() => {
-        if (testMessage) {
-            console.log('[WS Test Message]:', testMessage);
-        }
-    }, [testMessage]);
-
-    const handleTestConnect = async () => {
-        setTestMessage(null);
-        setFileStatus('connecting');
-
-        const client = createProjectAudioStreamClient({
-            projectId,
-            authMode,
-            onEvent: (event) => {
-                if (event.type === 'message') {
-                    setTestMessage(`Server: ${event.data}`);
-                }
-                if (event.type === 'close') {
-                    setTestMessage(
-                        `WebSocket closed (${event.code}${
-                            event.reason ? `: ${event.reason}` : ''
-                        }).`,
-                    );
-                }
-            },
-        });
-
-        try {
-            await client.connect();
-            setFileStatus('connected');
-            setTestMessage('WebSocket opened. Closing cleanly.');
-            client.close();
-            setFileStatus('closed');
-        } catch (error) {
-            console.error('WebSocket connection failed:', error);
-            setFileStatus('error');
-            setTestMessage(
-                error instanceof Error ? error.message : 'Connection failed',
-            );
-            toast.error(t('stream.wsError'));
-        }
-    };
-
     const handleStreamFile = async () => {
         if (!selectedFile) {
             fileInputRef.current?.click();
@@ -127,33 +85,24 @@ export function ProjectAudioStreamDebugPanel({
         }
 
         setFileStatus('connecting');
-        setFileBytesSent(0);
-        setFileChunksSent(0);
         setFileAudioUrl(null);
-        setTestMessage(null);
+        setFileError(null);
 
         try {
             const result = await streamAudioFileToProject({
                 projectId,
                 file: selectedFile,
-                authMode,
                 onEvent: (event) => {
                     if (event.type === 'open') setFileStatus('streaming');
-                    if (event.type === 'message') {
-                        setTestMessage(`Server: ${event.data}`);
-                    }
                     if (event.type === 'error') {
-                        setTestMessage(event.message);
+                        setFileError(event.message);
                     }
-                },
-                onProgress: ({ bytesSent, chunksSent }) => {
-                    setFileBytesSent(bytesSent);
-                    setFileChunksSent(chunksSent);
                 },
             });
 
             setFileStatus('closed');
             setFileAudioUrl(result.audioUrl);
+            setSelectedFile(null);
             await invalidateProject();
 
             if (result.audioUrl) {
@@ -162,12 +111,11 @@ export function ProjectAudioStreamDebugPanel({
                 toast.warning(t('stream.processing'));
             }
         } catch (error) {
-            console.error('Audio stream file failed:', error);
             setFileStatus('error');
-            setTestMessage(
-                error instanceof Error ? error.message : 'Streaming failed',
+            setFileError(
+                error instanceof Error ? error.message : 'stream.errorGeneric',
             );
-            toast.error(t('stream.wsError'));
+            toast.error(t('stream.errorGeneric'));
         }
     };
 
@@ -176,16 +124,12 @@ export function ProjectAudioStreamDebugPanel({
             includeTabAudio: true,
             includeMicrophone: true,
             chunkMs: 1000,
-            authMode,
         });
     };
 
     const handleStopCapture = async () => {
         await stream.stopCapture();
         await invalidateProject();
-        if (stream.audioUrlAfterClose) {
-            toast.success(t('stream.audioSaved'));
-        }
     };
 
     const activeAudioUrl = stream.audioUrlAfterClose ?? fileAudioUrl;
@@ -198,6 +142,7 @@ export function ProjectAudioStreamDebugPanel({
         fileStatus === 'connected' ||
         fileStatus === 'streaming';
     const hasError = stream.status === 'error' || fileStatus === 'error';
+    const errorMessage = getFriendlyStreamError(stream.error ?? fileError, t);
 
     return (
         <Collapsible
@@ -208,15 +153,12 @@ export function ProjectAudioStreamDebugPanel({
             <CollapsibleTrigger asChild>
                 <button className="hover:bg-muted/40 flex w-full items-center justify-between gap-3 rounded-xl px-5 py-3 text-left transition-colors">
                     <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20">
+                        <div className="bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
                             <FileAudio className="text-primary h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-foreground flex items-center gap-2 text-sm font-semibold">
+                            <p className="text-foreground text-sm font-semibold">
                                 {t('stream.title')}
-                                <span className="shrink-0 rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-violet-400 uppercase">
-                                    {t('stream.beta')}
-                                </span>
                             </p>
                             <p className="text-muted-foreground text-xs">
                                 {t('stream.subtitle')}
@@ -231,60 +173,33 @@ export function ProjectAudioStreamDebugPanel({
                 </button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-                <div className="border-border/60 grid gap-4 border-t px-5 py-4 md:grid-cols-[minmax(0,1fr)_220px]">
-                    <div className="space-y-3">
-                        {/* Warning banner */}
-                        <div className="flex items-start gap-2 rounded-lg border border-amber-300/30 bg-amber-50/50 px-3 py-2 text-xs text-amber-800 dark:border-amber-700/30 dark:bg-amber-950/20 dark:text-amber-300">
-                            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                            <span>{t('stream.warning')}</span>
+                <div className="border-border/60 space-y-4 border-t px-5 py-4">
+                    <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                        <div>
+                            <p className="text-foreground text-sm font-medium">
+                                {isCaptureActive
+                                    ? statusLabel(stream.status)
+                                    : t('stream.ready')}
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                                {t('stream.readyDesc')}
+                            </p>
                         </div>
 
-                        {/* Auth mode + test connect */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleTestConnect}
-                                disabled={isFileBusy || isCaptureActive}
-                            >
-                                {fileStatus === 'connecting' ? (
-                                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                    <PlugZap className="mr-2 h-3.5 w-3.5" />
-                                )}
-                                {t('stream.testConnect')}
-                            </Button>
-                        </div>
-
-                        {/* File stream */}
-                        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+                        <div className="flex flex-wrap gap-2">
                             <Input
                                 ref={fileInputRef}
                                 type="file"
                                 accept="audio/webm,.webm"
+                                className="hidden"
                                 onChange={(event) => {
                                     setSelectedFile(
                                         event.target.files?.[0] ?? null,
                                     );
                                     setFileAudioUrl(null);
+                                    setFileError(null);
                                 }}
                             />
-                            <Button
-                                variant="outline"
-                                onClick={handleStreamFile}
-                                disabled={isFileBusy || isCaptureActive}
-                            >
-                                {isFileBusy ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    <UploadCloud className="mr-2 h-4 w-4" />
-                                )}
-                                {t('stream.streamFile')}
-                            </Button>
-                        </div>
-
-                        {/* Capture buttons */}
-                        <div className="flex flex-wrap gap-2">
                             <Button
                                 onClick={handleStartCapture}
                                 disabled={isCaptureActive || isFileBusy}
@@ -299,94 +214,82 @@ export function ProjectAudioStreamDebugPanel({
                             <Button
                                 variant="outline"
                                 onClick={handleStopCapture}
-                                disabled={!isCaptureActive}
+                                disabled={
+                                    stream.status !== 'streaming' &&
+                                    stream.status !== 'capturing'
+                                }
                                 className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400"
                             >
                                 <Square className="mr-2 h-3.5 w-3.5" />
                                 {t('stream.stopCapture')}
                             </Button>
+                            <Button
+                                variant="outline"
+                                onClick={handleStreamFile}
+                                disabled={isFileBusy || isCaptureActive}
+                            >
+                                {isFileBusy ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <UploadCloud className="mr-2 h-4 w-4" />
+                                )}
+                                {t('stream.streamFile')}
+                            </Button>
                         </div>
+                    </div>
 
-                        {/* Error Warning Banner */}
-                        {hasError && (
-                            <div className="flex items-start gap-2 rounded-lg border border-red-300/30 bg-red-50/50 px-3 py-2 text-xs text-red-700 dark:border-red-800/40 dark:bg-red-950/20 dark:text-red-300">
-                                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                                <span>{t('stream.wsError')}</span>
-                            </div>
-                        )}
-
-                        {(stream.status === 'stopping' ||
-                            fileStatus === 'streaming') && (
-                            <p className="text-muted-foreground text-xs">
-                                {t('stream.processing')}
+                    {selectedFile && !isFileBusy && (
+                        <div className="bg-muted/40 flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2">
+                            <p className="text-foreground min-w-0 truncate text-sm font-medium">
+                                {selectedFile.name}
                             </p>
-                        )}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleStreamFile}
+                            >
+                                <UploadCloud className="mr-2 h-3.5 w-3.5" />
+                                {t('stream.streamFile')}
+                            </Button>
+                        </div>
+                    )}
 
-                        {activeAudioUrl && (
-                            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-emerald-300">
-                                <span className="font-medium">
-                                    {t('stream.audioSaved')}
-                                </span>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-7 bg-transparent"
-                                    onClick={() =>
-                                        window.open(
-                                            activeAudioUrl,
-                                            '_blank',
-                                            'noopener,noreferrer',
-                                        )
-                                    }
-                                >
-                                    <ExternalLink className="mr-1 h-3 w-3" />
-                                    {t('stream.openAudio')}
-                                </Button>
-                            </div>
-                        )}
-                    </div>
+                    {hasError && (
+                        <div className="flex items-start gap-2 rounded-lg border border-red-300/30 bg-red-50/50 px-3 py-2 text-sm text-red-700 dark:border-red-800/40 dark:bg-red-950/20 dark:text-red-300">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                            <span>{errorMessage}</span>
+                        </div>
+                    )}
 
-                    {/* Status sidebar */}
-                    <div className="bg-muted/40 grid content-start gap-2 rounded-lg p-3 text-xs">
-                        <div className="flex justify-between gap-2">
-                            <span className="text-muted-foreground">
-                                Capture
+                    {(stream.status === 'stopping' || isFileBusy) && (
+                        <p className="text-muted-foreground flex items-center gap-2 text-sm">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            {t('stream.processing')}
+                        </p>
+                    )}
+
+                    {activeAudioUrl && (
+                        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-emerald-300">
+                            <span className="font-medium">
+                                {t('stream.audioSaved')}
                             </span>
-                            <span className="text-foreground font-medium">
-                                {statusLabel(stream.status)}
-                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 bg-transparent"
+                                onClick={() =>
+                                    window.open(
+                                        activeAudioUrl,
+                                        '_blank',
+                                        'noopener,noreferrer',
+                                    )
+                                }
+                            >
+                                <ExternalLink className="mr-1 h-3 w-3" />
+                                {t('stream.openAudio')}
+                            </Button>
                         </div>
-                        <div className="flex justify-between gap-2">
-                            <span className="text-muted-foreground">File</span>
-                            <span className="text-foreground font-medium">
-                                {statusLabel(fileStatus)}
-                            </span>
-                        </div>
-                        <div className="flex justify-between gap-2">
-                            <span className="text-muted-foreground">
-                                Chunks
-                            </span>
-                            <span className="font-mono">
-                                {stream.chunksSent || fileChunksSent}
-                            </span>
-                        </div>
-                        <div className="flex justify-between gap-2">
-                            <span className="text-muted-foreground">Bytes</span>
-                            <span className="font-mono">
-                                {formatBytes(stream.bytesSent || fileBytesSent)}
-                            </span>
-                        </div>
-                        {stream.serverMessages.length > 0 && (
-                            <div className="border-border mt-1 border-t pt-2">
-                                <p className="text-muted-foreground mb-1">
-                                    Server messages
-                                </p>
-                                <p className="line-clamp-3 font-mono break-all">
-                                    {stream.serverMessages.at(-1)}
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
             </CollapsibleContent>
         </Collapsible>

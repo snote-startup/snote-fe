@@ -64,7 +64,6 @@ export async function streamAudioFileToProject(
     const {
         projectId,
         file,
-        authMode = 'cookie',
         chunkSize = DEFAULT_CHUNK_SIZE,
         pollIntervalMs = DEFAULT_POLL_INTERVAL_MS,
         pollTimeoutMs = DEFAULT_POLL_TIMEOUT_MS,
@@ -73,20 +72,19 @@ export async function streamAudioFileToProject(
     } = options;
 
     if (!projectId) {
-        throw new Error('Thiếu projectId để stream file audio.');
+        throw new Error('stream.errorGeneric');
     }
 
     if (!file) {
-        throw new Error('Thiếu file .webm để stream.');
+        throw new Error('stream.errorGeneric');
     }
 
     if (!file.type.includes('webm') && file.type !== '') {
-        throw new Error('Dev helper này chỉ dùng để stream file .webm.');
+        throw new Error('stream.errorGeneric');
     }
 
     const client = createProjectAudioStreamClient({
         projectId,
-        authMode,
         onEvent,
     });
 

@@ -1,13 +1,3 @@
-export type StreamAuthMode =
-    | 'cookie'
-    | 'query-token'
-    | 'node-only-authorization';
-
-export type BrowserStreamAuthMode = Extract<
-    StreamAuthMode,
-    'cookie' | 'query-token'
->;
-
 export type ProjectAudioStreamStatus =
     | 'idle'
     | 'connecting'
@@ -28,8 +18,6 @@ export type ProjectAudioStreamEvent =
 export interface CreateProjectAudioStreamClientOptions {
     projectId: string;
     apiBaseUrl?: string;
-    authMode?: BrowserStreamAuthMode;
-    accessToken?: string | null;
     onEvent?: (event: ProjectAudioStreamEvent) => void;
 }
 
@@ -57,13 +45,11 @@ export type StartCaptureOptions = {
     includeTabAudio: boolean;
     includeMicrophone: boolean;
     chunkMs?: number;
-    authMode?: BrowserStreamAuthMode;
 };
 
 export interface StreamAudioFileOptions {
     projectId: string;
     file: File | Blob;
-    authMode?: BrowserStreamAuthMode;
     chunkSize?: number;
     pollIntervalMs?: number;
     pollTimeoutMs?: number;

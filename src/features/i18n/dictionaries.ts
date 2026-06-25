@@ -76,8 +76,8 @@ export const dictionaries = {
         en: 'and ask AI in one workspace.',
     },
     'hero.subtitle': {
-        vi: 'Snote có thể nhận audio WebM qua WebSocket, lưu lại audio cuộc họp, sau đó tạo transcript, chat theo ngữ cảnh và sinh task từ nội dung đã ghi.',
-        en: 'Snote can receive WebM audio through WebSocket, store the meeting audio, then generate transcripts, contextual AI answers, and action items.',
+        vi: 'Snote ghi lại audio cuộc họp, sau đó tạo transcript, chat theo ngữ cảnh và sinh task từ nội dung đã ghi.',
+        en: 'Snote records meeting audio, then generates transcripts, contextual AI answers, and action items.',
     },
     'hero.cta.primary': {
         vi: 'Bắt đầu ghi âm cuộc họp',
@@ -100,8 +100,8 @@ export const dictionaries = {
     },
     'workflow.step1.title': { vi: 'Ghi âm audio', en: 'Record audio' },
     'workflow.step1.desc': {
-        vi: 'Ghi âm cuộc họp trực tiếp qua WebSocket hoặc tải file audio lên dự án.',
-        en: 'Record meetings live via WebSocket or upload audio files to a project.',
+        vi: 'Ghi âm cuộc họp hoặc tải file audio lên dự án.',
+        en: 'Record meetings or upload audio files to a project.',
     },
     'workflow.step2.title': { vi: 'Tạo transcript', en: 'Generate transcript' },
     'workflow.step2.desc': {
@@ -357,12 +357,12 @@ export const dictionaries = {
 
     // Dashboard — stream card
     'dashboard.stream.title': {
-        vi: 'Ghi âm cuộc họp qua WebSocket',
-        en: 'Record a meeting through WebSocket',
+        vi: 'Ghi âm cuộc họp',
+        en: 'Meeting recording',
     },
     'dashboard.stream.desc': {
-        vi: 'Gửi audio WebM lên backend, sau đó tạo transcript và task từ nội dung cuộc họp.',
-        en: 'Send WebM audio to the backend, then generate transcripts and action items from the meeting content.',
+        vi: 'Ghi lại audio cuộc họp, sau đó tạo transcript và task từ nội dung đã lưu.',
+        en: 'Record meeting audio, then generate transcripts and action items from the saved content.',
     },
     'dashboard.stream.button': {
         vi: 'Mở dự án để ghi âm',
@@ -716,42 +716,65 @@ export const dictionaries = {
 
     // ─── Audio Stream Panel ──────────────────────────────────────────────
     'stream.title': { vi: 'Ghi âm cuộc họp', en: 'Meeting recording' },
-    'stream.beta': { vi: 'Beta', en: 'Beta' },
     'stream.subtitle': {
-        vi: 'Gửi audio WebM lên Snote để lưu lại sau khi dừng ghi.',
-        en: 'Send WebM audio to Snote and store it after recording stops.',
+        vi: 'Ghi lại âm thanh cuộc họp để tạo transcript, hỏi AI và sinh task sau buổi họp.',
+        en: 'Record meeting audio to generate transcripts, ask AI, and create action items after the meeting.',
     },
-    'stream.warning': {
-        vi: 'Audio sẽ được lưu sau khi bạn dừng ghi. Đây chưa phải dịch realtime.',
-        en: 'Audio is saved after recording stops. This is not realtime translation yet.',
+    'stream.ready': {
+        vi: 'Sẵn sàng ghi âm',
+        en: 'Ready to record',
     },
-    'stream.wsError': {
-        vi: 'Không thể kết nối luồng ghi âm. Vui lòng thử lại sau.',
-        en: 'Could not connect to the recording stream. Please try again later.',
+    'stream.readyDesc': {
+        vi: 'Chọn bắt đầu ghi âm hoặc tải file audio có sẵn lên cuộc họp này.',
+        en: 'Start a new recording or upload an existing audio file to this meeting.',
+    },
+    'stream.errorGeneric': {
+        vi: 'Không thể bắt đầu ghi âm. Vui lòng kiểm tra quyền microphone/chia sẻ màn hình rồi thử lại.',
+        en: 'Could not start recording. Please check microphone/screen sharing permissions and try again.',
+    },
+    'stream.errorScreenCancelled': {
+        vi: 'Bạn đã huỷ chia sẻ màn hình. Hãy chọn tab/cuộc họp có âm thanh để ghi lại.',
+        en: 'Screen sharing was cancelled. Select a tab or meeting with audio to record.',
+    },
+    'stream.errorNoTabAudio': {
+        vi: 'Không tìm thấy âm thanh từ tab đã chọn. Hãy bật tuỳ chọn chia sẻ âm thanh khi chọn tab.',
+        en: 'No tab audio was detected. Enable audio sharing when selecting the tab.',
+    },
+    'stream.errorMicDenied': {
+        vi: 'Không thể truy cập microphone. Bạn có thể cấp quyền microphone rồi thử lại.',
+        en: 'Could not access the microphone. Grant microphone permission and try again.',
     },
     'stream.processing': {
-        vi: 'Backend đang xử lý audio, quá trình này có thể mất khoảng 1 phút...',
-        en: 'The backend is processing the audio. This may take about a minute...',
+        vi: 'Đang lưu audio...',
+        en: 'Saving audio...',
     },
-    'stream.testConnect': { vi: 'Test kết nối WS', en: 'Test WS connect' },
-    'stream.streamFile': { vi: 'Stream file .webm', en: 'Stream .webm file' },
+    'stream.streamFile': { vi: 'Tải audio lên', en: 'Upload audio' },
     'stream.startCapture': {
-        vi: 'Bắt đầu ghi tab + mic',
-        en: 'Start recording tab + mic',
+        vi: 'Bắt đầu ghi âm',
+        en: 'Start recording',
     },
-    'stream.stopCapture': { vi: 'Dừng ghi', en: 'Stop recording' },
-    'stream.audioSaved': { vi: 'Audio đã được lưu', en: 'Audio saved' },
+    'stream.stopCapture': {
+        vi: 'Dừng và lưu audio',
+        en: 'Stop and save audio',
+    },
+    'stream.audioSaved': {
+        vi: 'Audio đã được lưu. Bạn có thể tạo transcript ngay bây giờ.',
+        en: 'Audio saved. You can generate a transcript now.',
+    },
     'stream.openAudio': { vi: 'Mở audio', en: 'Open audio' },
     'stream.status.idle': { vi: 'Chưa chạy', en: 'Idle' },
-    'stream.status.connecting': { vi: 'Đang kết nối', en: 'Connecting' },
-    'stream.status.connected': { vi: 'Đã kết nối', en: 'Connected' },
-    'stream.status.capturing': {
-        vi: 'Đang xin quyền ghi',
-        en: 'Requesting capture',
+    'stream.status.connecting': {
+        vi: 'Đang chuẩn bị ghi âm',
+        en: 'Preparing recording',
     },
-    'stream.status.streaming': { vi: 'Đang gửi audio', en: 'Streaming' },
-    'stream.status.stopping': { vi: 'Đang dừng', en: 'Stopping' },
-    'stream.status.closed': { vi: 'Đã đóng', en: 'Closed' },
+    'stream.status.connected': { vi: 'Đang chuẩn bị', en: 'Preparing' },
+    'stream.status.capturing': {
+        vi: 'Đang chờ cấp quyền',
+        en: 'Waiting for permission',
+    },
+    'stream.status.streaming': { vi: 'Đang ghi âm', en: 'Recording' },
+    'stream.status.stopping': { vi: 'Đang lưu audio', en: 'Saving audio' },
+    'stream.status.closed': { vi: 'Đã lưu', en: 'Saved' },
     'stream.status.error': { vi: 'Lỗi', en: 'Error' },
 
     // ─── Errors ──────────────────────────────────────────────────────────
@@ -1000,71 +1023,103 @@ export const dictionaries = {
     },
     'billing.title': {
         vi: 'Gói dịch vụ',
-        en: 'Billing Plans',
+        en: 'Billing',
     },
     'billing.subtitle': {
         vi: 'Xem trạng thái tài khoản, hạn mức dự án và nâng cấp gói dịch vụ.',
         en: 'View account status, project limits, and upgrade your plan.',
     },
-    'billing.statusActive': {
-        vi: 'Tài khoản đang hoạt động',
-        en: 'Active Account',
-    },
-    'billing.statusDesc': {
-        vi: 'Hạn mức tạo dự án của bạn được quản lý dựa trên gói tài khoản.',
-        en: 'Your project creation limit is managed based on your account plan.',
+    'billing.currentPlan': {
+        vi: 'Gói hiện tại',
+        en: 'Current plan',
     },
     'billing.projectsUsage': {
-        vi: 'Dự án đã tạo: {used} / {limit} dự án',
-        en: 'Projects created: {used} / {limit} projects',
+        vi: '{used}/{limit} project đã sử dụng',
+        en: '{used}/{limit} projects used',
     },
-    'billing.planFree': {
-        vi: 'Gói Miễn phí (Free)',
-        en: 'Free Plan',
+    'billing.planFreeShort': {
+        vi: 'Miễn phí',
+        en: 'Free',
     },
-    'billing.planPremium': {
-        vi: 'Gói Cao cấp (Premium)',
-        en: 'Premium Plan',
+    'billing.planPremiumShort': {
+        vi: 'Premium',
+        en: 'Premium',
     },
-    'billing.upgradeBtn': {
+    'billing.upgradeTitle': {
         vi: 'Nâng cấp Premium',
         en: 'Upgrade to Premium',
     },
     'billing.upgradeDesc': {
-        vi: 'Nâng cấp lên gói Premium để tăng hạn mức tạo dự án lên 20 dự án chỉ với 70.000đ.',
-        en: 'Upgrade to Premium plan to increase project limit to 20 projects for only 70,000 VND.',
+        vi: 'Một lần nâng cấp để mở rộng hạn mức tạo project.',
+        en: 'Upgrade once to expand your project limit.',
     },
-    'billing.planPremiumActiveDesc': {
-        vi: 'Cảm ơn bạn đã nâng cấp gói Premium! Tài khoản của bạn hiện có hạn mức tạo tối đa 20 dự án.',
-        en: 'Thank you for upgrading to Premium! Your account now has a maximum limit of 20 projects.',
+    'billing.projectsUnit': {
+        vi: 'project',
+        en: 'projects',
     },
-    'billing.updatePayment': {
-        vi: 'Cập nhật thanh toán',
-        en: 'Update payment',
+    'billing.premiumPrice': {
+        vi: '70.000đ',
+        en: '70,000 VND',
     },
-    'billing.downloadInvoice': {
-        vi: 'Tải hóa đơn',
-        en: 'Download invoices',
+    'billing.benefitProjects': {
+        vi: 'Tạo tối đa 20 project',
+        en: 'Create up to 20 projects',
+    },
+    'billing.benefitMeetings': {
+        vi: 'Phù hợp cho nhiều buổi họp và tài liệu học tập',
+        en: 'Ideal for more meetings and study materials',
+    },
+    'billing.benefitWorkspace': {
+        vi: 'Tiếp tục dùng transcript, AI chat và task trong cùng workspace',
+        en: 'Keep transcripts, AI chat, and tasks in one workspace',
+    },
+    'billing.premiumActiveTitle': {
+        vi: 'Bạn đang dùng Premium',
+        en: 'You are on Premium',
+    },
+    'billing.premiumActiveDesc': {
+        vi: 'Hạn mức 20 project đã được kích hoạt.',
+        en: 'Your 20-project limit is active.',
+    },
+    'billing.premiumActiveButton': {
+        vi: 'Premium đã kích hoạt',
+        en: 'Premium active',
     },
     'billing.loading': {
         vi: 'Đang tải thông tin hạn mức...',
         en: 'Loading quota information...',
     },
-    'billing.generatingUrl': {
-        vi: 'Đang tạo liên kết thanh toán...',
-        en: 'Generating payment link...',
+    'billing.loadError': {
+        vi: 'Không thể tải thông tin hạn mức. Vui lòng thử lại.',
+        en: 'Could not load limit information. Please try again.',
+    },
+    'billing.overLimitTitle': {
+        vi: 'Bạn đã vượt hạn mức hiện tại',
+        en: 'You are over your current limit',
+    },
+    'billing.overLimitDesc': {
+        vi: 'Nâng cấp Premium để tiếp tục tạo thêm project.',
+        en: 'Upgrade to Premium to keep creating projects.',
+    },
+    'billing.upgradeButton': {
+        vi: 'Nâng cấp ngay',
+        en: 'Upgrade now',
+    },
+    'billing.checkoutOpening': {
+        vi: 'Đang mở cổng thanh toán...',
+        en: 'Opening checkout...',
+    },
+    'billing.checkoutError': {
+        vi: 'Không thể mở thanh toán. Vui lòng thử lại.',
+        en: 'Could not open checkout. Please try again.',
     },
     'payment.success.title': {
         vi: 'Thanh toán thành công',
-        en: 'Payment Successful',
-    },
-    'payment.success.desc': {
-        vi: 'Giao dịch nâng cấp hạn mức dự án của bạn đã được xử lý thành công.',
-        en: 'Your project limit upgrade transaction has been processed successfully.',
+        en: 'Payment successful',
     },
     'payment.success.back': {
         vi: 'Quay lại gói dịch vụ',
-        en: 'Back to Billing Plans',
+        en: 'Back to billing',
     },
     'payment.success.updating': {
         vi: 'Đang cập nhật gói Premium...',
@@ -1075,16 +1130,20 @@ export const dictionaries = {
         en: 'Your account has been upgraded to Premium. You can now create up to 20 projects.',
     },
     'payment.success.pending': {
-        vi: 'Thanh toán đã hoàn tất, hệ thống đang cập nhật quota...',
-        en: 'Payment completed. We are updating your quota...',
+        vi: 'Thanh toán đã hoàn tất, hệ thống đang cập nhật hạn mức...',
+        en: 'Payment completed. We are updating your limit...',
+    },
+    'payment.success.pendingTitle': {
+        vi: 'Đang chờ cập nhật Premium',
+        en: 'Premium update pending',
     },
     'payment.success.timeoutDesc': {
-        vi: 'Thanh toán đã được ghi nhận nhưng quota chưa cập nhật. Vui lòng thử tải lại sau ít phút.',
-        en: 'Payment was received, but your quota has not been updated yet. Please refresh again in a few minutes.',
+        vi: 'Thanh toán đã được ghi nhận nhưng hạn mức chưa cập nhật. Vui lòng kiểm tra lại sau ít phút.',
+        en: 'Payment was received, but your limit has not been updated yet. Please check again in a few minutes.',
     },
     'payment.success.retryBtn': {
-        vi: 'Kiểm tra lại quota',
-        en: 'Check quota again',
+        vi: 'Kiểm tra lại',
+        en: 'Check again',
     },
 } as const satisfies Dict;
 

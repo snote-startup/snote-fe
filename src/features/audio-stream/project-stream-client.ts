@@ -1,7 +1,5 @@
 import { getApiUrl } from '@/lib/api/api-url';
-import { getStoredAuthTokens } from '@/lib/api/auth-token-storage';
 import type {
-    BrowserStreamAuthMode,
     CreateProjectAudioStreamClientOptions,
     ProjectAudioStreamClient,
     ProjectAudioStreamEvent,
@@ -17,8 +15,6 @@ export function buildProjectAudioStreamUrl({
 }: {
     projectId: string;
     apiBaseUrl?: string;
-    authMode?: BrowserStreamAuthMode;
-    accessToken?: string | null;
 }) {
     const cleanBaseUrl = normalizeBaseUrl(apiBaseUrl);
     const url = new URL(
@@ -38,25 +34,21 @@ function eventErrorMessage(event: Event) {
     if (event instanceof ErrorEvent && event.message) {
         return event.message;
     }
-    return 'WebSocket audio stream gặp lỗi.';
+    return 'stream.errorGeneric';
 }
 
 export function createProjectAudioStreamClient({
     projectId,
     apiBaseUrl,
-    authMode = 'cookie',
-    accessToken = getStoredAuthTokens().accessToken,
     onEvent,
 }: CreateProjectAudioStreamClientOptions): ProjectAudioStreamClient {
     if (!projectId) {
-        throw new Error('Thiếu projectId cho audio stream.');
+        throw new Error('stream.errorGeneric');
     }
 
     const url = buildProjectAudioStreamUrl({
         projectId,
         apiBaseUrl,
-        authMode,
-        accessToken,
     });
 
     let ws: WebSocket | null = null;
@@ -74,9 +66,7 @@ export function createProjectAudioStreamClient({
         },
         connect() {
             if (typeof WebSocket === 'undefined') {
-                return Promise.reject(
-                    new Error('Trình duyệt không hỗ trợ WebSocket.'),
-                );
+                return Promise.reject(new Error('stream.errorGeneric'));
             }
 
             if (ws?.readyState === WebSocket.OPEN) {
@@ -122,9 +112,7 @@ export function createProjectAudioStreamClient({
                     if (!opened && !settled) {
                         settled = true;
                         reject(
-                            new Error(
-                                `WebSocket đóng trước khi sẵn sàng (${event.code}).`,
-                            ),
+                            new Error(event.reason || 'stream.errorGeneric'),
                         );
                     }
                 };
@@ -132,7 +120,7 @@ export function createProjectAudioStreamClient({
         },
         async sendAudioChunk(chunk) {
             if (!ws || ws.readyState !== WebSocket.OPEN) {
-                throw new Error('WebSocket audio stream chưa mở.');
+                throw new Error('stream.errorGeneric');
             }
 
             const payload =
@@ -142,7 +130,7 @@ export function createProjectAudioStreamClient({
             emit({ type: 'chunk-sent', bytes: payload.byteLength });
             return payload.byteLength;
         },
-        close(code = 1000, reason = 'client stopped audio stream') {
+        close(code = 1000, reason = 'recording stopped') {
             if (!ws) {
                 return;
             }
