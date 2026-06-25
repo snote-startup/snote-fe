@@ -21,7 +21,7 @@ export function PaymentSuccess() {
     const isUpgraded = !!(
         quota &&
         quota.projectsLimit !== undefined &&
-        quota.projectsLimit > 5
+        quota.projectsLimit >= 20
     );
     const isPending = !isUpgraded && pollCount >= 10;
     const isUpdating = !isUpgraded && pollCount < 10;
@@ -66,7 +66,7 @@ export function PaymentSuccess() {
                     <AlertCircle className="h-8 w-8 text-amber-600 dark:text-amber-500" />
                 </div>
                 <h1 className="text-foreground mb-2 text-3xl font-semibold">
-                    {t('payment.success.title')}
+                    {t('payment.success.pendingTitle')}
                 </h1>
                 <p className="text-muted-foreground mb-6">
                     {t('payment.success.timeoutDesc')}

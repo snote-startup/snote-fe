@@ -14,7 +14,6 @@ import {
     pollProjectAudioUrl,
 } from './test-utils';
 import type {
-    BrowserStreamAuthMode,
     MixedAudioCapture,
     ProjectAudioStreamClient,
     ProjectAudioStreamStatus,
@@ -28,7 +27,7 @@ function toErrorMessage(error: unknown) {
         return error.message;
     }
 
-    return 'Không thể ghi âm qua WebSocket.';
+    return 'stream.errorGeneric';
 }
 
 export function useProjectAudioWebSocketStream(projectId: string) {
@@ -59,6 +58,17 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         clientRef.current?.close();
         clientRef.current = null;
     }, []);
+
+    const cleanupAfterRecorderError = useCallback(() => {
+        if (recorderRef.current?.state === 'recording') {
+            recorderRef.current.stop();
+        }
+        recorderRef.current = null;
+        pendingSendsRef.current = [];
+        cleanupCapture();
+        closeClient();
+        setEndedAt(new Date());
+    }, [cleanupCapture, closeClient]);
 
     const reset = useCallback(() => {
         if (recorderRef.current?.state === 'recording') {
@@ -144,62 +154,62 @@ export function useProjectAudioWebSocketStream(projectId: string) {
             includeTabAudio,
             includeMicrophone,
             chunkMs = DEFAULT_CHUNK_MS,
-            authMode = 'cookie',
         }: StartCaptureOptions) => {
             if (!projectId) {
-                setError('Thiếu projectId để ghi âm.');
+                setError('stream.errorGeneric');
                 setStatus('error');
                 return;
             }
 
-            if (status === 'streaming' || status === 'capturing') {
+            if (
+                status === 'streaming' ||
+                status === 'capturing' ||
+                status === 'connecting'
+            ) {
                 return;
             }
 
             if (typeof MediaRecorder === 'undefined') {
-                setError('Trình duyệt không hỗ trợ MediaRecorder.');
+                setError('stream.errorGeneric');
                 setStatus('error');
                 return;
             }
 
             const mimeType = getSupportedWebmMimeType();
             if (!mimeType) {
-                setError('Trình duyệt không hỗ trợ ghi âm audio/webm.');
+                setError('stream.errorGeneric');
                 setStatus('error');
                 return;
             }
 
             reset();
-            setStatus('connecting');
+            setStatus('capturing');
             setError(null);
             setStartedAt(new Date());
 
-            const authModeForClient: BrowserStreamAuthMode = authMode;
-            const client = createProjectAudioStreamClient({
-                projectId,
-                authMode: authModeForClient,
-                onEvent: (event) => {
-                    if (event.type === 'message') {
-                        setServerMessages((prev) => [...prev, event.data]);
-                    }
-                    if (event.type === 'error') {
-                        setError(event.message);
-                    }
-                },
-            });
-
-            clientRef.current = client;
-
             try {
-                await client.connect();
-                setStatus('connected');
-                setStatus('capturing');
-
                 const capture = await createMixedAudioCapture({
                     includeTabAudio,
                     includeMicrophone,
                 });
                 captureRef.current = capture;
+
+                setStatus('connecting');
+                const client = createProjectAudioStreamClient({
+                    projectId,
+                    onEvent: (event) => {
+                        if (event.type === 'message') {
+                            setServerMessages((prev) => [...prev, event.data]);
+                        }
+                        if (event.type === 'error') {
+                            setError(event.message);
+                        }
+                    },
+                });
+
+                clientRef.current = client;
+                await client.connect();
+                setStatus('connected');
 
                 const recorder = new MediaRecorder(capture.stream, {
                     mimeType,
@@ -220,14 +230,16 @@ export function useProjectAudioWebSocketStream(projectId: string) {
                         .catch((sendError: unknown) => {
                             setError(toErrorMessage(sendError));
                             setStatus('error');
+                            cleanupAfterRecorderError();
                         });
 
                     pendingSendsRef.current.push(sendPromise);
                 };
 
                 recorder.onerror = () => {
-                    setError('MediaRecorder gặp lỗi khi ghi âm.');
+                    setError('stream.errorGeneric');
                     setStatus('error');
+                    cleanupAfterRecorderError();
                 };
 
                 recorder.start(chunkMs);
@@ -235,12 +247,10 @@ export function useProjectAudioWebSocketStream(projectId: string) {
             } catch (startError) {
                 setError(toErrorMessage(startError));
                 setStatus('error');
-                cleanupCapture();
-                closeClient();
-                setEndedAt(new Date());
+                cleanupAfterRecorderError();
             }
         },
-        [cleanupCapture, closeClient, projectId, reset, status],
+        [cleanupAfterRecorderError, projectId, reset, status],
     );
 
     useEffect(() => {
