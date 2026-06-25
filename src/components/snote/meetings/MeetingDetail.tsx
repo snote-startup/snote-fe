@@ -1153,6 +1153,7 @@ export function MeetingDetail() {
                         </div>
                     </div>
 
+                    {/* Audio stream debug panel. Connects directly to direct WS endpoint without browser auth */}
                     <ProjectAudioStreamDebugPanel projectId={project.id} />
 
                     {/* ── Desktop: Split Workspace ──────────────────────────── */}

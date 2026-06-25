@@ -718,16 +718,16 @@ export const dictionaries = {
     'stream.title': { vi: 'Ghi âm cuộc họp', en: 'Meeting recording' },
     'stream.beta': { vi: 'Beta', en: 'Beta' },
     'stream.subtitle': {
-        vi: 'Gửi audio WebM lên backend để lưu file sau khi dừng ghi.',
-        en: 'Send WebM audio to the backend to store after recording stops.',
+        vi: 'Gửi audio WebM lên Snote để lưu lại sau khi dừng ghi.',
+        en: 'Send WebM audio to Snote and store it after recording stops.',
     },
     'stream.warning': {
-        vi: 'Tính năng này lưu audio sau khi dừng ghi. Đây chưa phải dịch realtime.',
-        en: 'This stores audio after recording stops. It is not realtime translation yet.',
+        vi: 'Audio sẽ được lưu sau khi bạn dừng ghi. Đây chưa phải dịch realtime.',
+        en: 'Audio is saved after recording stops. This is not realtime translation yet.',
     },
     'stream.wsError': {
-        vi: 'Không thể kết nối WebSocket từ trình duyệt. Backend có thể đang yêu cầu Authorization header, trong khi browser WebSocket không hỗ trợ header này. Cần backend hỗ trợ cookie, query token hoặc subprotocol.',
-        en: 'Could not connect to WebSocket from the browser. The backend may require an Authorization header, which browser WebSocket cannot set. Backend support for cookie, query token, or subprotocol auth is required.',
+        vi: 'Không thể kết nối luồng ghi âm. Vui lòng thử lại sau.',
+        en: 'Could not connect to the recording stream. Please try again later.',
     },
     'stream.processing': {
         vi: 'Backend đang xử lý audio, quá trình này có thể mất khoảng 1 phút...',

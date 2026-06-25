@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
     AlertTriangle,
     ChevronDown,
@@ -22,13 +22,7 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+
 import { projectKeys } from '@/features/projects/hooks';
 import { useProjectAudioWebSocketStream } from '@/features/audio-stream/hooks';
 import { createProjectAudioStreamClient } from '@/features/audio-stream/project-stream-client';
@@ -57,19 +51,6 @@ function useStatusLabel() {
     };
 }
 
-/** Detect browser WS auth error patterns */
-function isWsAuthError(message: string | null): boolean {
-    if (!message) return false;
-    const lower = message.toLowerCase();
-    return (
-        lower.includes('401') ||
-        lower.includes('403') ||
-        lower.includes('authorization') ||
-        lower.includes('not authenticated') ||
-        lower.includes('websocket connection failed')
-    );
-}
-
 export function ProjectAudioStreamDebugPanel({
     projectId,
 }: ProjectAudioStreamDebugPanelProps) {
@@ -78,7 +59,7 @@ export function ProjectAudioStreamDebugPanel({
     const statusLabel = useStatusLabel();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
-    const [authMode, setAuthMode] = useState<BrowserStreamAuthMode>('cookie');
+    const authMode: BrowserStreamAuthMode = 'cookie';
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [fileStatus, setFileStatus] =
         useState<ProjectAudioStreamStatus>('idle');
@@ -95,6 +76,12 @@ export function ProjectAudioStreamDebugPanel({
         });
         await queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
     };
+
+    useEffect(() => {
+        if (testMessage) {
+            console.log('[WS Test Message]:', testMessage);
+        }
+    }, [testMessage]);
 
     const handleTestConnect = async () => {
         setTestMessage(null);
@@ -124,13 +111,12 @@ export function ProjectAudioStreamDebugPanel({
             client.close();
             setFileStatus('closed');
         } catch (error) {
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Could not connect to WebSocket.';
+            console.error('WebSocket connection failed:', error);
             setFileStatus('error');
-            setTestMessage(message);
-            toast.error(message);
+            setTestMessage(
+                error instanceof Error ? error.message : 'Connection failed',
+            );
+            toast.error(t('stream.wsError'));
         }
     };
 
@@ -176,13 +162,12 @@ export function ProjectAudioStreamDebugPanel({
                 toast.warning(t('stream.processing'));
             }
         } catch (error) {
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Could not stream audio file.';
+            console.error('Audio stream file failed:', error);
             setFileStatus('error');
-            setTestMessage(message);
-            toast.error(message);
+            setTestMessage(
+                error instanceof Error ? error.message : 'Streaming failed',
+            );
+            toast.error(t('stream.wsError'));
         }
     };
 
@@ -212,8 +197,7 @@ export function ProjectAudioStreamDebugPanel({
         fileStatus === 'connecting' ||
         fileStatus === 'connected' ||
         fileStatus === 'streaming';
-    const currentError = stream.error ?? testMessage;
-    const showWsAuthWarning = isWsAuthError(currentError);
+    const hasError = stream.status === 'error' || fileStatus === 'error';
 
     return (
         <Collapsible
@@ -257,24 +241,6 @@ export function ProjectAudioStreamDebugPanel({
 
                         {/* Auth mode + test connect */}
                         <div className="flex flex-wrap items-center gap-2">
-                            <Select
-                                value={authMode}
-                                onValueChange={(value) =>
-                                    setAuthMode(value as BrowserStreamAuthMode)
-                                }
-                            >
-                                <SelectTrigger size="sm" className="min-w-36">
-                                    <SelectValue placeholder="Auth mode" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="cookie">
-                                        Cookie/session
-                                    </SelectItem>
-                                    <SelectItem value="query-token">
-                                        Query token
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -341,19 +307,12 @@ export function ProjectAudioStreamDebugPanel({
                             </Button>
                         </div>
 
-                        {/* WS auth error — special warning */}
-                        {showWsAuthWarning && (
+                        {/* Error Warning Banner */}
+                        {hasError && (
                             <div className="flex items-start gap-2 rounded-lg border border-red-300/30 bg-red-50/50 px-3 py-2 text-xs text-red-700 dark:border-red-800/40 dark:bg-red-950/20 dark:text-red-300">
                                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                                 <span>{t('stream.wsError')}</span>
                             </div>
-                        )}
-
-                        {/* General status / error messages */}
-                        {currentError && !showWsAuthWarning && (
-                            <p className="text-muted-foreground text-xs">
-                                {currentError}
-                            </p>
                         )}
 
                         {(stream.status === 'stopping' ||

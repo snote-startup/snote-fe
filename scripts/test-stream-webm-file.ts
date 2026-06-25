@@ -88,13 +88,17 @@ async function streamFile({
     console.log(`Token: ${maskToken(accessToken)}`);
     console.log(`WEBM_FILE: ${filePath}`);
     console.log(`file_size=${fileSize}`);
-
     await new Promise<void>((resolve, reject) => {
-        const ws = new WebSocket(wsUrl, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+        const isDirectStream = process.env.SNOTE_STREAM_NO_AUTH === 'true';
+        const headers: Record<string, string> = {};
+        if (!isDirectStream) {
+            headers.Authorization = `Bearer ${accessToken}`;
+            console.log('Connecting with authorization header...');
+        } else {
+            console.log('Connecting directly...');
+        }
+
+        const ws = new WebSocket(wsUrl, { headers });
 
         let streamStarted = false;
         let settled = false;

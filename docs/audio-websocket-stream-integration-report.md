@@ -1,4 +1,7 @@
-# Audio WebSocket Stream Integration Report
+# Audio WebSocket Stream Integration Report (Superseded)
+
+> [!NOTE]
+> This integration design has been superseded by the simplified direct connection structure documented in [audio-stream-browser-direct-ws-report.md](file:///home/dorriss-dev/Projects/snote/snote-fe/docs/audio-stream-browser-direct-ws-report.md).
 
 ## Summary
 

@@ -14,8 +14,6 @@ function normalizeBaseUrl(baseUrl: string) {
 export function buildProjectAudioStreamUrl({
     projectId,
     apiBaseUrl = getApiUrl(),
-    authMode = 'cookie',
-    accessToken,
 }: {
     projectId: string;
     apiBaseUrl?: string;
@@ -31,15 +29,6 @@ export function buildProjectAudioStreamUrl({
         url.protocol = 'wss:';
     } else if (url.protocol === 'http:') {
         url.protocol = 'ws:';
-    }
-
-    if (authMode === 'query-token') {
-        if (!accessToken) {
-            throw new Error(
-                'Không có access token để thử WebSocket query token.',
-            );
-        }
-        url.searchParams.set('token', accessToken);
     }
 
     return url.toString();
