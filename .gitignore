@@ -48,3 +48,4 @@ next-env.d.ts
 #AGENTS
 AGENTS.md
 CLAUDE.md
+!/docs/final-ui-i18n-stream-polish-report.md
