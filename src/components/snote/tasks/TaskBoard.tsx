@@ -10,7 +10,9 @@ import {
     Circle,
     CircleDashed,
     Flag,
+    ListTodo,
     Loader2,
+    MoreHorizontal,
     Pencil,
     Search,
     Trash2,
@@ -27,12 +29,17 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import {
     useAllProjectTasks,
@@ -47,26 +54,19 @@ import type {
 import { AppLoadingState } from '@/components/snote/shared/AppLoadingState';
 import { AppErrorState } from '@/components/snote/shared/AppErrorState';
 import { useI18n } from '@/features/i18n/use-i18n';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-type TaskFilter = 'all' | TaskStatus | `priority:${TaskPriority}`;
+type TaskFilter = 'all' | `priority:${TaskPriority}`;
 
 function matchesFilter(task: AggregatedTask, filter: TaskFilter) {
     if (filter === 'all') return true;
     if (filter.startsWith('priority:')) {
         return task.priority === filter.replace('priority:', '');
     }
-    return task.status === filter;
+    return true;
 }
 
 function sortTasks(a: AggregatedTask, b: AggregatedTask) {
-    const statusOrder: Record<TaskStatus, number> = {
-        todo: 0,
-        in_progress: 1,
-        done: 2,
-    };
-    if (statusOrder[a.status] !== statusOrder[b.status]) {
-        return statusOrder[a.status] - statusOrder[b.status];
-    }
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
 }
 
@@ -108,27 +108,35 @@ export function TaskBoard() {
 
     const priorityConfig: Record<
         TaskPriority,
-        { label: string; className: string }
+        {
+            label: string;
+            className: string;
+            bgClass: string;
+            colorClass: string;
+        }
     > = {
         low: {
             label: t('tasks.priority.low'),
             className: 'bg-muted text-muted-foreground',
+            bgClass: 'bg-muted',
+            colorClass: 'text-muted-foreground',
         },
         medium: {
             label: t('tasks.priority.medium'),
             className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+            bgClass: 'bg-amber-500/10',
+            colorClass: 'text-amber-700 dark:text-amber-400',
         },
         high: {
             label: t('tasks.priority.high'),
             className: 'bg-red-500/10 text-red-700 dark:text-red-400',
+            bgClass: 'bg-red-500/10',
+            colorClass: 'text-red-700 dark:text-red-400',
         },
     };
 
     const filters: Array<{ value: TaskFilter; label: string }> = [
         { value: 'all', label: t('tasks.filter.all') },
-        { value: 'todo', label: t('tasks.filter.todo') },
-        { value: 'in_progress', label: t('tasks.filter.inProgress') },
-        { value: 'done', label: t('tasks.filter.done') },
         { value: 'priority:low', label: t('tasks.filter.lowPriority') },
         { value: 'priority:medium', label: t('tasks.filter.medPriority') },
         { value: 'priority:high', label: t('tasks.filter.highPriority') },
@@ -152,21 +160,26 @@ export function TaskBoard() {
             .sort(sortTasks);
     }, [activeFilter, searchQuery, tasks]);
 
-    const handleStatusChange = (task: AggregatedTask, status: TaskStatus) => {
+    const handleStatusChange = (
+        taskId: string,
+        projectId: string,
+        status: TaskStatus,
+    ) => {
         updateMutation.mutate({
-            taskId: task.id,
-            projectId: task.projectId,
+            taskId,
+            projectId,
             body: { status },
         });
     };
 
     const handlePriorityChange = (
-        task: AggregatedTask,
+        taskId: string,
+        projectId: string,
         priority: TaskPriority,
     ) => {
         updateMutation.mutate({
-            taskId: task.id,
-            projectId: task.projectId,
+            taskId,
+            projectId,
             body: { priority },
         });
     };
@@ -217,9 +230,11 @@ export function TaskBoard() {
         );
     }
 
+    const columns: TaskStatus[] = ['todo', 'in_progress', 'done'];
+
     return (
-        <div className="animate-fade-in-up mx-auto max-w-7xl p-6 md:p-8">
-            <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="animate-fade-in-up mx-auto flex h-[calc(100vh-theme(spacing.16))] max-w-[1600px] flex-col p-6 md:p-8">
+            <div className="mb-6 flex shrink-0 flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                     <h1 className="text-foreground mb-2 text-3xl font-semibold">
                         {t('tasks.title')}
@@ -234,26 +249,29 @@ export function TaskBoard() {
                     className="self-start md:self-auto"
                 >
                     {t('tasks.openMeetings')}
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
             </div>
 
             {failedProjects.length > 0 && (
-                <div className="mb-5 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/20 dark:text-amber-300">
+                <div className="mb-5 flex shrink-0 items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/20 dark:text-amber-300">
                     <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                     <div className="text-sm">
                         <p className="font-medium">
                             {t('tasks.failedProjects')}
                         </p>
                         <p className="mt-1">
-                            {t('tasks.failedProjectsDesc').replace('{count}', String(failedProjects.length))}
+                            {t('tasks.failedProjectsDesc').replace(
+                                '{count}',
+                                String(failedProjects.length),
+                            )}
                         </p>
                     </div>
                 </div>
             )}
 
-            <div className="border-border bg-card mb-6 space-y-4 rounded-xl border p-4">
-                <div className="relative">
+            <div className="border-border bg-card mb-6 flex shrink-0 flex-col items-start gap-4 rounded-xl border p-4 sm:flex-row sm:items-center">
+                <div className="relative w-full sm:max-w-md">
                     <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <Input
                         value={searchQuery}
@@ -282,170 +300,277 @@ export function TaskBoard() {
             </div>
 
             {tasks.length === 0 ? (
-                <div className="border-border bg-card rounded-xl border p-10 text-center">
-                    <CheckCircle2 className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+                <div className="border-border bg-card mt-4 rounded-xl border p-12 text-center">
+                    <CheckCircle2 className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
                     <h2 className="text-foreground mb-2 text-lg font-semibold">
                         {t('tasks.noTasks')}
                     </h2>
-                    <p className="text-muted-foreground mx-auto mb-5 max-w-md text-sm">
-                        {t('tasks.noTasksDesc')}
+                    <p className="text-muted-foreground mx-auto mb-6 max-w-md text-sm">
+                        {t('tasks.kanban.emptyBoard')}
                     </p>
                     <Button onClick={() => router.push('/meetings')}>
-                        {t('tasks.selectMeeting')}
+                        {t('tasks.openMeetings')}
                     </Button>
                 </div>
-            ) : filteredTasks.length === 0 ? (
-                <div className="border-border bg-card rounded-xl border p-10 text-center">
-                    <Search className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
-                    <h2 className="text-foreground mb-2 text-lg font-semibold">
-                        {t('tasks.noMatch')}
-                    </h2>
-                    <p className="text-muted-foreground text-sm">
-                        {t('tasks.noMatchDesc')}
-                    </p>
-                </div>
             ) : (
-                <div className="space-y-3">
-                    {filteredTasks.map((task) => {
-                        const StatusIcon = statusConfig[task.status].icon;
+                <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-x-auto pb-4 lg:flex-row">
+                    {columns.map((status) => {
+                        const columnTasks = filteredTasks.filter(
+                            (task) => task.status === status,
+                        );
+                        const {
+                            label,
+                            icon: StatusIcon,
+                            className,
+                        } = statusConfig[status];
+
                         return (
-                            <article
-                                key={task.id}
-                                className="border-border bg-card hover:border-primary/40 rounded-xl border p-4 transition-colors"
+                            <div
+                                key={status}
+                                className="bg-muted/30 border-border flex min-w-[320px] flex-1 flex-col rounded-xl border"
                             >
-                                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                                    <div className="min-w-0 flex-1">
-                                        <div className="mb-2 flex flex-wrap items-center gap-2">
-                                            <span
-                                                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${statusConfig[task.status].className}`}
-                                            >
-                                                <StatusIcon className="h-3.5 w-3.5" />
-                                                {
-                                                    statusConfig[task.status]
-                                                        .label
-                                                }
-                                            </span>
-                                            <span
-                                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${priorityConfig[task.priority].className}`}
-                                            >
-                                                {task.priority === 'high' && (
-                                                    <Flag className="h-3 w-3" />
-                                                )}
-                                                {
+                                <div className="border-border/50 bg-muted/50 flex shrink-0 items-center justify-between rounded-t-xl border-b p-4">
+                                    <div className="flex items-center gap-2">
+                                        <StatusIcon
+                                            className={`h-4 w-4 ${className}`}
+                                        />
+                                        <h3 className="text-foreground text-sm font-semibold">
+                                            {label}
+                                        </h3>
+                                    </div>
+                                    <span className="bg-muted-foreground/10 text-muted-foreground rounded-full px-2.5 py-0.5 text-xs font-medium">
+                                        {columnTasks.length}
+                                    </span>
+                                </div>
+                                <ScrollArea className="flex-1">
+                                    <div className="flex min-h-[150px] flex-col gap-3 p-3">
+                                        {columnTasks.length === 0 ? (
+                                            <div className="text-muted-foreground flex flex-col items-center justify-center p-8 text-center opacity-60">
+                                                <StatusIcon className="mb-2 h-8 w-8 opacity-20" />
+                                                <span className="text-sm">
+                                                    {t(
+                                                        'tasks.kanban.emptyColumn',
+                                                    )}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            columnTasks.map((task) => {
+                                                const priority =
                                                     priorityConfig[
                                                         task.priority
-                                                    ].label
-                                                }
-                                            </span>
-                                        </div>
-                                        <p
-                                            className={`text-sm leading-relaxed ${
-                                                task.status === 'done'
-                                                    ? 'text-muted-foreground line-through'
-                                                    : 'text-foreground'
-                                            }`}
-                                        >
-                                            {task.content}
-                                        </p>
-                                        <div className="text-muted-foreground mt-3 flex flex-wrap gap-2 text-xs">
-                                            <span>{task.projectTitle}</span>
-                                            <span>•</span>
-                                            <span>
-                                                {format(
-                                                    new Date(task.created_at),
-                                                    'dd/MM/yyyy HH:mm',
-                                                )}
-                                            </span>
-                                        </div>
+                                                    ];
+
+                                                return (
+                                                    <article
+                                                        key={task.id}
+                                                        className={`bg-card group relative flex flex-col rounded-xl border p-3.5 shadow-sm transition-all hover:shadow-md ${
+                                                            task.status ===
+                                                            'done'
+                                                                ? 'border-border/40 grayscale-[0.2]'
+                                                                : 'border-border/60 hover:border-primary/30'
+                                                        }`}
+                                                    >
+                                                        <div className="mb-2.5 flex items-start justify-between gap-3">
+                                                            <span
+                                                                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wider uppercase ${priority.bgClass} ${priority.colorClass}`}
+                                                            >
+                                                                {task.priority ===
+                                                                    'high' && (
+                                                                    <Flag className="h-2.5 w-2.5" />
+                                                                )}
+                                                                {priority.label}
+                                                            </span>
+
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger
+                                                                    asChild
+                                                                >
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="text-muted-foreground hover:bg-muted -mt-1 -mr-1.5 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
+                                                                        aria-label={t(
+                                                                            'tasks.kanban.actionMenu',
+                                                                        )}
+                                                                    >
+                                                                        <MoreHorizontal className="h-4 w-4" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent
+                                                                    align="end"
+                                                                    className="w-48"
+                                                                >
+                                                                    <DropdownMenuItem
+                                                                        onClick={() =>
+                                                                            router.push(
+                                                                                `/meetings/${task.projectId}`,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <ArrowRight className="mr-2 h-4 w-4" />
+                                                                        {t(
+                                                                            'tasks.kanban.actionOpen',
+                                                                        )}
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            setEditingTask(
+                                                                                task,
+                                                                            );
+                                                                            setEditContent(
+                                                                                task.content,
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        <Pencil className="mr-2 h-4 w-4" />
+                                                                        {t(
+                                                                            'tasks.kanban.actionEdit',
+                                                                        )}
+                                                                    </DropdownMenuItem>
+
+                                                                    <DropdownMenuSeparator />
+
+                                                                    <DropdownMenuSub>
+                                                                        <DropdownMenuSubTrigger>
+                                                                            <ListTodo className="mr-2 h-4 w-4" />
+                                                                            {t(
+                                                                                'projectTasks.changeStatus',
+                                                                            )}
+                                                                        </DropdownMenuSubTrigger>
+                                                                        <DropdownMenuSubContent>
+                                                                            <DropdownMenuRadioGroup
+                                                                                value={
+                                                                                    task.status
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    v,
+                                                                                ) =>
+                                                                                    handleStatusChange(
+                                                                                        task.id,
+                                                                                        task.projectId,
+                                                                                        v as TaskStatus,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <DropdownMenuRadioItem value="todo">
+                                                                                    {t(
+                                                                                        'tasks.status.todo',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                                <DropdownMenuRadioItem value="in_progress">
+                                                                                    {t(
+                                                                                        'tasks.status.inProgress',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                                <DropdownMenuRadioItem value="done">
+                                                                                    {t(
+                                                                                        'tasks.status.done',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                            </DropdownMenuRadioGroup>
+                                                                        </DropdownMenuSubContent>
+                                                                    </DropdownMenuSub>
+
+                                                                    <DropdownMenuSub>
+                                                                        <DropdownMenuSubTrigger>
+                                                                            <Flag className="mr-2 h-4 w-4" />
+                                                                            {t(
+                                                                                'projectTasks.changePriority',
+                                                                            )}
+                                                                        </DropdownMenuSubTrigger>
+                                                                        <DropdownMenuSubContent>
+                                                                            <DropdownMenuRadioGroup
+                                                                                value={
+                                                                                    task.priority
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    v,
+                                                                                ) =>
+                                                                                    handlePriorityChange(
+                                                                                        task.id,
+                                                                                        task.projectId,
+                                                                                        v as TaskPriority,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <DropdownMenuRadioItem value="low">
+                                                                                    {t(
+                                                                                        'tasks.priority.low',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                                <DropdownMenuRadioItem value="medium">
+                                                                                    {t(
+                                                                                        'tasks.priority.medium',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                                <DropdownMenuRadioItem value="high">
+                                                                                    {t(
+                                                                                        'tasks.priority.high',
+                                                                                    )}
+                                                                                </DropdownMenuRadioItem>
+                                                                            </DropdownMenuRadioGroup>
+                                                                        </DropdownMenuSubContent>
+                                                                    </DropdownMenuSub>
+
+                                                                    <DropdownMenuSeparator />
+                                                                    <DropdownMenuItem
+                                                                        className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                                                                        onClick={() =>
+                                                                            setDeletingTask(
+                                                                                task,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                                        {t(
+                                                                            'tasks.deleteDialog.confirm',
+                                                                        )}
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </div>
+
+                                                        <p
+                                                            className={`mb-4 text-sm leading-relaxed ${
+                                                                task.status ===
+                                                                'done'
+                                                                    ? 'text-muted-foreground decoration-muted-foreground/30 line-through opacity-80'
+                                                                    : 'text-foreground'
+                                                            }`}
+                                                        >
+                                                            {task.content}
+                                                        </p>
+
+                                                        <div className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-[11px] font-medium">
+                                                            <span
+                                                                className="bg-muted/30 max-w-[140px] truncate rounded-sm border px-1.5 py-0.5"
+                                                                title={
+                                                                    task.projectTitle
+                                                                }
+                                                            >
+                                                                {
+                                                                    task.projectTitle
+                                                                }
+                                                            </span>
+                                                            <span className="opacity-50">
+                                                                •
+                                                            </span>
+                                                            <span className="opacity-80">
+                                                                {format(
+                                                                    new Date(
+                                                                        task.created_at,
+                                                                    ),
+                                                                    'dd/MM',
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    </article>
+                                                );
+                                            })
+                                        )}
                                     </div>
-
-                                    <div className="grid gap-2 sm:grid-cols-2 lg:w-[360px]">
-                                        <Select
-                                            value={task.status}
-                                            disabled={updateMutation.isPending}
-                                            onValueChange={(value) =>
-                                                handleStatusChange(
-                                                    task,
-                                                    value as TaskStatus,
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="todo">
-                                                    {t('tasks.status.todo')}
-                                                </SelectItem>
-                                                <SelectItem value="in_progress">
-                                                    {t('tasks.status.inProgress')}
-                                                </SelectItem>
-                                                <SelectItem value="done">
-                                                    {t('tasks.status.done')}
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-
-                                        <Select
-                                            value={task.priority}
-                                            disabled={updateMutation.isPending}
-                                            onValueChange={(value) =>
-                                                handlePriorityChange(
-                                                    task,
-                                                    value as TaskPriority,
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="low">
-                                                    {t('tasks.priority.low')}
-                                                </SelectItem>
-                                                <SelectItem value="medium">
-                                                    {t('tasks.priority.medium')}
-                                                </SelectItem>
-                                                <SelectItem value="high">
-                                                    {t('tasks.priority.high')}
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => {
-                                                setEditingTask(task);
-                                                setEditContent(task.content);
-                                            }}
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                            {t('tasks.editTask')}
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() =>
-                                                router.push(
-                                                    `/meetings/${task.projectId}`,
-                                                )
-                                            }
-                                        >
-                                            {t('tasks.openMeeting')}
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="destructive"
-                                            onClick={() =>
-                                                setDeletingTask(task)
-                                            }
-                                            className="sm:col-span-2"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            {t('tasks.deleteTask')}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </article>
+                                </ScrollArea>
+                            </div>
                         );
                     })}
                 </div>
@@ -488,7 +613,7 @@ export function TaskBoard() {
                             }
                         >
                             {updateMutation.isPending && (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
                             {t('tasks.editDialog.save')}
                         </Button>
@@ -504,7 +629,9 @@ export function TaskBoard() {
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('tasks.deleteDialog.title')}</DialogTitle>
+                        <DialogTitle>
+                            {t('tasks.deleteDialog.title')}
+                        </DialogTitle>
                         <DialogDescription>
                             {t('tasks.deleteDialog.desc')}
                         </DialogDescription>
@@ -514,7 +641,7 @@ export function TaskBoard() {
                             variant="outline"
                             onClick={() => setDeletingTask(null)}
                         >
-                            {t('common.cancel')}
+                            {t('tasks.deleteDialog.cancel')}
                         </Button>
                         <Button
                             variant="destructive"
@@ -522,9 +649,9 @@ export function TaskBoard() {
                             disabled={deleteMutation.isPending}
                         >
                             {deleteMutation.isPending && (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            {t('common.delete')}
+                            {t('tasks.deleteDialog.confirm')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -39,8 +39,7 @@ export function useProjectAudioWebSocketStream(projectId: string) {
     const pendingSendsRef = useRef<Promise<unknown>[]>([]);
     const isStoppingRef = useRef(false);
 
-    const [status, setStatus] =
-        useState<ProjectAudioStreamStatus>('idle');
+    const [status, setStatus] = useState<ProjectAudioStreamStatus>('idle');
     const [error, setError] = useState<string | null>(null);
     const [bytesSent, setBytesSent] = useState(0);
     const [chunksSent, setChunksSent] = useState(0);

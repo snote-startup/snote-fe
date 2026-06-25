@@ -1,11 +1,6 @@
 'use client';
 
-import {
-    Mic,
-    FileText,
-    MessageSquareText,
-    ListTodo,
-} from 'lucide-react';
+import { Mic, FileText, MessageSquareText, ListTodo } from 'lucide-react';
 import { Reveal } from './Reveal';
 import { useI18n } from '@/features/i18n/use-i18n';
 import type { TranslationKey } from '@/features/i18n/use-i18n';

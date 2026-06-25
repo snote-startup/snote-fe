@@ -80,13 +80,15 @@ export function LandingNavbar() {
                         <LanguageToggle
                             variant="ghost"
                             size="icon"
-                            className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100 h-8 w-8"
+                            className="h-8 w-8 text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                             iconOnly
                         />
                         <Button
                             variant="ghost"
                             size="icon"
-                            aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
+                            aria-label={
+                                open ? t('nav.closeMenu') : t('nav.openMenu')
+                            }
                             onClick={() => setOpen((v) => !v)}
                             className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
                         >

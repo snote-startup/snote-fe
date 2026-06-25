@@ -78,12 +78,10 @@ export function ProjectAudioStreamDebugPanel({
     const statusLabel = useStatusLabel();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
-    const [authMode, setAuthMode] =
-        useState<BrowserStreamAuthMode>('cookie');
+    const [authMode, setAuthMode] = useState<BrowserStreamAuthMode>('cookie');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [fileStatus, setFileStatus] = useState<ProjectAudioStreamStatus>(
-        'idle',
-    );
+    const [fileStatus, setFileStatus] =
+        useState<ProjectAudioStreamStatus>('idle');
     const [fileBytesSent, setFileBytesSent] = useState(0);
     const [fileChunksSent, setFileChunksSent] = useState(0);
     const [testMessage, setTestMessage] = useState<string | null>(null);
@@ -226,7 +224,7 @@ export function ProjectAudioStreamDebugPanel({
             <CollapsibleTrigger asChild>
                 <button className="hover:bg-muted/40 flex w-full items-center justify-between gap-3 rounded-xl px-5 py-3 text-left transition-colors">
                     <div className="flex min-w-0 items-center gap-3">
-                        <div className="from-violet-500/20 to-indigo-500/20 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20">
                             <FileAudio className="text-primary h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -265,10 +263,7 @@ export function ProjectAudioStreamDebugPanel({
                                     setAuthMode(value as BrowserStreamAuthMode)
                                 }
                             >
-                                <SelectTrigger
-                                    size="sm"
-                                    className="min-w-36"
-                                >
+                                <SelectTrigger size="sm" className="min-w-36">
                                     <SelectValue placeholder="Auth mode" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -417,13 +412,9 @@ export function ProjectAudioStreamDebugPanel({
                             </span>
                         </div>
                         <div className="flex justify-between gap-2">
-                            <span className="text-muted-foreground">
-                                Bytes
-                            </span>
+                            <span className="text-muted-foreground">Bytes</span>
                             <span className="font-mono">
-                                {formatBytes(
-                                    stream.bytesSent || fileBytesSent,
-                                )}
+                                {formatBytes(stream.bytesSent || fileBytesSent)}
                             </span>
                         </div>
                         {stream.serverMessages.length > 0 && (

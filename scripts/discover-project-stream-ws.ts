@@ -11,8 +11,7 @@ function maskToken(token: string) {
 }
 
 function buildWsUrl(projectId: string) {
-    const apiBaseUrl =
-        process.env.SNOTE_API_BASE_URL ?? DEFAULT_API_BASE_URL;
+    const apiBaseUrl = process.env.SNOTE_API_BASE_URL ?? DEFAULT_API_BASE_URL;
     const cleanBaseUrl = apiBaseUrl.endsWith('/')
         ? apiBaseUrl.slice(0, -1)
         : apiBaseUrl;

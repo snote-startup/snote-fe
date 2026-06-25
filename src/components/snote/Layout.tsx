@@ -175,7 +175,11 @@ export function Layout({ children }: LayoutProps) {
     const { t } = useI18n();
 
     const navItems = [
-        { icon: LayoutDashboard, label: t('nav.dashboard'), path: '/dashboard' },
+        {
+            icon: LayoutDashboard,
+            label: t('nav.dashboard'),
+            path: '/dashboard',
+        },
         { icon: FolderOpen, label: t('nav.meetings'), path: '/meetings' },
         { icon: CheckSquare, label: t('nav.tasks'), path: '/tasks' },
         { icon: Calendar, label: t('nav.calendar'), path: '/calendar' },

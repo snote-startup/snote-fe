@@ -274,7 +274,9 @@ export function ProjectTasksPanel({
                                                         className="w-48"
                                                     >
                                                         <DropdownMenuLabel>
-                                                            {t('projectTasks.action')}
+                                                            {t(
+                                                                'projectTasks.action',
+                                                            )}
                                                         </DropdownMenuLabel>
                                                         <DropdownMenuItem
                                                             onClick={() => {
@@ -287,13 +289,17 @@ export function ProjectTasksPanel({
                                                             }}
                                                         >
                                                             <Pencil className="mr-2 h-4 w-4" />
-                                                            {t('tasks.editTask')}
+                                                            {t(
+                                                                'tasks.editTask',
+                                                            )}
                                                         </DropdownMenuItem>
 
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <ListTodo className="mr-2 h-4 w-4" />
-                                                                {t('projectTasks.changeStatus')}
+                                                                {t(
+                                                                    'projectTasks.changeStatus',
+                                                                )}
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -310,13 +316,19 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="todo">
-                                                                        {t('tasks.status.todo')}
+                                                                        {t(
+                                                                            'tasks.status.todo',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="in_progress">
-                                                                        {t('tasks.status.inProgress')}
+                                                                        {t(
+                                                                            'tasks.status.inProgress',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="done">
-                                                                        {t('tasks.status.done')}
+                                                                        {t(
+                                                                            'tasks.status.done',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -325,7 +337,9 @@ export function ProjectTasksPanel({
                                                         <DropdownMenuSub>
                                                             <DropdownMenuSubTrigger>
                                                                 <Flag className="mr-2 h-4 w-4" />
-                                                                {t('projectTasks.changePriority')}
+                                                                {t(
+                                                                    'projectTasks.changePriority',
+                                                                )}
                                                             </DropdownMenuSubTrigger>
                                                             <DropdownMenuSubContent>
                                                                 <DropdownMenuRadioGroup
@@ -342,13 +356,19 @@ export function ProjectTasksPanel({
                                                                     }
                                                                 >
                                                                     <DropdownMenuRadioItem value="low">
-                                                                        {t('tasks.priority.low')}
+                                                                        {t(
+                                                                            'tasks.priority.low',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="medium">
-                                                                        {t('tasks.priority.medium')}
+                                                                        {t(
+                                                                            'tasks.priority.medium',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                     <DropdownMenuRadioItem value="high">
-                                                                        {t('tasks.priority.high')}
+                                                                        {t(
+                                                                            'tasks.priority.high',
+                                                                        )}
                                                                     </DropdownMenuRadioItem>
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuSubContent>
@@ -454,7 +474,9 @@ export function ProjectTasksPanel({
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('tasks.deleteDialog.title')}</DialogTitle>
+                        <DialogTitle>
+                            {t('tasks.deleteDialog.title')}
+                        </DialogTitle>
                         <DialogDescription>
                             {t('tasks.deleteDialog.desc')}
                         </DialogDescription>

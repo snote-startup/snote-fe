@@ -210,7 +210,7 @@ export function Dashboard() {
             >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-start gap-4">
-                        <div className="from-violet-500/20 to-indigo-500/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20">
                             <Radio className="text-primary h-5 w-5" />
                         </div>
                         <div>
@@ -371,7 +371,9 @@ export function Dashboard() {
                                                 </p>
                                                 <p className="text-muted-foreground mt-0.5 truncate text-xs">
                                                     {project.description ||
-                                                        t('common.noDescription')}
+                                                        t(
+                                                            'common.noDescription',
+                                                        )}
                                                 </p>
                                             </div>
                                             <span
@@ -383,7 +385,9 @@ export function Dashboard() {
                                             >
                                                 {project.audio_url
                                                     ? t('dashboard.hasAudio')
-                                                    : t('dashboard.waitingAudio')}
+                                                    : t(
+                                                          'dashboard.waitingAudio',
+                                                      )}
                                             </span>
                                         </div>
                                     </div>

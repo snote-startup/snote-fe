@@ -76,7 +76,9 @@ export function LandingFooter() {
                                     variant="ghost"
                                     className="h-12 border border-white/[0.1] px-8 text-zinc-300 hover:bg-white/[0.06] hover:text-zinc-100"
                                 >
-                                    <Link href="/login">{t('footer.cta.login')}</Link>
+                                    <Link href="/login">
+                                        {t('footer.cta.login')}
+                                    </Link>
                                 </Button>
                             </div>
                         </div>
@@ -132,7 +134,8 @@ export function LandingFooter() {
                             className="text-xs text-zinc-600"
                             suppressHydrationWarning
                         >
-                            © {new Date().getFullYear()} Snote. {t('footer.copyright')}
+                            © {new Date().getFullYear()} Snote.{' '}
+                            {t('footer.copyright')}
                         </p>
                         <p className="text-xs text-zinc-600">
                             {t('footer.tagline')}

@@ -15,8 +15,7 @@ function maskToken(token: string) {
 }
 
 function buildUrls(projectId: string) {
-    const apiBaseUrl =
-        process.env.SNOTE_API_BASE_URL ?? DEFAULT_API_BASE_URL;
+    const apiBaseUrl = process.env.SNOTE_API_BASE_URL ?? DEFAULT_API_BASE_URL;
     const cleanBaseUrl = apiBaseUrl.endsWith('/')
         ? apiBaseUrl.slice(0, -1)
         : apiBaseUrl;
@@ -162,7 +161,9 @@ async function streamFile({
         ws.on('close', (code, reason) => {
             closeCode = code;
             closeReason = reason.toString();
-            console.log(`close: ${code}${closeReason ? ` ${closeReason}` : ''}`);
+            console.log(
+                `close: ${code}${closeReason ? ` ${closeReason}` : ''}`,
+            );
             settle();
         });
     });

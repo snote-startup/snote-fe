@@ -1,9 +1,6 @@
 import { getProject } from '@/features/projects/api';
 import { createProjectAudioStreamClient } from './project-stream-client';
-import type {
-    StreamAudioFileOptions,
-    StreamAudioFileResult,
-} from './types';
+import type { StreamAudioFileOptions, StreamAudioFileResult } from './types';
 
 const DEFAULT_CHUNK_SIZE = 64 * 1024;
 const DEFAULT_POLL_INTERVAL_MS = 2000;

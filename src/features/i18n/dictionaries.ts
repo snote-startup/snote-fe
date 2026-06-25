@@ -127,7 +127,10 @@ export const dictionaries = {
 
     // ─── Landing — Grounded Answers ──────────────────────────────────────
     'grounded.label': { vi: 'Nguồn tham chiếu', en: 'References' },
-    'grounded.title': { vi: 'AI trả lời kèm căn cứ.', en: 'AI answers with evidence.' },
+    'grounded.title': {
+        vi: 'AI trả lời kèm căn cứ.',
+        en: 'AI answers with evidence.',
+    },
     'grounded.subtitle': {
         vi: 'Không chỉ tóm tắt. Mỗi câu trả lời có thể truy về đoạn transcript có mốc thời gian để bạn kiểm chứng.',
         en: 'Not just summaries. Every answer can be traced back to a timestamped transcript segment for verification.',
@@ -274,7 +277,10 @@ export const dictionaries = {
     'login.hidePassword': { vi: 'Ẩn mật khẩu', en: 'Hide password' },
     'login.submit': { vi: 'Đăng nhập', en: 'Sign in' },
     'login.submitting': { vi: 'Đang đăng nhập...', en: 'Signing in...' },
-    'login.noAccount': { vi: 'Chưa có tài khoản?', en: "Don't have an account?" },
+    'login.noAccount': {
+        vi: 'Chưa có tài khoản?',
+        en: "Don't have an account?",
+    },
     'login.createAccount': { vi: 'Tạo tài khoản', en: 'Create account' },
     'login.errorGeneric': {
         vi: 'Không thể đăng nhập. Vui lòng kiểm tra thông tin tài khoản.',
@@ -322,7 +328,10 @@ export const dictionaries = {
         vi: 'Đang tạo tài khoản...',
         en: 'Creating account...',
     },
-    'register.hasAccount': { vi: 'Đã có tài khoản?', en: 'Already have an account?' },
+    'register.hasAccount': {
+        vi: 'Đã có tài khoản?',
+        en: 'Already have an account?',
+    },
     'register.login': { vi: 'Đăng nhập', en: 'Sign in' },
     'register.errorGeneric': {
         vi: 'Không thể tạo tài khoản. Vui lòng thử lại.',
@@ -379,7 +388,10 @@ export const dictionaries = {
     },
 
     // Dashboard — recent work
-    'dashboard.recentMeetings': { vi: 'Cuộc họp gần đây', en: 'Recent meetings' },
+    'dashboard.recentMeetings': {
+        vi: 'Cuộc họp gần đây',
+        en: 'Recent meetings',
+    },
     'dashboard.loadError': {
         vi: 'Không tải được cuộc họp gần đây',
         en: 'Could not load recent meetings',
@@ -408,7 +420,10 @@ export const dictionaries = {
     },
 
     // Dashboard — getting started
-    'dashboard.gettingStarted': { vi: 'Bắt đầu sử dụng', en: 'Getting started' },
+    'dashboard.gettingStarted': {
+        vi: 'Bắt đầu sử dụng',
+        en: 'Getting started',
+    },
     'dashboard.gettingStartedDesc': {
         vi: 'Hoàn tất các bước chính để thiết lập workspace.',
         en: 'Complete the key steps to set up your workspace.',
@@ -484,7 +499,10 @@ export const dictionaries = {
         vi: 'Vui lòng nhập tiêu đề cuộc họp.',
         en: 'Please enter a meeting title.',
     },
-    'meetings.dialog.success': { vi: 'Đã tạo cuộc họp.', en: 'Meeting created.' },
+    'meetings.dialog.success': {
+        vi: 'Đã tạo cuộc họp.',
+        en: 'Meeting created.',
+    },
     'meetings.dialog.error': {
         vi: 'Không thể tạo cuộc họp.',
         en: 'Could not create meeting.',
@@ -515,10 +533,10 @@ export const dictionaries = {
     },
 
     // ─── Tasks ───────────────────────────────────────────────────────────
-    'tasks.title': { vi: 'Tất cả công việc', en: 'All tasks' },
+    'tasks.title': { vi: 'Bảng công việc', en: 'Task board' },
     'tasks.subtitle': {
-        vi: 'Công việc được tạo từ transcript của từng cuộc họp.',
-        en: 'Tasks generated from transcripts of each meeting.',
+        vi: 'Theo dõi các task được tạo từ transcript của từng cuộc họp.',
+        en: 'Track action items generated from each meeting transcript.',
     },
     'tasks.openMeetings': {
         vi: 'Mở danh sách cuộc họp',
@@ -575,11 +593,29 @@ export const dictionaries = {
         en: 'Task content...',
     },
     'tasks.editDialog.save': { vi: 'Lưu thay đổi', en: 'Save changes' },
-    'tasks.deleteDialog.title': { vi: 'Xóa công việc', en: 'Delete task' },
-    'tasks.deleteDialog.desc': {
-        vi: 'Công việc này sẽ bị xóa vĩnh viễn. Thao tác này không thể hoàn tác.',
-        en: 'This task will be permanently deleted. This action cannot be undone.',
+    'tasks.deleteDialog.title': {
+        vi: 'Xoá task này?',
+        en: 'Delete this task?',
     },
+    'tasks.deleteDialog.desc': {
+        vi: 'Task sẽ bị xoá khỏi danh sách công việc. Hành động này không thể hoàn tác.',
+        en: 'This task will be removed from your action items. This action cannot be undone.',
+    },
+    'tasks.deleteDialog.confirm': { vi: 'Xoá task', en: 'Delete task' },
+    'tasks.deleteDialog.cancel': { vi: 'Huỷ', en: 'Cancel' },
+
+    // Kanban-specific empty states
+    'tasks.kanban.emptyColumn': {
+        vi: 'Chưa có task nào ở trạng thái này.',
+        en: 'No tasks in this stage yet.',
+    },
+    'tasks.kanban.emptyBoard': {
+        vi: 'Chưa có task nào. Hãy mở một cuộc họp có transcript để tạo task.',
+        en: 'No tasks yet. Open a meeting with a transcript to generate action items.',
+    },
+    'tasks.kanban.actionOpen': { vi: 'Mở cuộc họp', en: 'Open meeting' },
+    'tasks.kanban.actionEdit': { vi: 'Sửa', en: 'Edit' },
+    'tasks.kanban.actionMenu': { vi: 'Menu (...)', en: 'More menu (...)' },
     'tasks.failedProjects': {
         vi: 'Một số dự án chưa tải được công việc.',
         en: 'Some projects could not load tasks.',
@@ -612,32 +648,50 @@ export const dictionaries = {
     },
     'profile.deleteAccount': { vi: 'Xóa tài khoản', en: 'Delete account' },
     'profile.changePassword': { vi: 'Đổi mật khẩu', en: 'Change password' },
-    'profile.currentPassword': { vi: 'Mật khẩu hiện tại', en: 'Current password' },
+    'profile.currentPassword': {
+        vi: 'Mật khẩu hiện tại',
+        en: 'Current password',
+    },
     'profile.newPassword': { vi: 'Mật khẩu mới', en: 'New password' },
-    'profile.minChars': { vi: 'Tối thiểu 8 ký tự.', en: 'Minimum 8 characters.' },
+    'profile.minChars': {
+        vi: 'Tối thiểu 8 ký tự.',
+        en: 'Minimum 8 characters.',
+    },
     'profile.confirmPassword': {
         vi: 'Xác nhận mật khẩu mới',
         en: 'Confirm new password',
     },
-    'profile.updatePassword': { vi: 'Cập nhật mật khẩu', en: 'Update password' },
+    'profile.updatePassword': {
+        vi: 'Cập nhật mật khẩu',
+        en: 'Update password',
+    },
     'profile.twoFactor': { vi: 'Xác thực hai lớp', en: 'Two-factor auth' },
     'profile.twoFactorDesc': {
         vi: 'Tăng cường bảo mật cho tài khoản của bạn.',
         en: 'Enhance security for your account.',
     },
     'profile.enable2FA': { vi: 'Bật 2FA', en: 'Enable 2FA' },
-    'profile.notifTitle': { vi: 'Tùy chọn thông báo', en: 'Notification settings' },
+    'profile.notifTitle': {
+        vi: 'Tùy chọn thông báo',
+        en: 'Notification settings',
+    },
     'profile.notif.email': { vi: 'Thông báo email', en: 'Email notifications' },
     'profile.notif.emailDesc': {
         vi: 'Nhận cập nhật liên quan đến tài khoản.',
         en: 'Receive account-related updates.',
     },
-    'profile.notif.calendar': { vi: 'Nhắc lịch cuộc họp', en: 'Meeting reminders' },
+    'profile.notif.calendar': {
+        vi: 'Nhắc lịch cuộc họp',
+        en: 'Meeting reminders',
+    },
     'profile.notif.calendarDesc': {
         vi: 'Nhận nhắc nhở cho sự kiện sắp tới.',
         en: 'Get reminders for upcoming events.',
     },
-    'profile.notif.tasks': { vi: 'Thông báo công việc', en: 'Task notifications' },
+    'profile.notif.tasks': {
+        vi: 'Thông báo công việc',
+        en: 'Task notifications',
+    },
     'profile.notif.tasksDesc': {
         vi: 'Nhận cập nhật khi công việc thay đổi.',
         en: 'Get updates when tasks change.',
@@ -691,7 +745,10 @@ export const dictionaries = {
     'stream.status.idle': { vi: 'Chưa chạy', en: 'Idle' },
     'stream.status.connecting': { vi: 'Đang kết nối', en: 'Connecting' },
     'stream.status.connected': { vi: 'Đã kết nối', en: 'Connected' },
-    'stream.status.capturing': { vi: 'Đang xin quyền ghi', en: 'Requesting capture' },
+    'stream.status.capturing': {
+        vi: 'Đang xin quyền ghi',
+        en: 'Requesting capture',
+    },
     'stream.status.streaming': { vi: 'Đang gửi audio', en: 'Streaming' },
     'stream.status.stopping': { vi: 'Đang dừng', en: 'Stopping' },
     'stream.status.closed': { vi: 'Đã đóng', en: 'Closed' },
@@ -701,67 +758,166 @@ export const dictionaries = {
     'error.default': { vi: 'Đã xảy ra lỗi', en: 'An error occurred' },
     'error.title': { vi: 'Đã xảy ra lỗi', en: 'An error occurred' },
     'error.backText': { vi: 'Quay lại', en: 'Go back' },
-    'error.defaultDesc': { vi: 'Rất tiếc, đã có lỗi không xác định xảy ra.', en: 'Sorry, an unknown error occurred.' },
+    'error.defaultDesc': {
+        vi: 'Rất tiếc, đã có lỗi không xác định xảy ra.',
+        en: 'Sorry, an unknown error occurred.',
+    },
     'error.loadScreen': {
         vi: 'Không thể tải màn hình này. Vui lòng thử lại hoặc liên hệ hỗ trợ.',
         en: 'Could not load this screen. Please try again or contact support.',
     },
-    'error.backToDashboard': { vi: 'Quay lại tổng quan', en: 'Back to dashboard' },
+    'error.backToDashboard': {
+        vi: 'Quay lại tổng quan',
+        en: 'Back to dashboard',
+    },
 
     // ─── Meeting Detail - Upload ─────────────────────────────────────────
     'meeting.upload.title': { vi: 'Tải audio lên', en: 'Upload audio' },
-    'meeting.upload.subtitle': { vi: 'Audio sẽ được dùng để tạo transcript.', en: 'Audio will be used to generate transcript.' },
-    'meeting.upload.errorInvalidFile': { vi: 'File không hợp lệ. Vui lòng chọn file audio.', en: 'Invalid file. Please select an audio file.' },
-    'meeting.upload.errorGeneric': { vi: 'Có lỗi xảy ra khi tải lên.', en: 'An error occurred during upload.' },
-    'meeting.upload.success': { vi: 'Tải audio thành công.', en: 'Audio uploaded successfully.' },
-    'meeting.upload.dragDrop': { vi: 'Kéo thả file vào đây hoặc', en: 'Drag and drop file here or' },
+    'meeting.upload.subtitle': {
+        vi: 'Audio sẽ được dùng để tạo transcript.',
+        en: 'Audio will be used to generate transcript.',
+    },
+    'meeting.upload.errorInvalidFile': {
+        vi: 'File không hợp lệ. Vui lòng chọn file audio.',
+        en: 'Invalid file. Please select an audio file.',
+    },
+    'meeting.upload.errorGeneric': {
+        vi: 'Có lỗi xảy ra khi tải lên.',
+        en: 'An error occurred during upload.',
+    },
+    'meeting.upload.success': {
+        vi: 'Tải audio thành công.',
+        en: 'Audio uploaded successfully.',
+    },
+    'meeting.upload.dragDrop': {
+        vi: 'Kéo thả file vào đây hoặc',
+        en: 'Drag and drop file here or',
+    },
     'meeting.upload.browse': { vi: 'chọn từ thiết bị', en: 'browse files' },
-    'meeting.upload.formats': { vi: 'Hỗ trợ: MP3, WAV, M4A, WebM, OGG', en: 'Supports: MP3, WAV, M4A, WebM, OGG' },
+    'meeting.upload.formats': {
+        vi: 'Hỗ trợ: MP3, WAV, M4A, WebM, OGG',
+        en: 'Supports: MP3, WAV, M4A, WebM, OGG',
+    },
     'meeting.upload.uploading': { vi: 'Đang tải lên...', en: 'Uploading...' },
     'meeting.upload.button': { vi: 'Tải lên dự án', en: 'Upload to project' },
 
     // ─── Meeting Detail - Transcript ──────────────────────────────────────
     'meeting.transcript.title': { vi: 'Transcript', en: 'Transcript' },
-    'meeting.transcript.segments': { vi: '{count} đoạn', en: '{count} segments' },
-    'meeting.transcript.search': { vi: 'Tìm trong transcript...', en: 'Search transcript...' },
-    'meeting.transcript.loading': { vi: 'Đang tải transcript...', en: 'Loading transcript...' },
-    'meeting.transcript.error': { vi: 'Không tải được transcript.', en: 'Failed to load transcript.' },
-    'meeting.transcript.generating': { vi: 'Đang tạo transcript', en: 'Generating transcript' },
-    'meeting.transcript.generatingDesc': { vi: 'Vui lòng đợi vài phút trong khi hệ thống xử lý audio.', en: 'Please wait a few minutes while the system processes the audio.' },
-    'meeting.transcript.processing': { vi: 'Đang xử lý nội dung', en: 'Processing content' },
-    'meeting.transcript.processingDesc': { vi: 'Quá trình có thể mất thời gian lâu hơn bình thường.', en: 'The process might take longer than usual.' },
+    'meeting.transcript.segments': {
+        vi: '{count} đoạn',
+        en: '{count} segments',
+    },
+    'meeting.transcript.search': {
+        vi: 'Tìm trong transcript...',
+        en: 'Search transcript...',
+    },
+    'meeting.transcript.loading': {
+        vi: 'Đang tải transcript...',
+        en: 'Loading transcript...',
+    },
+    'meeting.transcript.error': {
+        vi: 'Không tải được transcript.',
+        en: 'Failed to load transcript.',
+    },
+    'meeting.transcript.generating': {
+        vi: 'Đang tạo transcript',
+        en: 'Generating transcript',
+    },
+    'meeting.transcript.generatingDesc': {
+        vi: 'Vui lòng đợi vài phút trong khi hệ thống xử lý audio.',
+        en: 'Please wait a few minutes while the system processes the audio.',
+    },
+    'meeting.transcript.processing': {
+        vi: 'Đang xử lý nội dung',
+        en: 'Processing content',
+    },
+    'meeting.transcript.processingDesc': {
+        vi: 'Quá trình có thể mất thời gian lâu hơn bình thường.',
+        en: 'The process might take longer than usual.',
+    },
     'meeting.transcript.checkAgain': { vi: 'Kiểm tra lại', en: 'Check again' },
-    'meeting.transcript.empty': { vi: 'Chưa có transcript', en: 'No transcript yet' },
-    'meeting.transcript.emptyDesc': { vi: 'Transcript sẽ hiển thị tại đây sau khi xử lý.', en: 'Transcript will appear here after processing.' },
-    'meeting.transcript.noMatch': { vi: 'Không tìm thấy kết quả phù hợp.', en: 'No matching results found.' },
-    'meeting.transcript.unknownSpeaker': { vi: 'Người nói chưa rõ', en: 'Unknown speaker' },
-    'meeting.transcript.referenced': { vi: 'Được tham chiếu', en: 'Referenced' },
+    'meeting.transcript.empty': {
+        vi: 'Chưa có transcript',
+        en: 'No transcript yet',
+    },
+    'meeting.transcript.emptyDesc': {
+        vi: 'Transcript sẽ hiển thị tại đây sau khi xử lý.',
+        en: 'Transcript will appear here after processing.',
+    },
+    'meeting.transcript.noMatch': {
+        vi: 'Không tìm thấy kết quả phù hợp.',
+        en: 'No matching results found.',
+    },
+    'meeting.transcript.unknownSpeaker': {
+        vi: 'Người nói chưa rõ',
+        en: 'Unknown speaker',
+    },
+    'meeting.transcript.referenced': {
+        vi: 'Được tham chiếu',
+        en: 'Referenced',
+    },
 
     // ─── Meeting Detail - Chat ───────────────────────────────────────────
     'meeting.chat.title': { vi: 'Trợ lý AI', en: 'AI Assistant' },
     'meeting.chat.empty': { vi: 'Chưa có tin nhắn', en: 'No messages yet' },
-    'meeting.chat.emptyDescReady': { vi: 'Bắt đầu chat về cuộc họp này bên dưới.', en: 'Start chatting about this meeting below.' },
-    'meeting.chat.emptyDescNotReady': { vi: 'Cần có transcript để chat.', en: 'Transcript is required to chat.' },
+    'meeting.chat.emptyDescReady': {
+        vi: 'Bắt đầu chat về cuộc họp này bên dưới.',
+        en: 'Start chatting about this meeting below.',
+    },
+    'meeting.chat.emptyDescNotReady': {
+        vi: 'Cần có transcript để chat.',
+        en: 'Transcript is required to chat.',
+    },
     'meeting.chat.you': { vi: 'Bạn', en: 'You' },
     'meeting.chat.assistant': { vi: 'AI', en: 'AI' },
     'meeting.chat.thinking': { vi: 'Đang suy nghĩ', en: 'Thinking' },
     'meeting.chat.source': { vi: 'Nguồn', en: 'Source' },
-    'meeting.chat.sourceNotFound': { vi: 'Không tìm thấy nguồn.', en: 'Source not found.' },
-    'meeting.chat.jumpToSource': { vi: 'Chuyển tới đoạn {ref}', en: 'Jump to segment {ref}' },
-    'meeting.chat.errorSend': { vi: 'Lỗi khi gửi tin nhắn.', en: 'Error sending message.' },
+    'meeting.chat.sourceNotFound': {
+        vi: 'Không tìm thấy nguồn.',
+        en: 'Source not found.',
+    },
+    'meeting.chat.jumpToSource': {
+        vi: 'Chuyển tới đoạn {ref}',
+        en: 'Jump to segment {ref}',
+    },
+    'meeting.chat.errorSend': {
+        vi: 'Lỗi khi gửi tin nhắn.',
+        en: 'Error sending message.',
+    },
     'meeting.chat.stopped': { vi: 'Đã dừng chat.', en: 'Chat stopped.' },
-    'meeting.chat.waitNotice': { vi: 'Chờ transcript để chat.', en: 'Wait for transcript to chat.' },
-    'meeting.chat.inputPlaceholder': { vi: 'Hỏi về cuộc họp (Ctrl+Enter để gửi)...', en: 'Ask about the meeting (Ctrl+Enter to send)...' },
-    'meeting.chat.inputDisabled': { vi: 'Tải audio lên trước.', en: 'Upload audio first.' },
+    'meeting.chat.waitNotice': {
+        vi: 'Chờ transcript để chat.',
+        en: 'Wait for transcript to chat.',
+    },
+    'meeting.chat.inputPlaceholder': {
+        vi: 'Hỏi về cuộc họp (Ctrl+Enter để gửi)...',
+        en: 'Ask about the meeting (Ctrl+Enter to send)...',
+    },
+    'meeting.chat.inputDisabled': {
+        vi: 'Tải audio lên trước.',
+        en: 'Upload audio first.',
+    },
 
     // ─── Meeting Detail - General ─────────────────────────────────────────
-    'meeting.errorNotFound': { vi: 'Không tìm thấy cuộc họp', en: 'Meeting not found' },
-    'meeting.errorLoad': { vi: 'Không tải được cuộc họp', en: 'Failed to load meeting' },
+    'meeting.errorNotFound': {
+        vi: 'Không tìm thấy cuộc họp',
+        en: 'Meeting not found',
+    },
+    'meeting.errorLoad': {
+        vi: 'Không tải được cuộc họp',
+        en: 'Failed to load meeting',
+    },
     'meeting.backToList': { vi: 'Quay lại danh sách', en: 'Back to list' },
     'meeting.copyIdSuccess': { vi: 'Đã copy ID', en: 'ID copied' },
     'meeting.copyId': { vi: 'Copy ID dự án', en: 'Copy project ID' },
-    'meetings.errorTitleRequired': { vi: 'Vui lòng nhập tiêu đề.', en: 'Please enter a title.' },
-    'meeting.editSuccess': { vi: 'Cập nhật thành công.', en: 'Updated successfully.' },
+    'meetings.errorTitleRequired': {
+        vi: 'Vui lòng nhập tiêu đề.',
+        en: 'Please enter a title.',
+    },
+    'meeting.editSuccess': {
+        vi: 'Cập nhật thành công.',
+        en: 'Updated successfully.',
+    },
     'meeting.editError': { vi: 'Lỗi cập nhật.', en: 'Update failed.' },
     'meeting.downloadAudio': { vi: 'Tải audio', en: 'Download audio' },
 
@@ -774,31 +930,70 @@ export const dictionaries = {
     // ─── Meeting Detail - Overview ────────────────────────────────────────
     'meeting.overview.title': { vi: 'Thông tin chung', en: 'General info' },
     'meeting.overview.id': { vi: 'ID Dự án', en: 'Project ID' },
-    'meeting.overview.audioStatus': { vi: 'Trạng thái audio', en: 'Audio status' },
+    'meeting.overview.audioStatus': {
+        vi: 'Trạng thái audio',
+        en: 'Audio status',
+    },
     'meeting.overview.audioUploaded': { vi: 'Đã tải lên', en: 'Uploaded' },
-    'meeting.overview.audioPending': { vi: 'Chưa tải lên', en: 'Pending upload' },
-    'meeting.overview.segmentsCount': { vi: 'Số đoạn transcript', en: 'Transcript segments' },
+    'meeting.overview.audioPending': {
+        vi: 'Chưa tải lên',
+        en: 'Pending upload',
+    },
+    'meeting.overview.segmentsCount': {
+        vi: 'Số đoạn transcript',
+        en: 'Transcript segments',
+    },
 
     // ─── Meeting Detail - Edit Dialog ─────────────────────────────────────
-    'meeting.editDialog.title': { vi: 'Chỉnh sửa cuộc họp', en: 'Edit meeting' },
-    'meeting.editDialog.desc': { vi: 'Sửa tiêu đề và mô tả.', en: 'Edit title and description.' },
+    'meeting.editDialog.title': {
+        vi: 'Chỉnh sửa cuộc họp',
+        en: 'Edit meeting',
+    },
+    'meeting.editDialog.desc': {
+        vi: 'Sửa tiêu đề và mô tả.',
+        en: 'Edit title and description.',
+    },
     'meeting.editDialog.save': { vi: 'Lưu thay đổi', en: 'Save changes' },
 
     // ─── Loading State ───────────────────────────────────────────────────
-    'loading.workspace': { vi: 'Đang chuẩn bị workspace', en: 'Preparing workspace' },
-    'loading.session': { vi: 'Đang kiểm tra phiên...', en: 'Checking session...' },
+    'loading.workspace': {
+        vi: 'Đang chuẩn bị workspace',
+        en: 'Preparing workspace',
+    },
+    'loading.session': {
+        vi: 'Đang kiểm tra phiên...',
+        en: 'Checking session...',
+    },
 
     // ─── Project Tasks Panel ─────────────────────────────────────────────
-    'projectTasks.loading': { vi: 'Đang tải công việc...', en: 'Loading tasks...' },
+    'projectTasks.loading': {
+        vi: 'Đang tải công việc...',
+        en: 'Loading tasks...',
+    },
     'projectTasks.emptyTitle': { vi: 'Chưa có công việc', en: 'No tasks yet' },
-    'projectTasks.emptyDescReady': { vi: 'Nhấn nút tạo công việc để AI tự động trích xuất việc cần làm từ nội dung cuộc họp.', en: 'Click generate tasks to let AI extract action items from the meeting.' },
-    'projectTasks.emptyDescNotReady': { vi: 'Cần có transcript để tạo danh sách công việc tự động.', en: 'Transcript is needed to automatically generate tasks.' },
+    'projectTasks.emptyDescReady': {
+        vi: 'Nhấn nút tạo công việc để AI tự động trích xuất việc cần làm từ nội dung cuộc họp.',
+        en: 'Click generate tasks to let AI extract action items from the meeting.',
+    },
+    'projectTasks.emptyDescNotReady': {
+        vi: 'Cần có transcript để tạo danh sách công việc tự động.',
+        en: 'Transcript is needed to automatically generate tasks.',
+    },
     'projectTasks.generating': { vi: 'Đang tạo...', en: 'Generating...' },
-    'projectTasks.generateBtn': { vi: 'Tạo danh sách công việc', en: 'Generate tasks' },
+    'projectTasks.generateBtn': {
+        vi: 'Tạo danh sách công việc',
+        en: 'Generate tasks',
+    },
     'projectTasks.action': { vi: 'Hành động', en: 'Action' },
     'projectTasks.changeStatus': { vi: 'Đổi trạng thái', en: 'Change status' },
-    'projectTasks.changePriority': { vi: 'Đổi mức ưu tiên', en: 'Change priority' },
-    'projectTasks.regenerate': { vi: 'Tạo lại danh sách', en: 'Regenerate tasks' },
+    'projectTasks.changePriority': {
+        vi: 'Đổi mức ưu tiên',
+        en: 'Change priority',
+    },
+    'projectTasks.regenerate': {
+        vi: 'Tạo lại danh sách',
+        en: 'Regenerate tasks',
+    },
 } as const satisfies Dict;
 
 export type TranslationKey = keyof typeof dictionaries;

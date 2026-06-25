@@ -71,7 +71,9 @@ export function Hero() {
                                 track('landing_secondary_cta_clicked')
                             }
                         >
-                            <Link href="/meetings">{t('hero.cta.secondary')}</Link>
+                            <Link href="/meetings">
+                                {t('hero.cta.secondary')}
+                            </Link>
                         </Button>
                     </div>
                 </Reveal>

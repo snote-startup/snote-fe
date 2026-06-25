@@ -119,11 +119,13 @@ export function Login() {
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
-                        {([
-                            t('login.feature1'),
-                            t('login.feature2'),
-                            t('login.feature3'),
-                        ] as const).map((item) => (
+                        {(
+                            [
+                                t('login.feature1'),
+                                t('login.feature2'),
+                                t('login.feature3'),
+                            ] as const
+                        ).map((item) => (
                             <div
                                 key={item}
                                 className="border-border bg-muted/30 text-muted-foreground flex items-start gap-3 rounded-xl border p-4 text-sm"
@@ -212,7 +214,9 @@ export function Login() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder={t('login.passwordPlaceholder')}
+                                            placeholder={t(
+                                                'login.passwordPlaceholder',
+                                            )}
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)

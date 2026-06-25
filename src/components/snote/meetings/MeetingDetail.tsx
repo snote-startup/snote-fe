@@ -203,7 +203,9 @@ function UploadSection({ projectId, onUploadSuccess }: UploadSectionProps) {
                         <div>
                             <p className="text-foreground text-sm font-medium">
                                 {t('meeting.upload.dragDrop')}{' '}
-                                <span className="text-primary">{t('meeting.upload.browse')}</span>
+                                <span className="text-primary">
+                                    {t('meeting.upload.browse')}
+                                </span>
                             </p>
                             <p className="text-muted-foreground mt-0.5 text-xs">
                                 {t('meeting.upload.formats')}
@@ -301,7 +303,12 @@ function TranscriptPanel({
                         {t('meeting.transcript.title')}
                         {hasSegments && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
-                                ({t('meeting.transcript.segments').replace('{count}', String(transcript.length))})
+                                (
+                                {t('meeting.transcript.segments').replace(
+                                    '{count}',
+                                    String(transcript.length),
+                                )}
+                                )
                             </span>
                         )}
                     </h2>
@@ -341,7 +348,8 @@ function TranscriptPanel({
                     <div className="mx-4 flex flex-col items-center rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/40 dark:bg-red-950/20">
                         <AlertCircle className="mb-2 h-8 w-8 text-red-500" />
                         <p className="text-sm font-medium text-red-700 dark:text-red-400">
-                            {transcriptError.message || t('meeting.transcript.error')}
+                            {transcriptError.message ||
+                                t('meeting.transcript.error')}
                         </p>
                         <Button
                             variant="outline"
@@ -428,7 +436,10 @@ function TranscriptPanel({
                                             <div className="mb-1.5 flex items-center gap-2">
                                                 <span className="bg-muted inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-semibold">
                                                     <User className="text-muted-foreground h-3 w-3" />
-                                                    {segment.speaker || t('meeting.transcript.unknownSpeaker')}
+                                                    {segment.speaker ||
+                                                        t(
+                                                            'meeting.transcript.unknownSpeaker',
+                                                        )}
                                                 </span>
                                                 <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
                                                     <Clock className="h-3 w-3" />
@@ -442,7 +453,9 @@ function TranscriptPanel({
                                                 </span>
                                                 {isHighlighted && (
                                                     <span className="ml-auto rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
-                                                        {t('meeting.transcript.referenced')}
+                                                        {t(
+                                                            'meeting.transcript.referenced',
+                                                        )}
                                                     </span>
                                                 )}
                                             </div>
@@ -751,7 +764,9 @@ function ChatPanel({
                             }`}
                         >
                             <span className="text-muted-foreground mb-1 px-1 text-[10px] font-semibold tracking-wider uppercase">
-                                {msg.role === 'user' ? t('meeting.chat.you') : t('meeting.chat.assistant')}
+                                {msg.role === 'user'
+                                    ? t('meeting.chat.you')
+                                    : t('meeting.chat.assistant')}
                             </span>
                             <div
                                 className={`max-w-[90%] rounded-xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
@@ -826,14 +841,23 @@ function ChatPanel({
                                                             );
                                                         } else {
                                                             toast.info(
-                                                                t('meeting.chat.sourceNotFound'),
+                                                                t(
+                                                                    'meeting.chat.sourceNotFound',
+                                                                ),
                                                             );
                                                         }
                                                     }}
                                                     title={
                                                         isKnown
-                                                            ? t('meeting.chat.jumpToSource').replace('{ref}', ref)
-                                                            : t('meeting.chat.sourceNotFound')
+                                                            ? t(
+                                                                  'meeting.chat.jumpToSource',
+                                                              ).replace(
+                                                                  '{ref}',
+                                                                  ref,
+                                                              )
+                                                            : t(
+                                                                  'meeting.chat.sourceNotFound',
+                                                              )
                                                     }
                                                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors ${
                                                         isKnown
@@ -937,22 +961,25 @@ export function MeetingDetail() {
     const hasSegments = !!(transcript && transcript.length > 0);
     const transcriptSegmentIds = new Set((transcript ?? []).map((s) => s.id));
 
-    const handleReferenceClick = useCallback((segmentId: string) => {
-        setActiveReferences((prev) =>
-            prev.includes(segmentId) ? prev : [...prev, segmentId],
-        );
-        setTimeout(() => {
-            const el = segmentRefs.current.get(segmentId);
-            if (el) {
-                el.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                });
-            } else {
-                toast.info(t('meeting.chat.sourceNotFound'));
-            }
-        }, 50);
-    }, [t]);
+    const handleReferenceClick = useCallback(
+        (segmentId: string) => {
+            setActiveReferences((prev) =>
+                prev.includes(segmentId) ? prev : [...prev, segmentId],
+            );
+            setTimeout(() => {
+                const el = segmentRefs.current.get(segmentId);
+                if (el) {
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                    });
+                } else {
+                    toast.info(t('meeting.chat.sourceNotFound'));
+                }
+            }, 50);
+        },
+        [t],
+    );
 
     useEffect(() => {
         if (activeReferences.length === 0) return;
@@ -1017,9 +1044,7 @@ export function MeetingDetail() {
                     toast.success(t('meeting.editSuccess'));
                 },
                 onError: (err) => {
-                    setEditError(
-                        err.message || t('meeting.editError'),
-                    );
+                    setEditError(err.message || t('meeting.editError'));
                 },
             },
         );
@@ -1081,7 +1106,12 @@ export function MeetingDetail() {
                                                 •
                                             </span>
                                             <span className="text-muted-foreground">
-                                                {t('meeting.transcript.segments').replace('{count}', String(transcript!.length))}
+                                                {t(
+                                                    'meeting.transcript.segments',
+                                                ).replace(
+                                                    '{count}',
+                                                    String(transcript!.length),
+                                                )}
                                             </span>
                                         </>
                                     )}
@@ -1262,16 +1292,22 @@ export function MeetingDetail() {
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                {t('meeting.overview.audioStatus')}
+                                                {t(
+                                                    'meeting.overview.audioStatus',
+                                                )}
                                             </span>
                                             <div className="flex flex-1 flex-wrap items-center gap-2">
                                                 {project.audio_url ? (
                                                     <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                                                        {t('meeting.overview.audioUploaded')}
+                                                        {t(
+                                                            'meeting.overview.audioUploaded',
+                                                        )}
                                                     </span>
                                                 ) : (
                                                     <span className="font-medium text-amber-600 dark:text-amber-400">
-                                                        {t('meeting.overview.audioPending')}
+                                                        {t(
+                                                            'meeting.overview.audioPending',
+                                                        )}
                                                     </span>
                                                 )}
                                                 {project.audio_url && (
@@ -1284,14 +1320,18 @@ export function MeetingDetail() {
                                                         className="h-8"
                                                     >
                                                         <Download className="mr-2 h-3.5 w-3.5" />
-                                                        {t('meeting.downloadAudio')}
+                                                        {t(
+                                                            'meeting.downloadAudio',
+                                                        )}
                                                     </Button>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="border-border/60 flex items-start gap-4 border-b pb-3">
                                             <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                {t('meeting.overview.segmentsCount')}
+                                                {t(
+                                                    'meeting.overview.segmentsCount',
+                                                )}
                                             </span>
                                             <span className="text-foreground text-sm font-medium">
                                                 {transcript?.length ?? 0}
@@ -1300,7 +1340,9 @@ export function MeetingDetail() {
                                         {project.description && (
                                             <div className="flex items-start gap-4">
                                                 <span className="text-muted-foreground w-28 shrink-0 text-sm">
-                                                    {t('meetings.dialog.descLabel')}
+                                                    {t(
+                                                        'meetings.dialog.descLabel',
+                                                    )}
                                                 </span>
                                                 <span className="text-muted-foreground text-sm whitespace-pre-wrap">
                                                     {project.description}
@@ -1374,7 +1416,9 @@ export function MeetingDetail() {
             >
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>{t('meeting.editDialog.title')}</DialogTitle>
+                        <DialogTitle>
+                            {t('meeting.editDialog.title')}
+                        </DialogTitle>
                         <DialogDescription>
                             {t('meeting.editDialog.desc')}
                         </DialogDescription>

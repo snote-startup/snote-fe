@@ -167,7 +167,8 @@ export function MeetingsList() {
                                         {project.title}
                                     </h3>
                                     <p className="text-muted-foreground mb-3 line-clamp-2 text-sm">
-                                        {project.description || t('common.noDescription')}
+                                        {project.description ||
+                                            t('common.noDescription')}
                                     </p>
                                     <div className="flex items-center gap-2 text-xs font-medium">
                                         <span
@@ -234,7 +235,9 @@ export function MeetingsList() {
                                 </Label>
                                 <Input
                                     id="title"
-                                    placeholder={t('meetings.dialog.titlePlaceholder')}
+                                    placeholder={t(
+                                        'meetings.dialog.titlePlaceholder',
+                                    )}
                                     value={newTitle}
                                     onChange={(e) =>
                                         setNewTitle(e.target.value)
@@ -252,7 +255,9 @@ export function MeetingsList() {
                                 </Label>
                                 <Textarea
                                     id="description"
-                                    placeholder={t('meetings.dialog.descPlaceholder')}
+                                    placeholder={t(
+                                        'meetings.dialog.descPlaceholder',
+                                    )}
                                     value={newDescription}
                                     onChange={(e) =>
                                         setNewDescription(e.target.value)

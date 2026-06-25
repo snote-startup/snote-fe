@@ -44,11 +44,10 @@ export async function createMixedAudioCapture({
 
     try {
         if (includeTabAudio) {
-            const displayStream =
-                await navigator.mediaDevices.getDisplayMedia({
-                    video: true,
-                    audio: true,
-                });
+            const displayStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: true,
+            });
 
             if (displayStream.getAudioTracks().length === 0) {
                 stopStreamTracks(displayStream);

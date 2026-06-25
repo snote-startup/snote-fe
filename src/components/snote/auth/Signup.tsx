@@ -121,11 +121,13 @@ export function Signup() {
                     </div>
 
                     <div className="mt-10 grid max-w-xl gap-3">
-                        {([
-                            t('register.feature1'),
-                            t('register.feature2'),
-                            t('register.feature3'),
-                        ] as const).map((item) => (
+                        {(
+                            [
+                                t('register.feature1'),
+                                t('register.feature2'),
+                                t('register.feature3'),
+                            ] as const
+                        ).map((item) => (
                             <div
                                 key={item}
                                 className="border-border bg-muted/30 text-muted-foreground flex items-start gap-3 rounded-xl border p-4 text-sm"
@@ -186,7 +188,9 @@ export function Signup() {
                                         <Input
                                             id="name"
                                             type="text"
-                                            placeholder={t('register.namePlaceholder')}
+                                            placeholder={t(
+                                                'register.namePlaceholder',
+                                            )}
                                             value={name}
                                             onChange={(event) =>
                                                 setName(event.target.value)
@@ -238,7 +242,9 @@ export function Signup() {
                                                     ? 'text'
                                                     : 'password'
                                             }
-                                            placeholder={t('register.passwordPlaceholder')}
+                                            placeholder={t(
+                                                'register.passwordPlaceholder',
+                                            )}
                                             value={password}
                                             onChange={(event) =>
                                                 setPassword(event.target.value)

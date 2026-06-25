@@ -39,9 +39,7 @@ export function Profile() {
                 <h1 className="text-foreground mb-2 text-3xl font-semibold">
                     {t('profile.title')}
                 </h1>
-                <p className="text-muted-foreground">
-                    {t('profile.subtitle')}
-                </p>
+                <p className="text-muted-foreground">{t('profile.subtitle')}</p>
             </div>
 
             <div className="border-border bg-card mb-6 rounded-xl border p-6">
@@ -89,7 +87,9 @@ export function Profile() {
 
                         <div className="space-y-5">
                             <div>
-                                <Label htmlFor="name">{t('profile.name')}</Label>
+                                <Label htmlFor="name">
+                                    {t('profile.name')}
+                                </Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -101,7 +101,9 @@ export function Profile() {
                             </div>
 
                             <div>
-                                <Label htmlFor="email">{t('login.email')}</Label>
+                                <Label htmlFor="email">
+                                    {t('login.email')}
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -224,7 +226,9 @@ export function Profile() {
                                 },
                                 {
                                     title: t('profile.notif.calendar'),
-                                    description: t('profile.notif.calendarDesc'),
+                                    description: t(
+                                        'profile.notif.calendarDesc',
+                                    ),
                                     checked: true,
                                 },
                                 {
