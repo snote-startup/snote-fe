@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
     useProjectTasks,
     useGenerateProjectTasks,
@@ -48,6 +48,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { useI18n } from '@/features/i18n/use-i18n';
+import { toast } from 'sonner';
 
 interface ProjectTasksPanelProps {
     projectId: string;
@@ -59,8 +60,11 @@ export function ProjectTasksPanel({
     hasSegments,
 }: ProjectTasksPanelProps) {
     const { t } = useI18n();
-    const { data: tasks, isLoading: isTasksLoading } =
-        useProjectTasks(projectId);
+    const {
+        data: tasks,
+        isLoading: isTasksLoading,
+        refetch: refetchTasks,
+    } = useProjectTasks(projectId);
     const generateMutation = useGenerateProjectTasks(projectId);
     const updateMutation = useUpdateTask(projectId);
     const deleteMutation = useDeleteTask(projectId);
@@ -68,6 +72,46 @@ export function ProjectTasksPanel({
     const [editingTask, setEditingTask] = useState<ProjectTask | null>(null);
     const [editContent, setEditContent] = useState('');
     const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
+
+    // Task generation polling state
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [pollCount, setPollCount] = useState(0);
+    const [initialTaskIds, setInitialTaskIds] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (!isGenerating || pollCount === 0) return;
+
+        const timer = setTimeout(async () => {
+            if (pollCount > 10) {
+                setIsGenerating(false);
+                setPollCount(0);
+                toast.error(
+                    t('projectTasks.generateTimeout') ||
+                        'Quá thời gian tạo công việc.',
+                );
+                return;
+            }
+
+            const result = await refetchTasks();
+            const currentTasks = result.data ?? [];
+            const currentIds = currentTasks.map((t) => t.id);
+            const isDifferent =
+                currentIds.length !== initialTaskIds.length ||
+                currentIds.some((id) => !initialTaskIds.includes(id));
+
+            if (
+                currentTasks.length > 0 &&
+                (initialTaskIds.length === 0 || isDifferent)
+            ) {
+                setIsGenerating(false);
+                setPollCount(0);
+            } else {
+                setPollCount((prev) => prev + 1);
+            }
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [isGenerating, pollCount, refetchTasks, initialTaskIds, t]);
 
     const statusConfig: Record<
         TaskStatus,
@@ -112,7 +156,15 @@ export function ProjectTasksPanel({
     };
 
     const handleGenerate = () => {
-        generateMutation.mutate();
+        setIsGenerating(true);
+        setPollCount(1);
+        setInitialTaskIds(tasks?.map((t) => t.id) ?? []);
+        generateMutation.mutate(undefined, {
+            onError: () => {
+                setIsGenerating(false);
+                setPollCount(0);
+            },
+        });
     };
 
     const handleStatusChange = (taskId: string, status: TaskStatus) => {
@@ -144,7 +196,18 @@ export function ProjectTasksPanel({
         });
     };
 
-    const sortedTasks = [...(tasks || [])].sort((a, b) => {
+    // Deduplicate tasks by id for display to handle potential duplicate tasks from backend
+    const uniqueTasks = useMemo(() => {
+        if (!tasks) return [];
+        const seen = new Set<string>();
+        return tasks.filter((t) => {
+            if (seen.has(t.id)) return false;
+            seen.add(t.id);
+            return true;
+        });
+    }, [tasks]);
+
+    const sortedTasks = [...uniqueTasks].sort((a, b) => {
         // Sort by status first (todo -> in_progress -> done), then by creation date
         const statusOrder = { todo: 0, in_progress: 1, done: 2 };
         if (statusOrder[a.status] !== statusOrder[b.status]) {
@@ -163,25 +226,27 @@ export function ProjectTasksPanel({
                     <ListTodo className="text-muted-foreground h-4 w-4" />
                     <h2 className="text-foreground text-sm font-semibold">
                         {t('tasks.title')}
-                        {tasks && tasks.length > 0 && (
+                        {uniqueTasks.length > 0 && (
                             <span className="text-muted-foreground ml-1.5 font-normal">
-                                ({tasks.length})
+                                ({uniqueTasks.length})
                             </span>
                         )}
                     </h2>
                 </div>
-                {isTasksLoading && (
+                {(isTasksLoading || isGenerating) && (
                     <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
                 )}
             </div>
 
             {/* Panel Body */}
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                {isTasksLoading ? (
+                {isTasksLoading || isGenerating ? (
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
-                            {t('projectTasks.loading')}
+                            {isGenerating
+                                ? t('projectTasks.generating') || 'Đang tạo...'
+                                : t('projectTasks.loading')}
                         </p>
                     </div>
                 ) : !tasks || tasks.length === 0 ? (

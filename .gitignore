@@ -49,3 +49,4 @@ next-env.d.ts
 AGENTS.md
 CLAUDE.md
 !/docs/final-ui-i18n-stream-polish-report.md
+!/docs/api-discovery-quota-task-sync-report.md

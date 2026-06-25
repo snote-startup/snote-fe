@@ -994,6 +994,74 @@ export const dictionaries = {
         vi: 'Tạo lại danh sách',
         en: 'Regenerate tasks',
     },
+    'projectTasks.generateTimeout': {
+        vi: 'Quá thời gian tạo công việc. Vui lòng kiểm tra lại sau.',
+        en: 'Generating tasks timed out. Please check again later.',
+    },
+    'billing.title': {
+        vi: 'Gói dịch vụ',
+        en: 'Billing Plans',
+    },
+    'billing.subtitle': {
+        vi: 'Xem trạng thái tài khoản, hạn mức dự án và nâng cấp gói dịch vụ.',
+        en: 'View account status, project limits, and upgrade your plan.',
+    },
+    'billing.statusActive': {
+        vi: 'Tài khoản đang hoạt động',
+        en: 'Active Account',
+    },
+    'billing.statusDesc': {
+        vi: 'Hạn mức tạo dự án của bạn được quản lý dựa trên gói tài khoản.',
+        en: 'Your project creation limit is managed based on your account plan.',
+    },
+    'billing.projectsUsage': {
+        vi: 'Dự án đã tạo: {used} / {limit} dự án',
+        en: 'Projects created: {used} / {limit} projects',
+    },
+    'billing.planFree': {
+        vi: 'Gói Miễn phí (Free)',
+        en: 'Free Plan',
+    },
+    'billing.planPremium': {
+        vi: 'Gói Cao cấp (Premium)',
+        en: 'Premium Plan',
+    },
+    'billing.upgradeBtn': {
+        vi: 'Nâng cấp Premium',
+        en: 'Upgrade to Premium',
+    },
+    'billing.upgradeDesc': {
+        vi: 'Nâng cấp lên gói Premium để tăng hạn mức tạo dự án lên 20 dự án chỉ với 70.000đ.',
+        en: 'Upgrade to Premium plan to increase project limit to 20 projects for only 70,000 VND.',
+    },
+    'billing.updatePayment': {
+        vi: 'Cập nhật thanh toán',
+        en: 'Update payment',
+    },
+    'billing.downloadInvoice': {
+        vi: 'Tải hóa đơn',
+        en: 'Download invoices',
+    },
+    'billing.loading': {
+        vi: 'Đang tải thông tin hạn mức...',
+        en: 'Loading quota information...',
+    },
+    'billing.generatingUrl': {
+        vi: 'Đang tạo liên kết thanh toán...',
+        en: 'Generating payment link...',
+    },
+    'payment.success.title': {
+        vi: 'Thanh toán thành công',
+        en: 'Payment Successful',
+    },
+    'payment.success.desc': {
+        vi: 'Giao dịch nâng cấp hạn mức dự án của bạn đã được xử lý thành công.',
+        en: 'Your project limit upgrade transaction has been processed successfully.',
+    },
+    'payment.success.back': {
+        vi: 'Quay lại gói dịch vụ',
+        en: 'Back to Billing Plans',
+    },
 } as const satisfies Dict;
 
 export type TranslationKey = keyof typeof dictionaries;
