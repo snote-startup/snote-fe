@@ -273,7 +273,7 @@ function TranscriptPanel({
 
     useEffect(() => {
         if (!isPolling) return;
-        const timer = setTimeout(() => setPollTimeout(true), 60_000);
+        const timer = setTimeout(() => setPollTimeout(true), 90_000);
         return () => clearTimeout(timer);
     }, [isPolling]);
 
@@ -384,7 +384,10 @@ function TranscriptPanel({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => refetchTranscript()}
+                                    onClick={() => {
+                                        setPollTimeout(false);
+                                        refetchTranscript();
+                                    }}
                                 >
                                     {t('meeting.transcript.checkAgain')}
                                 </Button>
@@ -948,6 +951,16 @@ export function MeetingDetail() {
     const [activeReferences, setActiveReferences] = useState<string[]>([]);
     const [isTranscriptPolling, setIsTranscriptPolling] = useState(false);
     const segmentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+    // Auto-poll transcript if audio exists but segments don't
+    useEffect(() => {
+        if (project?.audio_url && transcript && transcript.length === 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsTranscriptPolling(true);
+        } else if (transcript && transcript.length > 0) {
+            setIsTranscriptPolling(false);
+        }
+    }, [project?.audio_url, transcript]);
 
     // Dialog & Edit States
     const [isEditing, setIsEditing] = useState(false);
