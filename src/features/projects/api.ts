@@ -87,7 +87,7 @@ export async function uploadProjectAudio(
     formData.append('audio', file);
 
     // Do NOT set Content-Type manually — browser must set multipart boundary.
-    await apiClient.post(`/project/${id}/transcript`, formData, {
+    await apiClient.post(`/project/${id}/upload`, formData, {
         headers: {
             // Override default application/json; let axios set multipart correctly
             'Content-Type': undefined,
