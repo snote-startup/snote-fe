@@ -31,21 +31,21 @@ export function Hero() {
                 {/* Text centered */}
                 <Reveal className="mx-auto max-w-3xl text-center">
                     {/* Badge */}
-                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-xs font-medium text-violet-300">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-xs font-medium text-violet-700 dark:text-violet-300">
                         <Sparkles className="h-3.5 w-3.5" />
                         {t('hero.badge')}
                     </div>
 
                     {/* Headline */}
-                    <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-100 sm:text-5xl lg:text-6xl">
+                    <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-zinc-100">
                         {t('hero.title.line1')}{' '}
-                        <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent dark:from-violet-400 dark:via-purple-400 dark:to-indigo-400">
                             {t('hero.title.line2')}
                         </span>
                     </h1>
 
                     {/* Subheadline */}
-                    <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
+                    <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-zinc-400">
                         {t('hero.subtitle')}
                     </p>
 
@@ -66,7 +66,7 @@ export function Hero() {
                             asChild
                             size="lg"
                             variant="ghost"
-                            className="h-12 border border-white/[0.1] px-8 text-zinc-300 hover:bg-white/[0.06] hover:text-zinc-100"
+                            className="h-12 border border-slate-200 px-8 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-white/[0.1] dark:text-zinc-300 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                             onClick={() =>
                                 track('landing_secondary_cta_clicked')
                             }
@@ -87,7 +87,7 @@ export function Hero() {
             </div>
 
             {/* Bottom fade to next section */}
-            <div className="pointer-events-none relative z-10 h-24 bg-gradient-to-b from-transparent to-[#09090b]" />
+            <div className="to-background pointer-events-none relative z-10 h-24 bg-gradient-to-b from-transparent" />
         </CursorReactiveBackground>
     );
 }

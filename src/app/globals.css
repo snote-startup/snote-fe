@@ -582,10 +582,17 @@ body.cursor-none [contenteditable] {
     .landing-grid-bg {
         background-image: radial-gradient(
             circle,
-            rgb(255 255 255 / 0.04) 1px,
+            rgb(15 23 42 / 0.08) 1px,
             transparent 1px
         );
         background-size: 32px 32px;
+    }
+    .dark .landing-grid-bg {
+        background-image: radial-gradient(
+            circle,
+            rgb(255 255 255 / 0.04) 1px,
+            transparent 1px
+        );
     }
 }
 

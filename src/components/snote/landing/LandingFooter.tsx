@@ -43,17 +43,17 @@ export function LandingFooter() {
             <section className="py-20 sm:py-28">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <Reveal>
-                        <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.03] p-10 text-center sm:p-16">
+                        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50/80 p-10 text-center sm:p-16 dark:border-white/[0.08] dark:bg-white/[0.03]">
                             {/* Glow behind */}
                             <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(124_58_237_/_0.08),transparent_60%)]" />
 
-                            <p className="mb-4 text-sm font-semibold text-violet-400">
+                            <p className="mb-4 text-sm font-semibold text-violet-600 dark:text-violet-400">
                                 {t('footer.cta.label')}
                             </p>
-                            <h2 className="mb-5 text-3xl leading-tight font-semibold tracking-tight text-zinc-100 sm:text-4xl lg:text-5xl">
+                            <h2 className="mb-5 text-3xl leading-tight font-semibold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-zinc-100">
                                 {t('footer.cta.title')}
                             </h2>
-                            <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-zinc-400">
+                            <p className="text-slate-650 mx-auto mb-8 max-w-xl text-base leading-relaxed dark:text-zinc-400">
                                 {t('footer.cta.subtitle')}
                             </p>
                             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -74,7 +74,7 @@ export function LandingFooter() {
                                     asChild
                                     size="lg"
                                     variant="ghost"
-                                    className="h-12 border border-white/[0.1] px-8 text-zinc-300 hover:bg-white/[0.06] hover:text-zinc-100"
+                                    className="h-12 border border-slate-200 px-8 text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-white/[0.1] dark:text-zinc-300 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                                 >
                                     <Link href="/login">
                                         {t('footer.cta.login')}
@@ -87,7 +87,7 @@ export function LandingFooter() {
             </section>
 
             {/* ── Footer links ── */}
-            <div className="border-t border-white/[0.06]">
+            <div className="border-t border-slate-200 dark:border-white/[0.06]">
                 <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[240px_repeat(3,1fr)]">
                         {/* Brand */}
@@ -98,10 +98,10 @@ export function LandingFooter() {
                                     alt="Snote"
                                     width={100}
                                     height={28}
-                                    className="h-auto w-[92px] brightness-0 invert"
+                                    className="h-auto w-[92px] dark:brightness-0 dark:invert"
                                 />
                             </Link>
-                            <p className="mt-3 max-w-xs text-sm leading-6 text-zinc-500">
+                            <p className="mt-3 max-w-xs text-sm leading-6 text-slate-500 dark:text-zinc-500">
                                 {t('footer.brand')}
                             </p>
                         </div>
@@ -109,7 +109,7 @@ export function LandingFooter() {
                         {/* Links */}
                         {footerLinks.map(({ section, links }) => (
                             <div key={section}>
-                                <p className="mb-4 text-xs font-semibold tracking-wider text-zinc-400 uppercase">
+                                <p className="mb-4 text-xs font-semibold tracking-wider text-slate-800 uppercase dark:text-zinc-400">
                                     {section}
                                 </p>
                                 <ul className="space-y-2.5">
@@ -117,7 +117,7 @@ export function LandingFooter() {
                                         <li key={label}>
                                             <Link
                                                 href={href}
-                                                className="text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+                                                className="text-sm text-slate-500 transition-colors hover:text-slate-800 dark:text-zinc-500 dark:hover:text-zinc-300"
                                             >
                                                 {label}
                                             </Link>
@@ -129,15 +129,15 @@ export function LandingFooter() {
                     </div>
 
                     {/* Bottom bar */}
-                    <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 sm:flex-row">
+                    <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row dark:border-white/[0.06]">
                         <p
-                            className="text-xs text-zinc-600"
+                            className="text-xs text-slate-500 dark:text-zinc-600"
                             suppressHydrationWarning
                         >
                             © {new Date().getFullYear()} Snote.{' '}
                             {t('footer.copyright')}
                         </p>
-                        <p className="text-xs text-zinc-600">
+                        <p className="text-xs text-slate-500 dark:text-zinc-600">
                             {t('footer.tagline')}
                         </p>
                     </div>
