@@ -863,20 +863,20 @@ export const dictionaries = {
         en: 'Failed to load transcript.',
     },
     'meeting.transcript.generating': {
-        vi: 'Đang tạo transcript',
-        en: 'Generating transcript',
+        vi: 'Đang tạo transcript từ audio...',
+        en: 'Generating transcript from audio...',
     },
     'meeting.transcript.generatingDesc': {
         vi: 'Vui lòng đợi vài phút trong khi hệ thống xử lý audio.',
         en: 'Please wait a few minutes while the system processes the audio.',
     },
     'meeting.transcript.processing': {
-        vi: 'Đang xử lý nội dung',
-        en: 'Processing content',
+        vi: 'Transcript chưa sẵn sàng.',
+        en: 'Transcript is not ready yet.',
     },
     'meeting.transcript.processingDesc': {
-        vi: 'Quá trình có thể mất thời gian lâu hơn bình thường.',
-        en: 'The process might take longer than usual.',
+        vi: 'Vui lòng thử lại sau ít phút.',
+        en: 'Please try again in a few minutes.',
     },
     'meeting.transcript.checkAgain': { vi: 'Kiểm tra lại', en: 'Check again' },
     'meeting.transcript.empty': {
