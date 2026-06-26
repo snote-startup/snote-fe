@@ -1,8 +1,8 @@
 ## Summary
 
-Implemented pragmatic Montserrat migration using `next/font/google`.
+Implemented exact local Vietnamized Montserrat font package from `public/fonts/montserrat-vietnamized`.
 
-The exact third-party “Montserrat Việt hoá” local package remains pending design-provided files and license confirmation. No font files were downloaded from the requested website and no unverified font assets were committed.
+The app now uses `next/font/local` for the project-provided Montserrat Việt hoá `.otf` files. Google Montserrat from `next/font/google` was removed; `Geist_Mono` remains for monospace text.
 
 ## Current Font Setup
 
@@ -17,15 +17,19 @@ Previous global setup:
 - `html` applies `font-sans`.
 - `tailwind.config.ts` does not define a custom font family, only font weights.
 
-Current global setup after migration:
+Current global setup after local font migration:
 
-- `src/app/layout.tsx` imports `Montserrat` and `Geist_Mono` from `next/font/google`.
-- `Montserrat` uses subsets `latin` and `vietnamese`, `display: 'swap'`, weights `400`, `500`, `600`, `700`, and `800`.
-- `body` applies `--font-snote` and `--font-geist-mono`.
+- `src/app/layout.tsx` imports `localFont` from `next/font/local` and `Geist_Mono` from `next/font/google`.
+- `snoteFont` maps local files from `public/fonts/montserrat-vietnamized`.
+- Weights `100` through `900` are mapped for normal style.
+- Weights `100` through `900` are mapped for italic style.
+- `body` applies `snoteFont.variable`, `snoteFont.className`, and `--font-geist-mono`.
 - `src/app/globals.css` maps:
   - `--font-sans: var(--font-snote), Montserrat, Inter, system-ui, sans-serif`
   - `--font-mono: var(--font-geist-mono)`
   - `--font-heading: var(--font-snote), Montserrat, Inter, system-ui, sans-serif`
+- `src/app/globals.css` applies the font stack to `html` and `body`.
+- `button`, `input`, `textarea`, and `select` inherit the local UI font.
 
 Next.js 16 local font guidance was checked in `node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md`. The recommended path for project-owned font files is `next/font/local`, with paths resolved relative to the file where `localFont` is called.
 
@@ -43,35 +47,36 @@ External reference notes:
 
 ## Asset/License Status
 
-Repo scan found no local font files:
+Repo local font files now present:
 
-- No `public/fonts/montserrat-vietnamized/*.woff2`
-- No `.woff`, `.woff2`, `.ttf`, or `.otf` Montserrat assets under `public` or `src`
+- `public/fonts/montserrat-vietnamized/*.otf`
+- `public/fonts/montserrat-vietnamized/SIL Open Font License.txt`
 
 License/asset verification:
 
 - The requested Fonttiengviet URL was attempted but returned `502` through the web fetch tool.
-- No design-provided license confirmation was present in the repo.
-- No approved `.woff2`/`.ttf` files were present.
+- The repo now includes `SIL Open Font License.txt` alongside the provided `.otf` files.
+- No zip files were committed.
 
 ## Implementation Done or Blocked
 
-Implementation status: **Implemented pragmatic Google Montserrat migration**.
+Implementation status: **Implemented exact local Vietnamized Montserrat font package**.
 
-No third-party local font files were applied because committing or downloading unverified font files would violate the audit constraints.
+Implemented exact local Vietnamized Montserrat font package from `public/fonts/montserrat-vietnamized`. Used `next/font/local`. Mapped weights `100`-`900` normal and `100`-`900` italic where files exist. Google Montserrat from `next/font/google` was removed. Body uses `snoteFont.className` plus the `--font-snote` variable. Global CSS applies font to `html`, `body`, and form controls.
 
-Safe integration path once assets are provided:
+Applied files:
 
-1. Put approved files under `public/fonts/montserrat-vietnamized/`.
-2. Use `next/font/local` in `src/app/layout.tsx`.
-3. Expose a global variable such as `--font-snote`.
-4. Keep fallback stack:
+1. `src/app/layout.tsx`
+2. `src/app/globals.css`
+3. `public/fonts/montserrat-vietnamized/`
+
+Fallback stack:
 
 ```css
 font-family: var(--font-snote), Montserrat, Inter, system-ui, sans-serif;
 ```
 
-5. Verify Vietnamese UI text:
+Vietnamese UI text to verify:
 
 - `Ghi âm cuộc họp`
 - `Nâng cấp Premium`
@@ -79,7 +84,7 @@ font-family: var(--font-snote), Montserrat, Inter, system-ui, sans-serif;
 
 ## Retry With Env File Token
 
-Font migration result:
+Previous font migration result:
 
 - Implemented pragmatic Montserrat migration using `next/font/google`.
 - Exact third-party Vietnamized Montserrat local package remains pending design-provided files/license.
@@ -109,14 +114,26 @@ Font asset status:
 - Exact design font local files are still pending.
 - `subsets: ['latin', 'vietnamese']` builds successfully with Next.js `16.2.6`.
 
-## Required Design Assets
+### Local Font Package Applied
 
-Design/team needs to provide:
+Implementation result:
 
-- Approved `.woff2` files, preferred for web delivery, or `.ttf` if `.woff2` is unavailable.
-- Weight/style mapping, for example regular/medium/semibold/bold and italic needs.
-- Written usage/license confirmation for this product.
-- Confirmation whether Google Fonts Montserrat is acceptable as a fallback or temporary substitute if the exact Vietnamized package is unavailable.
+- Implemented exact local Vietnamized Montserrat font package from `public/fonts/montserrat-vietnamized`.
+- Used `next/font/local`.
+- Mapped weights `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, and `900` for normal style.
+- Mapped weights `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, and `900` for italic style.
+- Google Montserrat from `next/font/google` removed.
+- Body uses `snoteFont.className` and `--font-snote`.
+- Global CSS applies the font to `html`, `body`, `button`, `input`, `textarea`, and `select`.
+- `Geist_Mono` remains for `--font-geist-mono`.
+
+## Future Design Assets
+
+Optional future improvements:
+
+- Provide `.woff2` versions if design wants smaller web font payloads than `.otf`.
+- Confirm whether `MontserratAlternates-ThinItalic.otf` should be used anywhere; it is not part of the current global UI font mapping.
+- Keep written usage/license confirmation with the provided `SIL Open Font License.txt`.
 
 ## Visual Risk
 
