@@ -32,6 +32,9 @@ export interface ProjectAudioStreamClient {
 export interface AudioCaptureOptions {
     includeTabAudio: boolean;
     includeMicrophone: boolean;
+    onDiagnosticsUpdate?: (
+        diagnostics: Partial<AudioStreamDiagnostics>,
+    ) => void;
 }
 
 export interface MixedAudioCapture {
@@ -46,6 +49,25 @@ export type StartCaptureOptions = {
     includeMicrophone: boolean;
     chunkMs?: number;
 };
+
+export type AudioCaptureMode = 'microphone' | 'meeting-tab';
+
+export interface AudioStreamDiagnostics {
+    browserUserAgent: string;
+    captureMode: AudioCaptureMode;
+    displayAudioTrackCount: number | null;
+    displayVideoTrackCount: number | null;
+    audioTrackLabels: string[];
+    audioTrackSettings: MediaTrackSettings[];
+    videoTrackSettings: MediaTrackSettings[];
+    microphoneIncluded: boolean;
+    mediaRecorderMimeSelected: string | null;
+    wsOpened: boolean;
+    chunkCount: number;
+    totalBytes: number;
+    stopReason: string | null;
+    audioUrlPollResult: string | null;
+}
 
 export interface StreamAudioFileOptions {
     projectId: string;

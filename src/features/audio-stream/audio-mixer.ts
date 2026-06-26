@@ -1,22 +1,22 @@
 import type { AudioCaptureOptions, MixedAudioCapture } from './types';
 
-export const PREFERRED_AUDIO_MIME_TYPE = 'audio/webm;codecs=opus';
-export const FALLBACK_AUDIO_MIME_TYPE = 'audio/webm';
+export const MEDIA_RECORDER_MIME_TYPE_CANDIDATES = [
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'video/webm;codecs=vp8,opus',
+    'video/webm',
+] as const;
 
 export function getSupportedWebmMimeType() {
     if (typeof MediaRecorder === 'undefined') {
-        return FALLBACK_AUDIO_MIME_TYPE;
+        return '';
     }
 
-    if (MediaRecorder.isTypeSupported(PREFERRED_AUDIO_MIME_TYPE)) {
-        return PREFERRED_AUDIO_MIME_TYPE;
-    }
-
-    if (MediaRecorder.isTypeSupported(FALLBACK_AUDIO_MIME_TYPE)) {
-        return FALLBACK_AUDIO_MIME_TYPE;
-    }
-
-    return '';
+    return (
+        MEDIA_RECORDER_MIME_TYPE_CANDIDATES.find((type) =>
+            MediaRecorder.isTypeSupported(type),
+        ) ?? ''
+    );
 }
 
 function stopStreamTracks(stream?: MediaStream | null) {
@@ -30,6 +30,7 @@ export function stopMixedAudioCapture(capture?: MixedAudioCapture | null) {
 export async function createMixedAudioCapture({
     includeTabAudio,
     includeMicrophone,
+    onDiagnosticsUpdate,
 }: AudioCaptureOptions): Promise<MixedAudioCapture> {
     if (typeof window === 'undefined' || !navigator.mediaDevices) {
         throw new Error('stream.errorGeneric');
@@ -62,7 +63,22 @@ export async function createMixedAudioCapture({
                 throw error;
             }
 
-            if (displayStream.getAudioTracks().length === 0) {
+            const audioTracks = displayStream.getAudioTracks();
+            const videoTracks = displayStream.getVideoTracks();
+
+            onDiagnosticsUpdate?.({
+                displayAudioTrackCount: audioTracks.length,
+                displayVideoTrackCount: videoTracks.length,
+                audioTrackLabels: audioTracks.map((track) => track.label),
+                audioTrackSettings: audioTracks.map((track) =>
+                    track.getSettings(),
+                ),
+                videoTrackSettings: videoTracks.map((track) =>
+                    track.getSettings(),
+                ),
+            });
+
+            if (audioTracks.length === 0) {
                 stopStreamTracks(displayStream);
                 throw new Error('stream.errorNoTabAudio');
             }
@@ -87,6 +103,9 @@ export async function createMixedAudioCapture({
                 throw error;
             }
             sourceStreams.push(micStream);
+            onDiagnosticsUpdate?.({
+                microphoneIncluded: true,
+            });
         }
 
         const AudioContextConstructor =

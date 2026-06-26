@@ -8,6 +8,7 @@ import {
     FileAudio,
     Loader2,
     Mic,
+    MonitorUp,
     Square,
     UploadCloud,
 } from 'lucide-react';
@@ -21,6 +22,8 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 import { projectKeys } from '@/features/projects/hooks';
 import { useProjectAudioWebSocketStream } from '@/features/audio-stream/hooks';
@@ -68,6 +71,8 @@ export function ProjectAudioStreamDebugPanel({
         useState<ProjectAudioStreamStatus>('idle');
     const [fileError, setFileError] = useState<string | null>(null);
     const [fileAudioUrl, setFileAudioUrl] = useState<string | null>(null);
+    const [includeMicrophoneWithTab, setIncludeMicrophoneWithTab] =
+        useState(false);
 
     const stream = useProjectAudioWebSocketStream(projectId);
 
@@ -119,9 +124,17 @@ export function ProjectAudioStreamDebugPanel({
         }
     };
 
-    const handleStartCapture = async () => {
+    const handleStartTabCapture = async () => {
         await stream.startCapture({
             includeTabAudio: true,
+            includeMicrophone: includeMicrophoneWithTab,
+            chunkMs: 1000,
+        });
+    };
+
+    const handleStartMicrophoneCapture = async () => {
+        await stream.startCapture({
+            includeTabAudio: false,
             includeMicrophone: true,
             chunkMs: 1000,
         });
@@ -136,7 +149,9 @@ export function ProjectAudioStreamDebugPanel({
     const isCaptureActive =
         stream.status === 'streaming' ||
         stream.status === 'capturing' ||
-        stream.status === 'connecting';
+        stream.status === 'connecting' ||
+        stream.status === 'connected' ||
+        stream.status === 'stopping';
     const isFileBusy =
         fileStatus === 'connecting' ||
         fileStatus === 'connected' ||
@@ -184,13 +199,16 @@ export function ProjectAudioStreamDebugPanel({
                             <p className="text-muted-foreground text-xs">
                                 {t('stream.readyDesc')}
                             </p>
+                            <p className="text-muted-foreground mt-1 text-xs">
+                                {t('stream.tabAudioTip')}
+                            </p>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <Input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="audio/webm,.webm"
+                                accept="audio/*,.webm"
                                 className="hidden"
                                 onChange={(event) => {
                                     setSelectedFile(
@@ -201,7 +219,7 @@ export function ProjectAudioStreamDebugPanel({
                                 }}
                             />
                             <Button
-                                onClick={handleStartCapture}
+                                onClick={handleStartMicrophoneCapture}
                                 disabled={isCaptureActive || isFileBusy}
                             >
                                 {isCaptureActive ? (
@@ -209,14 +227,27 @@ export function ProjectAudioStreamDebugPanel({
                                 ) : (
                                     <Mic className="mr-2 h-4 w-4" />
                                 )}
-                                {t('stream.startCapture')}
+                                {t('stream.recordMicrophone')}
+                            </Button>
+                            <Button
+                                onClick={handleStartTabCapture}
+                                disabled={isCaptureActive || isFileBusy}
+                                variant="outline"
+                            >
+                                {isCaptureActive ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <MonitorUp className="mr-2 h-4 w-4" />
+                                )}
+                                {t('stream.recordMeetingTab')}
                             </Button>
                             <Button
                                 variant="outline"
                                 onClick={handleStopCapture}
                                 disabled={
                                     stream.status !== 'streaming' &&
-                                    stream.status !== 'capturing'
+                                    stream.status !== 'capturing' &&
+                                    stream.status !== 'connected'
                                 }
                                 className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400"
                             >
@@ -236,6 +267,21 @@ export function ProjectAudioStreamDebugPanel({
                                 {t('stream.streamFile')}
                             </Button>
                         </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            id="include-microphone-with-tab"
+                            checked={includeMicrophoneWithTab}
+                            onCheckedChange={setIncludeMicrophoneWithTab}
+                            disabled={isCaptureActive || isFileBusy}
+                        />
+                        <Label
+                            htmlFor="include-microphone-with-tab"
+                            className="text-muted-foreground text-xs"
+                        >
+                            {t('stream.includeMicrophone')}
+                        </Label>
                     </div>
 
                     {selectedFile && !isFileBusy && (
@@ -290,6 +336,22 @@ export function ProjectAudioStreamDebugPanel({
                             </Button>
                         </div>
                     )}
+
+                    {process.env.NODE_ENV === 'development' &&
+                        stream.diagnostics && (
+                            <details className="rounded-lg border border-dashed p-3 text-xs">
+                                <summary className="cursor-pointer font-medium">
+                                    {t('stream.devDiagnostics')}
+                                </summary>
+                                <pre className="mt-3 max-h-72 overflow-auto break-words whitespace-pre-wrap">
+                                    {JSON.stringify(
+                                        stream.diagnostics,
+                                        null,
+                                        2,
+                                    )}
+                                </pre>
+                            </details>
+                        )}
                 </div>
             </CollapsibleContent>
         </Collapsible>

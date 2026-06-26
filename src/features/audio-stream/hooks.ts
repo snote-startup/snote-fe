@@ -14,6 +14,8 @@ import {
     pollProjectAudioUrl,
 } from './test-utils';
 import type {
+    AudioCaptureMode,
+    AudioStreamDiagnostics,
     MixedAudioCapture,
     ProjectAudioStreamClient,
     ProjectAudioStreamStatus,
@@ -28,6 +30,34 @@ function toErrorMessage(error: unknown) {
     }
 
     return 'stream.errorGeneric';
+}
+
+function createInitialDiagnostics({
+    captureMode,
+    includeMicrophone,
+    mimeType,
+}: {
+    captureMode: AudioCaptureMode;
+    includeMicrophone: boolean;
+    mimeType: string;
+}): AudioStreamDiagnostics {
+    return {
+        browserUserAgent:
+            typeof navigator === 'undefined' ? '' : navigator.userAgent,
+        captureMode,
+        displayAudioTrackCount: null,
+        displayVideoTrackCount: null,
+        audioTrackLabels: [],
+        audioTrackSettings: [],
+        videoTrackSettings: [],
+        microphoneIncluded: includeMicrophone,
+        mediaRecorderMimeSelected: mimeType,
+        wsOpened: false,
+        chunkCount: 0,
+        totalBytes: 0,
+        stopReason: null,
+        audioUrlPollResult: null,
+    };
 }
 
 export function useProjectAudioWebSocketStream(projectId: string) {
@@ -48,6 +78,17 @@ export function useProjectAudioWebSocketStream(projectId: string) {
     const [audioUrlAfterClose, setAudioUrlAfterClose] = useState<string | null>(
         null,
     );
+    const [diagnostics, setDiagnostics] =
+        useState<AudioStreamDiagnostics | null>(null);
+
+    const updateDiagnostics = useCallback(
+        (patch: Partial<AudioStreamDiagnostics>) => {
+            setDiagnostics((current) =>
+                current ? { ...current, ...patch } : current,
+            );
+        },
+        [],
+    );
 
     const cleanupCapture = useCallback(() => {
         stopMixedAudioCapture(captureRef.current);
@@ -59,16 +100,20 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         clientRef.current = null;
     }, []);
 
-    const cleanupAfterRecorderError = useCallback(() => {
-        if (recorderRef.current?.state === 'recording') {
-            recorderRef.current.stop();
-        }
-        recorderRef.current = null;
-        pendingSendsRef.current = [];
-        cleanupCapture();
-        closeClient();
-        setEndedAt(new Date());
-    }, [cleanupCapture, closeClient]);
+    const cleanupAfterRecorderError = useCallback(
+        (stopReason = 'recorder error') => {
+            if (recorderRef.current?.state === 'recording') {
+                recorderRef.current.stop();
+            }
+            recorderRef.current = null;
+            pendingSendsRef.current = [];
+            cleanupCapture();
+            closeClient();
+            updateDiagnostics({ stopReason });
+            setEndedAt(new Date());
+        },
+        [cleanupCapture, closeClient, updateDiagnostics],
+    );
 
     const reset = useCallback(() => {
         if (recorderRef.current?.state === 'recording') {
@@ -88,15 +133,20 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         setStartedAt(null);
         setEndedAt(null);
         setAudioUrlAfterClose(null);
+        setDiagnostics(null);
     }, [cleanupCapture, closeClient]);
 
     const pollAudioUrlAfterClose = useCallback(async () => {
+        updateDiagnostics({ audioUrlPollResult: 'pending' });
         const audioUrl = await pollProjectAudioUrl(projectId, {
             intervalMs: 2000,
             timeoutMs: PROJECT_AUDIO_URL_POLL_TIMEOUT_MS,
         });
 
         setAudioUrlAfterClose(audioUrl);
+        updateDiagnostics({
+            audioUrlPollResult: audioUrl ? 'found' : 'timeout',
+        });
         await queryClient.invalidateQueries({
             queryKey: projectKeys.detail(projectId),
         });
@@ -109,7 +159,7 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         }
 
         return audioUrl;
-    }, [projectId, queryClient]);
+    }, [projectId, queryClient, updateDiagnostics]);
 
     const stopCapture = useCallback(async () => {
         if (isStoppingRef.current) {
@@ -119,6 +169,7 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         isStoppingRef.current = true;
         setStatus('stopping');
         setEndedAt(new Date());
+        updateDiagnostics({ stopReason: 'user stopped recording' });
 
         const recorder = recorderRef.current;
 
@@ -147,7 +198,12 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         setStatus('closed');
         await pollAudioUrlAfterClose();
         isStoppingRef.current = false;
-    }, [cleanupCapture, closeClient, pollAudioUrlAfterClose]);
+    }, [
+        cleanupCapture,
+        closeClient,
+        pollAudioUrlAfterClose,
+        updateDiagnostics,
+    ]);
 
     const startCapture = useCallback(
         async ({
@@ -183,6 +239,16 @@ export function useProjectAudioWebSocketStream(projectId: string) {
             }
 
             reset();
+            const captureMode: AudioCaptureMode = includeTabAudio
+                ? 'meeting-tab'
+                : 'microphone';
+            setDiagnostics(
+                createInitialDiagnostics({
+                    captureMode,
+                    includeMicrophone,
+                    mimeType,
+                }),
+            );
             setStatus('capturing');
             setError(null);
             setStartedAt(new Date());
@@ -191,6 +257,7 @@ export function useProjectAudioWebSocketStream(projectId: string) {
                 const capture = await createMixedAudioCapture({
                     includeTabAudio,
                     includeMicrophone,
+                    onDiagnosticsUpdate: updateDiagnostics,
                 });
                 captureRef.current = capture;
 
@@ -201,8 +268,12 @@ export function useProjectAudioWebSocketStream(projectId: string) {
                         if (event.type === 'message') {
                             setServerMessages((prev) => [...prev, event.data]);
                         }
+                        if (event.type === 'open') {
+                            updateDiagnostics({ wsOpened: true });
+                        }
                         if (event.type === 'error') {
                             setError(event.message);
+                            updateDiagnostics({ stopReason: event.message });
                         }
                     },
                 });
@@ -226,11 +297,26 @@ export function useProjectAudioWebSocketStream(projectId: string) {
                         .then((bytes) => {
                             setBytesSent((prev) => prev + bytes);
                             setChunksSent((prev) => prev + 1);
+                            setDiagnostics((current) =>
+                                current
+                                    ? {
+                                          ...current,
+                                          chunkCount: current.chunkCount + 1,
+                                          totalBytes:
+                                              current.totalBytes + bytes,
+                                      }
+                                    : current,
+                            );
                         })
                         .catch((sendError: unknown) => {
                             setError(toErrorMessage(sendError));
                             setStatus('error');
-                            cleanupAfterRecorderError();
+                            updateDiagnostics({
+                                stopReason: toErrorMessage(sendError),
+                            });
+                            cleanupAfterRecorderError(
+                                toErrorMessage(sendError),
+                            );
                         });
 
                     pendingSendsRef.current.push(sendPromise);
@@ -239,7 +325,8 @@ export function useProjectAudioWebSocketStream(projectId: string) {
                 recorder.onerror = () => {
                     setError('stream.errorGeneric');
                     setStatus('error');
-                    cleanupAfterRecorderError();
+                    updateDiagnostics({ stopReason: 'recorder error' });
+                    cleanupAfterRecorderError('recorder error');
                 };
 
                 recorder.start(chunkMs);
@@ -247,10 +334,17 @@ export function useProjectAudioWebSocketStream(projectId: string) {
             } catch (startError) {
                 setError(toErrorMessage(startError));
                 setStatus('error');
-                cleanupAfterRecorderError();
+                updateDiagnostics({ stopReason: toErrorMessage(startError) });
+                cleanupAfterRecorderError(toErrorMessage(startError));
             }
         },
-        [cleanupAfterRecorderError, projectId, reset, status],
+        [
+            cleanupAfterRecorderError,
+            projectId,
+            reset,
+            status,
+            updateDiagnostics,
+        ],
     );
 
     useEffect(() => {
@@ -272,6 +366,7 @@ export function useProjectAudioWebSocketStream(projectId: string) {
         startedAt,
         endedAt,
         audioUrlAfterClose,
+        diagnostics,
         startCapture,
         stopCapture,
         reset,

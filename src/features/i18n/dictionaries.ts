@@ -737,8 +737,8 @@ export const dictionaries = {
         en: 'Screen sharing was cancelled. Select a tab or meeting with audio to record.',
     },
     'stream.errorNoTabAudio': {
-        vi: 'Không tìm thấy âm thanh từ tab đã chọn. Hãy bật tuỳ chọn chia sẻ âm thanh khi chọn tab.',
-        en: 'No tab audio was detected. Enable audio sharing when selecting the tab.',
+        vi: 'Không nhận được âm thanh từ tab đã chọn. Hãy dùng Chrome/Chromium, chọn đúng tab Google Meet và bật chia sẻ âm thanh.',
+        en: 'No audio was received from the selected tab. Use Chrome/Chromium, select the Google Meet tab, and enable audio sharing.',
     },
     'stream.errorMicDenied': {
         vi: 'Không thể truy cập microphone. Bạn có thể cấp quyền microphone rồi thử lại.',
@@ -749,6 +749,26 @@ export const dictionaries = {
         en: 'Saving audio...',
     },
     'stream.streamFile': { vi: 'Tải audio lên', en: 'Upload audio' },
+    'stream.recordMicrophone': {
+        vi: 'Ghi bằng microphone',
+        en: 'Record microphone',
+    },
+    'stream.recordMeetingTab': {
+        vi: 'Ghi âm từ tab/cuộc họp',
+        en: 'Record meeting/tab audio',
+    },
+    'stream.includeMicrophone': {
+        vi: 'Ghi kèm microphone khi ghi từ tab/cuộc họp',
+        en: 'Include microphone when recording meeting/tab audio',
+    },
+    'stream.tabAudioTip': {
+        vi: 'Mẹo: trên Chrome/Chromium, hãy chọn đúng tab Google Meet và bật chia sẻ âm thanh.',
+        en: 'Tip: in Chrome/Chromium, select the Google Meet tab and enable audio sharing.',
+    },
+    'stream.devDiagnostics': {
+        vi: 'Chẩn đoán kỹ thuật',
+        en: 'Technical diagnostics',
+    },
     'stream.startCapture': {
         vi: 'Bắt đầu ghi âm',
         en: 'Start recording',
