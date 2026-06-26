@@ -55,6 +55,9 @@ interface ProjectTasksPanelProps {
     hasSegments: boolean;
 }
 
+const TASK_GENERATION_POLL_INTERVAL_MS = 3000;
+const TASK_GENERATION_MAX_POLLS = 30;
+
 export function ProjectTasksPanel({
     projectId,
     hasSegments,
@@ -82,33 +85,46 @@ export function ProjectTasksPanel({
         if (!isGenerating || pollCount === 0) return;
 
         const timer = setTimeout(async () => {
-            if (pollCount > 10) {
-                setIsGenerating(false);
-                setPollCount(0);
-                toast.error(
-                    t('projectTasks.generateTimeout') ||
-                        'Quá thời gian tạo công việc.',
-                );
-                return;
-            }
+            try {
+                const result = await refetchTasks();
+                const currentTasks = result.data ?? [];
+                const currentIds = currentTasks.map((t) => t.id);
+                const isDifferent =
+                    currentIds.length !== initialTaskIds.length ||
+                    currentIds.some((id) => !initialTaskIds.includes(id));
 
-            const result = await refetchTasks();
-            const currentTasks = result.data ?? [];
-            const currentIds = currentTasks.map((t) => t.id);
-            const isDifferent =
-                currentIds.length !== initialTaskIds.length ||
-                currentIds.some((id) => !initialTaskIds.includes(id));
+                if (
+                    currentTasks.length > 0 &&
+                    (initialTaskIds.length === 0 || isDifferent)
+                ) {
+                    setIsGenerating(false);
+                    setPollCount(0);
+                    return;
+                }
 
-            if (
-                currentTasks.length > 0 &&
-                (initialTaskIds.length === 0 || isDifferent)
-            ) {
-                setIsGenerating(false);
-                setPollCount(0);
-            } else {
+                if (pollCount >= TASK_GENERATION_MAX_POLLS) {
+                    setIsGenerating(false);
+                    setPollCount(0);
+                    toast.error(t('projectTasks.generateNotReady'));
+                    return;
+                }
+
+                setPollCount((prev) => prev + 1);
+            } catch (error) {
+                if (pollCount >= TASK_GENERATION_MAX_POLLS) {
+                    setIsGenerating(false);
+                    setPollCount(0);
+                    toast.error(
+                        error instanceof Error
+                            ? error.message
+                            : t('projectTasks.generateNotReady'),
+                    );
+                    return;
+                }
+
                 setPollCount((prev) => prev + 1);
             }
-        }, 1500);
+        }, TASK_GENERATION_POLL_INTERVAL_MS);
 
         return () => clearTimeout(timer);
     }, [isGenerating, pollCount, refetchTasks, initialTaskIds, t]);
@@ -156,10 +172,14 @@ export function ProjectTasksPanel({
     };
 
     const handleGenerate = () => {
+        if (isGenerating || generateMutation.isPending) return;
         setIsGenerating(true);
-        setPollCount(1);
+        setPollCount(0);
         setInitialTaskIds(tasks?.map((t) => t.id) ?? []);
         generateMutation.mutate(undefined, {
+            onSuccess: () => {
+                setPollCount(1);
+            },
             onError: () => {
                 setIsGenerating(false);
                 setPollCount(0);
@@ -263,11 +283,13 @@ export function ProjectTasksPanel({
                         <Button
                             onClick={handleGenerate}
                             disabled={
-                                !hasSegments || generateMutation.isPending
+                                !hasSegments ||
+                                isGenerating ||
+                                generateMutation.isPending
                             }
                             className="w-full max-w-[200px]"
                         >
-                            {generateMutation.isPending ? (
+                            {isGenerating || generateMutation.isPending ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     {t('projectTasks.generating')}
@@ -478,9 +500,11 @@ export function ProjectTasksPanel({
                                 variant="outline"
                                 className="text-muted-foreground w-full"
                                 onClick={handleGenerate}
-                                disabled={generateMutation.isPending}
+                                disabled={
+                                    isGenerating || generateMutation.isPending
+                                }
                             >
-                                {generateMutation.isPending ? (
+                                {isGenerating || generateMutation.isPending ? (
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (
                                     <Wand2 className="mr-2 h-4 w-4" />
