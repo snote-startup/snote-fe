@@ -21,7 +21,7 @@ import { LandingFooter } from './landing/LandingFooter';
 
 export function LandingPage() {
     return (
-        <div className="min-h-screen bg-[#09090b] text-zinc-100">
+        <div className="min-h-screen bg-transparent text-slate-900 dark:text-zinc-100">
             <LandingNavbar />
             <Hero />
             <Workflow />

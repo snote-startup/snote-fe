@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageToggle } from '@/features/i18n/LanguageToggle';
+import { ThemeToggle } from '@/components/snote/ThemeToggle';
 import { useI18n } from '@/features/i18n/use-i18n';
 
 export function LandingNavbar() {
@@ -22,7 +23,7 @@ export function LandingNavbar() {
     return (
         <header className="fixed top-0 right-0 left-0 z-50">
             <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-                <nav className="flex h-14 items-center justify-between rounded-2xl border border-white/[0.08] bg-zinc-950/60 px-4 backdrop-blur-xl sm:px-6">
+                <nav className="flex h-14 items-center justify-between rounded-2xl border border-slate-200 bg-white/70 px-4 backdrop-blur-xl sm:px-6 dark:border-white/[0.08] dark:bg-zinc-950/60">
                     {/* Logo */}
                     <Link href="/" className="flex shrink-0 items-center">
                         <Image
@@ -31,7 +32,7 @@ export function LandingNavbar() {
                             width={112}
                             height={32}
                             priority
-                            className="h-auto w-[88px] brightness-0 invert"
+                            className="h-auto w-[88px] dark:brightness-0 dark:invert"
                         />
                     </Link>
 
@@ -41,7 +42,7 @@ export function LandingNavbar() {
                             <Link
                                 key={l.href}
                                 href={l.href}
-                                className="text-zinc-400 transition-colors hover:text-zinc-100"
+                                className="text-slate-600 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-100"
                             >
                                 {l.label}
                             </Link>
@@ -53,13 +54,18 @@ export function LandingNavbar() {
                         <LanguageToggle
                             variant="ghost"
                             size="sm"
-                            className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                            className="text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
+                        />
+                        <ThemeToggle
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                         />
                         <Button
                             asChild
                             variant="ghost"
                             size="sm"
-                            className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                            className="text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                         >
                             <Link href="/login">{t('landing.nav.login')}</Link>
                         </Button>
@@ -80,8 +86,13 @@ export function LandingNavbar() {
                         <LanguageToggle
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                            className="h-8 w-8 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                             iconOnly
+                        />
+                        <ThemeToggle
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                         />
                         <Button
                             variant="ghost"
@@ -90,7 +101,7 @@ export function LandingNavbar() {
                                 open ? t('nav.closeMenu') : t('nav.openMenu')
                             }
                             onClick={() => setOpen((v) => !v)}
-                            className="text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                            className="text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                         >
                             {open ? (
                                 <X className="h-5 w-5" />
@@ -104,14 +115,14 @@ export function LandingNavbar() {
 
             {/* Mobile drawer */}
             {open && (
-                <div className="mx-4 mt-2 rounded-2xl border border-white/[0.08] bg-zinc-950/90 px-4 pt-3 pb-4 backdrop-blur-xl sm:mx-6 md:hidden">
+                <div className="mx-4 mt-2 rounded-2xl border border-slate-200 bg-white/95 px-4 pt-3 pb-4 backdrop-blur-xl sm:mx-6 md:hidden dark:border-white/[0.08] dark:bg-zinc-950/90">
                     <nav className="flex flex-col gap-1">
                         {navLinks.map((l) => (
                             <Link
                                 key={l.href}
                                 href={l.href}
                                 onClick={() => setOpen(false)}
-                                className="rounded-lg px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+                                className="rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-zinc-100"
                             >
                                 {l.label}
                             </Link>
@@ -120,7 +131,7 @@ export function LandingNavbar() {
                             <Button
                                 asChild
                                 variant="outline"
-                                className="w-full border-white/[0.1] bg-transparent text-zinc-300 hover:bg-white/[0.06]"
+                                className="w-full border-slate-200 bg-transparent text-slate-700 hover:bg-slate-100 dark:border-white/[0.1] dark:text-zinc-300 dark:hover:bg-white/[0.06]"
                             >
                                 <Link
                                     href="/login"
