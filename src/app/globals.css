@@ -214,16 +214,20 @@
         @apply border-border outline-ring/50;
     }
 
+    html {
+        @apply font-sans;
+        font-family:
+            var(--font-snote), Montserrat, Inter, system-ui, sans-serif;
+        font-size: var(--font-size);
+        scroll-behavior: smooth;
+    }
+
     body {
         @apply bg-background text-foreground;
         min-height: 100svh;
         background: var(--app-background);
-    }
-
-    html {
-        @apply font-sans;
-        font-size: var(--font-size);
-        scroll-behavior: smooth;
+        font-family:
+            var(--font-snote), Montserrat, Inter, system-ui, sans-serif;
     }
 
     h1 {
@@ -257,15 +261,22 @@
     }
 
     button {
+        font: inherit;
         font-size: var(--text-base);
         font-weight: var(--font-weight-medium);
         line-height: 1.5;
     }
 
     input {
+        font: inherit;
         font-size: var(--text-base);
         font-weight: var(--font-weight-normal);
         line-height: 1.5;
+    }
+
+    textarea,
+    select {
+        font: inherit;
     }
 }
 
