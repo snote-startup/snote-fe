@@ -103,3 +103,83 @@ Relevant code changes:
 - `src/components/snote/meetings/ProjectTasksPanel.tsx`
 - `src/features/tasks/hooks.ts`
 - `src/features/i18n/dictionaries.ts`
+
+## Retry With Env File Token
+
+Environment retry:
+
+- Env files loaded: `.env.local`, `.env`
+- Token value: not printed and not written to docs/source
+- Token expiry decoded: `2026-06-25T06:16:14Z`
+- Project id source: env file
+
+Auth sanity:
+
+| Endpoint | Result |
+| --- | --- |
+| `GET /auth/me` | FAIL: `500`, response `{ "message": "Something went wrong", "detail": null }` |
+
+Direct project/transcript/task retry:
+
+- Not continued because auth sanity did not return `200`.
+- Project GET status: not run after failed auth sanity.
+- Transcript count: unknown.
+- Task count before generation: unknown.
+
+Task generation retry:
+
+- Not triggered because the env-file token failed auth sanity.
+- POST status: not run.
+- Task count after 30s/60s/90s: unknown.
+
+Classification:
+
+- AI task issue owner remains **Unknown** from live backend evidence.
+- The FE 90-second polling fix remains appropriate for the async case already identified by code inspection and prior repo evidence.
+
+Backend bug:
+
+- `GET /auth/me` returns `500` for the env-file token. Expired/invalid auth should return `401` so clients can clear session state deterministically.
+
+Remaining blocker:
+
+- A non-expired env-file token is still required to classify task generation as backend async success, backend worker failure, backend generation error, or FE cache/render issue.
+
+### Resume Retry After Account Switch
+
+Environment retry:
+
+- Env files loaded: `.env.local`, `.env`
+- Token value: not printed and not written to docs/source
+- Token expiry decoded: `2026-06-25T06:16:14.000Z`
+- Project id source: env file, `c1aa6eac-4c0d-4631-921b-a8ff20155603`
+
+Auth sanity:
+
+| Endpoint | Result |
+| --- | --- |
+| `GET /auth/me` | FAIL: `500`, response `{ "message": "Something went wrong", "detail": null }` |
+
+Direct project/transcript/task retry:
+
+- Not continued because the env-file token is still expired and auth sanity did not return `200`.
+- Project GET status: skipped.
+- Transcript count: unknown.
+- Task count before generation: unknown.
+
+Task generation retry:
+
+- Not triggered.
+- POST status: skipped.
+- Task count after 30s/60s/90s: unknown.
+
+Classification:
+
+- AI task issue owner remains **Unknown** from live backend evidence.
+- Current blocker is backend/auth behavior plus the need for a fresh token.
+
+Check results:
+
+- `bun run lint`: pass
+- `bun run build`: pass
+- Dev route smoke: pass for the required routes, including meeting detail for `c1aa6eac-4c0d-4631-921b-a8ff20155603`

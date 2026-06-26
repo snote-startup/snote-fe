@@ -114,3 +114,95 @@ Smoke counts:
 - Route smoke: PASS `10`, FAIL `0`, BLOCKED `0`
 - API smoke: PASS `0`, FAIL `1`, BLOCKED `15`, SKIPPED `1`
 - Button/source matrix: PASS `5`, FAIL `0`, BLOCKED `15`
+
+## Retry With Env File Token
+
+Environment retry:
+
+- Env files loaded: `.env.local`, `.env`
+- Token value: not printed and not written to docs/source
+- Token expiry decoded: `2026-06-25T06:16:14Z`
+- Project id source: env file
+
+Auth sanity:
+
+| Endpoint | Result |
+| --- | --- |
+| `GET /auth/me` | FAIL: `500`, response `{ "message": "Something went wrong", "detail": null }` |
+
+Because `/auth/me` did not return `200`, authenticated protected API smoke was not continued. This is still a backend/auth handling bug for an expired env-file token; expected behavior is `401`, not generic `500`.
+
+Retry API counts:
+
+- PASS `0`
+- FAIL `1`
+- BLOCKED `8`
+
+Blocked endpoints after failed auth sanity:
+
+- `GET /project`
+- `GET /project/{id}`
+- `GET /project/{id}/transcript`
+- `GET /project/{id}/chat/history`
+- `POST /project/{id}/chat`
+- `GET /project/{id}/task`
+- `GET /quota`
+- `POST /quota/buy`
+
+Task generation classification:
+
+- **Unknown**. Task generation was not triggered because auth sanity failed before project/transcript/task validation.
+
+Quota/PayOS result:
+
+- Blocked. `POST /quota/buy` was not called after failed auth sanity, so no PayOS URL was requested and no payment was performed.
+
+Font migration result:
+
+- Implemented pragmatic global Montserrat migration using `next/font/google`.
+- Exact third-party Vietnamized Montserrat local package remains pending design-provided files/license.
+
+### Resume Retry After Account Switch
+
+Environment retry:
+
+- Env files loaded: `.env.local`, `.env`
+- Token value: not printed and not written to docs/source
+- Token expiry decoded: `2026-06-25T06:16:14.000Z`
+- Project id source: env file, `c1aa6eac-4c0d-4631-921b-a8ff20155603`
+
+Auth sanity:
+
+| Endpoint | Result |
+| --- | --- |
+| `GET /auth/me` | FAIL: `500`, response `{ "message": "Something went wrong", "detail": null }` |
+
+Because the env-file token is still expired and `/auth/me` still returns `500`, protected API retry was not continued.
+
+Resume API counts:
+
+- PASS `0`
+- FAIL `1`
+- BLOCKED `8`
+
+Task generation classification:
+
+- **Unknown**. Task generation was not triggered because auth sanity failed before project/transcript/task validation.
+- Task counts after 30s/60s/90s: not measured.
+
+Quota/PayOS result:
+
+- Blocked. `GET /quota` and `POST /quota/buy` were not called after failed auth sanity, so no PayOS URL was requested and no payment was performed.
+
+Check results:
+
+- `bun install`: pass, no dependency changes
+- `bun run lint`: pass
+- `bun run build`: pass; Montserrat with `latin` and `vietnamese` subsets builds under Next.js `16.2.6`
+- Dev route smoke: pass for `/`, `/dashboard`, `/meetings`, `/meetings/c1aa6eac-4c0d-4631-921b-a8ff20155603`, `/tasks`, `/billing`, `/billing/success`, `/profile`
+- Visual/font smoke: pass at route/render level; SSR output includes the Montserrat font variable class and Next font `.woff2` preloads
+
+Remaining backend issues:
+
+- `GET /auth/me` returns `500` for an expired token. Expected behavior is `401`.
+- A fresh token is still required for protected endpoint, quota, PayOS URL, and task-generation classification.

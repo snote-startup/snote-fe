@@ -1,12 +1,12 @@
 ## Summary
 
-Font migration to the exact requested “Montserrat Việt hoá” package is **blocked**.
+Implemented pragmatic Montserrat migration using `next/font/google`.
 
-No design-provided font files were found in the repo, and the requested source URL could not be verified reliably during this audit. No font files were downloaded or committed.
+The exact third-party “Montserrat Việt hoá” local package remains pending design-provided files and license confirmation. No font files were downloaded from the requested website and no unverified font assets were committed.
 
 ## Current Font Setup
 
-Current global setup:
+Previous global setup:
 
 - `src/app/layout.tsx` imports `Geist` and `Geist_Mono` from `next/font/google`.
 - `body` applies `--font-geist-sans` and `--font-geist-mono`.
@@ -16,6 +16,16 @@ Current global setup:
   - `--font-heading: var(--font-sans)`
 - `html` applies `font-sans`.
 - `tailwind.config.ts` does not define a custom font family, only font weights.
+
+Current global setup after migration:
+
+- `src/app/layout.tsx` imports `Montserrat` and `Geist_Mono` from `next/font/google`.
+- `Montserrat` uses subsets `latin` and `vietnamese`, `display: 'swap'`, weights `400`, `500`, `600`, `700`, and `800`.
+- `body` applies `--font-snote` and `--font-geist-mono`.
+- `src/app/globals.css` maps:
+  - `--font-sans: var(--font-snote), Montserrat, Inter, system-ui, sans-serif`
+  - `--font-mono: var(--font-geist-mono)`
+  - `--font-heading: var(--font-snote), Montserrat, Inter, system-ui, sans-serif`
 
 Next.js 16 local font guidance was checked in `node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md`. The recommended path for project-owned font files is `next/font/local`, with paths resolved relative to the file where `localFont` is called.
 
@@ -46,9 +56,9 @@ License/asset verification:
 
 ## Implementation Done or Blocked
 
-Implementation status: **Blocked**.
+Implementation status: **Implemented pragmatic Google Montserrat migration**.
 
-No code font migration was applied because committing or downloading unverified font files would violate the audit constraints.
+No third-party local font files were applied because committing or downloading unverified font files would violate the audit constraints.
 
 Safe integration path once assets are provided:
 
@@ -66,6 +76,38 @@ font-family: var(--font-snote), Montserrat, Inter, system-ui, sans-serif;
 - `Ghi âm cuộc họp`
 - `Nâng cấp Premium`
 - `Tạo transcript và sinh task`
+
+## Retry With Env File Token
+
+Font migration result:
+
+- Implemented pragmatic Montserrat migration using `next/font/google`.
+- Exact third-party Vietnamized Montserrat local package remains pending design-provided files/license.
+- No font files were downloaded from the requested website.
+- No font files were committed.
+
+Vietnamese visual smoke targets:
+
+- `Ghi âm cuộc họp`
+- `Nâng cấp Premium`
+- `Tạo transcript và sinh task`
+- `Bảng công việc`
+- `Gói dịch vụ`
+
+### Resume Retry After Account Switch
+
+Verification results:
+
+- `bun run lint`: pass
+- `bun run build`: pass
+- Dev route smoke: pass for `/`, `/dashboard`, `/meetings`, `/meetings/c1aa6eac-4c0d-4631-921b-a8ff20155603`, `/tasks`, `/billing`, `/billing/success`, `/profile`
+- Runtime font smoke: pass at route/render level; SSR output includes the generated Montserrat variable class on `<body>` and Next font `.woff2` preloads
+
+Font asset status:
+
+- No downloaded third-party font files were found under `public` or `src`.
+- Exact design font local files are still pending.
+- `subsets: ['latin', 'vietnamese']` builds successfully with Next.js `16.2.6`.
 
 ## Required Design Assets
 
