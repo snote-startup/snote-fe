@@ -1002,7 +1002,10 @@ export const dictionaries = {
         vi: 'Cần có transcript để tạo danh sách công việc tự động.',
         en: 'Transcript is needed to automatically generate tasks.',
     },
-    'projectTasks.generating': { vi: 'Đang tạo...', en: 'Generating...' },
+    'projectTasks.generating': {
+        vi: 'Đang tạo task từ transcript...',
+        en: 'Generating tasks from transcript...',
+    },
     'projectTasks.generateBtn': {
         vi: 'Tạo danh sách công việc',
         en: 'Generate tasks',
@@ -1020,6 +1023,10 @@ export const dictionaries = {
     'projectTasks.generateTimeout': {
         vi: 'Quá thời gian tạo công việc. Vui lòng kiểm tra lại sau.',
         en: 'Generating tasks timed out. Please check again later.',
+    },
+    'projectTasks.generateNotReady': {
+        vi: 'Task chưa sẵn sàng. Vui lòng thử lại sau ít phút.',
+        en: 'Tasks are not ready yet. Please try again in a few minutes.',
     },
     'billing.title': {
         vi: 'Gói dịch vụ',

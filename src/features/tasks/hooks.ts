@@ -53,7 +53,6 @@ export function useGenerateProjectTasks(projectId: string) {
                 queryKey: taskKeys.byProject(projectId),
             });
             queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
-            toast.success('Đã tạo công việc từ transcript.');
         },
         onError: (err: Error) => {
             toast.error(err.message || 'Không thể tạo công việc.');
