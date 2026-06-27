@@ -1,0 +1,1388 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "snote-api",
+        "description": "",
+        "license": { "name": "" },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "operationId": "auth::login",
+                "requestBody": {
+                    "description": "Login using email and password",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/auth.login.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Login successful. Returns access token and sets refresh token cookie.",
+                        "headers": {
+                            "Set-Cookie": { "schema": { "type": "string" } }
+                        },
+                        "content": {
+                            "text/plain": {
+                                "schema": { "type": "string" },
+                                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid email or password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": ["Auth"],
+                "operationId": "auth::me",
+                "responses": {
+                    "200": {
+                        "description": "Current authenticated account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MinimalAccount"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid, expired, or missing access token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "tags": ["Auth"],
+                "operationId": "auth::refresh",
+                "responses": {
+                    "200": {
+                        "description": "Refresh successful. Returns a new access token and sets a new refresh token cookie.",
+                        "headers": {
+                            "Set-Cookie": {
+                                "schema": { "type": "string" },
+                                "description": "New refresh token cookie"
+                            }
+                        },
+                        "content": {
+                            "text/plain": { "schema": { "type": "string" } }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid refresh token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": ["Auth"],
+                "operationId": "auth::register",
+                "requestBody": {
+                    "description": "Create a new account",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/auth.register.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully. Returns access token and sets refresh token cookie.",
+                        "headers": {
+                            "Set-Cookie": {
+                                "schema": { "type": "string" },
+                                "description": "Refresh token cookie"
+                            }
+                        },
+                        "content": {
+                            "text/plain": {
+                                "schema": { "type": "string" },
+                                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to create account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": ["Health"],
+                "operationId": "health",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "text/plain": { "schema": { "type": "string" } }
+                        }
+                    }
+                }
+            }
+        },
+        "/payment-test": {
+            "post": {
+                "tags": ["Test"],
+                "operationId": "payment_test::create_link",
+                "requestBody": {
+                    "description": "Create a payment link",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/payment_test.create_link.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment link created successfully",
+                        "content": {
+                            "text/plain": {
+                                "schema": { "type": "string" },
+                                "example": "https://pay.example.com/checkout/abc123"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid payment data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/payment-test/return": {
+            "get": {
+                "tags": ["Test"],
+                "operationId": "payment_test::handle_return",
+                "parameters": [
+                    {
+                        "name": "order_code",
+                        "in": "query",
+                        "description": "Payment provider order code",
+                        "required": true,
+                        "schema": { "type": "integer", "format": "int64" },
+                        "example": 123456789
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment return handled successfully"
+                    },
+                    "400": {
+                        "description": "Invalid payment return data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/project": {
+            "get": {
+                "tags": ["Project"],
+                "operationId": "project::get_by_account",
+                "responses": {
+                    "200": {
+                        "description": "List all projects owned by the authenticated account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Project"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            },
+            "post": {
+                "tags": ["Project"],
+                "operationId": "project::create",
+                "requestBody": {
+                    "description": "Create a new project",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/project.create.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project created successfully. Returns project id.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "example": "550e8400-e29b-41d4-a716-446655440000"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid project data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}": {
+            "get": {
+                "tags": ["Project"],
+                "operationId": "project::get",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid project id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            },
+            "patch": {
+                "tags": ["Project"],
+                "operationId": "project::update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Fields to update. Omitted fields are left unchanged.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/project.update.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": { "description": "Project updated successfully" },
+                    "400": {
+                        "description": "Invalid project id, title, or description",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}/chat": {
+            "post": {
+                "tags": ["Chat", "Project"],
+                "operationId": "project::chat",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Prompt sent to the AI assistant",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/project.chat.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Streaming AI response",
+                        "content": { "text/plain": {} }
+                    },
+                    "400": {
+                        "description": "Invalid project id or prompt",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}/chat/history": {
+            "get": {
+                "tags": ["Chat", "Project"],
+                "operationId": "project::get_chat_history",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Maximum number of messages to return",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                        },
+                        "example": 20
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Cursor returned from previous page",
+                        "required": false,
+                        "schema": { "type": "string" },
+                        "example": "eyJpZCI6IjU1MGU4NDAwLWUyOWItNDFkNC1hNzE2LTQ0NjY1NTQ0MDAwMCJ9"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated chat messages",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedVec_ChatMessage"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid project id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}/stream": {
+            "post": {
+                "tags": ["Project"],
+                "operationId": "project::stream_audio",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/project/{id}/task": {
+            "get": {
+                "tags": ["Task", "Project"],
+                "operationId": "project::get_task",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all tasks belonging to the project",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Task"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            },
+            "post": {
+                "tags": ["Task", "Project"],
+                "operationId": "project::create_tasks",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Tasks generated successfully from project content"
+                    },
+                    "400": {
+                        "description": "Invalid project id or project content cannot be processed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Project not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}/transcript": {
+            "get": {
+                "tags": ["Transcript", "Project"],
+                "operationId": "project::get_transcript",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List all transcripts belonging to the project",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/TranscriptSegment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Project with given id does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            },
+            "post": {
+                "tags": ["Transcript", "Project"],
+                "operationId": "project::create_transcript",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "204": { "description": "Audio uploaded successfully" },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/project/{id}/upload": {
+            "post": {
+                "tags": ["Project"],
+                "operationId": "project::upload_audio",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Project id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Upload an audio file",
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/project.upload_audio.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": { "description": "Audio uploaded successfully" },
+                    "400": {
+                        "description": "Payload is not multipart, no audio file provided, or invalid project id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/quota": {
+            "get": {
+                "tags": ["Quota"],
+                "operationId": "quota::get",
+                "responses": {},
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/quota/buy": {
+            "post": {
+                "tags": ["Quota"],
+                "operationId": "quota::buy",
+                "responses": {
+                    "200": {
+                        "description": "Quota purchase link created successfully",
+                        "content": {
+                            "text/plain": {
+                                "schema": { "type": "string" },
+                                "example": "https://pay.example.com/checkout/abc123"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to create quota purchase",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        },
+        "/quota/payment/return": {
+            "get": {
+                "tags": ["Quota"],
+                "operationId": "quota::handle_payment_return",
+                "responses": {}
+            }
+        },
+        "/task/{id}": {
+            "delete": {
+                "tags": ["Task"],
+                "operationId": "task::delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Task id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "204": { "description": "Task deleted successfully" },
+                    "400": {
+                        "description": "Invalid task id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            },
+            "patch": {
+                "tags": ["Task"],
+                "operationId": "task::update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Task id",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Fields to update. Any omitted field remains unchanged.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/task.update.Request"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": { "description": "Task updated successfully" },
+                    "400": {
+                        "description": "Invalid task id or update data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [{ "jwt_token": [] }]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ChatMessage": {
+                "type": "object",
+                "required": ["id", "role", "content", "created_at"],
+                "properties": {
+                    "content": { "type": "string" },
+                    "created_at": { "type": "string", "format": "date-time" },
+                    "id": { "type": "string", "format": "uuid" },
+                    "role": { "$ref": "#/components/schemas/ChatRole" }
+                }
+            },
+            "ChatRole": { "type": "string", "enum": ["user", "assistant"] },
+            "Error": {
+                "allOf": [{ "$ref": "#/components/schemas/ErrorContext" }]
+            },
+            "ErrorContext": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                    "detail": { "type": ["string", "null"] },
+                    "message": { "type": "string" }
+                }
+            },
+            "MinimalAccount": {
+                "type": "object",
+                "required": ["email", "name", "role"],
+                "properties": {
+                    "email": { "type": "string" },
+                    "name": { "type": "string" },
+                    "role": { "$ref": "#/components/schemas/Role" }
+                }
+            },
+            "PaginatedVec_ChatMessage": {
+                "type": "object",
+                "required": ["data"],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["id", "role", "content", "created_at"],
+                            "properties": {
+                                "content": { "type": "string" },
+                                "created_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "id": { "type": "string", "format": "uuid" },
+                                "role": {
+                                    "$ref": "#/components/schemas/ChatRole"
+                                }
+                            }
+                        }
+                    },
+                    "next_cursor": { "type": ["string", "null"] }
+                }
+            },
+            "Project": {
+                "type": "object",
+                "required": ["id", "title"],
+                "properties": {
+                    "audio_url": { "type": ["string", "null"] },
+                    "description": { "type": ["string", "null"] },
+                    "id": { "type": "string", "format": "uuid" },
+                    "title": { "type": "string" }
+                }
+            },
+            "Role": { "type": "string", "enum": ["admin", "member"] },
+            "Task": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "status",
+                    "priority",
+                    "content",
+                    "created_at"
+                ],
+                "properties": {
+                    "content": { "type": "string" },
+                    "created_at": { "type": "string", "format": "date-time" },
+                    "id": { "type": "string", "format": "uuid" },
+                    "priority": { "$ref": "#/components/schemas/TaskPriority" },
+                    "status": { "$ref": "#/components/schemas/TaskStatus" }
+                }
+            },
+            "TaskPriority": {
+                "type": "string",
+                "enum": ["low", "medium", "high"]
+            },
+            "TaskStatus": {
+                "type": "string",
+                "enum": ["todo", "in_progress", "done"]
+            },
+            "TranscriptSegment": {
+                "type": "object",
+                "required": ["id", "speaker", "text", "start", "end"],
+                "properties": {
+                    "end": { "type": "integer", "format": "int32" },
+                    "id": { "type": "string", "format": "uuid" },
+                    "speaker": { "type": "string" },
+                    "start": { "type": "integer", "format": "int32" },
+                    "text": { "type": "string" }
+                }
+            },
+            "auth.login.Request": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "password": { "type": "string", "example": "password123" }
+                }
+            },
+            "auth.register.Request": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "name": { "type": "string", "example": "John Doe" },
+                    "password": { "type": "string", "example": "password123" }
+                }
+            },
+            "payment_test.create_link.Request": {
+                "type": "object",
+                "required": ["amount"],
+                "properties": {
+                    "amount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 1000,
+                        "minimum": 0
+                    }
+                }
+            },
+            "project.chat.Request": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                    "prompt": {
+                        "type": "string",
+                        "example": "Summarize the uploaded meeting transcript"
+                    }
+                }
+            },
+            "project.create.Request": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"],
+                        "example": "My portfolio website built with Rust and Axum"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Personal Portfolio"
+                    }
+                }
+            },
+            "project.update.Request": {
+                "type": "object",
+                "properties": {
+                    "description": {
+                        "type": ["string", "null"],
+                        "example": "Updated project description"
+                    },
+                    "title": {
+                        "type": ["string", "null"],
+                        "example": "Updated Portfolio Website"
+                    }
+                }
+            },
+            "project.upload_audio.Request": {
+                "type": "object",
+                "required": ["audio"],
+                "properties": {
+                    "audio": { "type": "string", "format": "binary" }
+                }
+            },
+            "task.update.Request": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": ["string", "null"],
+                        "example": "Implement refresh token rotation and update tests"
+                    },
+                    "priority": {
+                        "oneOf": [
+                            { "type": "null" },
+                            { "$ref": "#/components/schemas/TaskPriority" }
+                        ]
+                    },
+                    "status": {
+                        "oneOf": [
+                            { "type": "null" },
+                            { "$ref": "#/components/schemas/TaskStatus" }
+                        ]
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "jwt_token": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

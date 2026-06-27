@@ -51,6 +51,7 @@ import {
     useProjectChatMessages,
     useUpdateProject,
     useUploadProjectAudio,
+    useTriggerProjectTranscript,
 } from '@/features/projects/hooks';
 import { sendProjectChatMessage } from '@/features/projects/api';
 import { parseChatResponse } from '@/features/projects/chat-parser';
@@ -246,7 +247,9 @@ interface TranscriptPanelProps {
     hasAudioUrl: boolean;
     activeReferences: string[];
     isPolling: boolean;
+    pollSession: number;
     onPollingStarted: () => void;
+    onRetryTranscriptGeneration: () => void;
     segmentRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
 }
 
@@ -255,12 +258,17 @@ function TranscriptPanel({
     hasAudioUrl,
     activeReferences,
     isPolling,
+    pollSession,
     onPollingStarted,
+    onRetryTranscriptGeneration,
     segmentRefs,
 }: TranscriptPanelProps) {
     const { t } = useI18n();
     const [searchQuery, setSearchQuery] = useState('');
-    const [pollTimeout, setPollTimeout] = useState(false);
+    const [timedOutPollSession, setTimedOutPollSession] = useState<
+        number | null
+    >(null);
+    const pollTimeout = isPolling && timedOutPollSession === pollSession;
 
     const {
         data: transcript,
@@ -273,9 +281,12 @@ function TranscriptPanel({
 
     useEffect(() => {
         if (!isPolling) return;
-        const timer = setTimeout(() => setPollTimeout(true), 90_000);
+        const timer = setTimeout(
+            () => setTimedOutPollSession(pollSession),
+            90_000,
+        );
         return () => clearTimeout(timer);
-    }, [isPolling]);
+    }, [isPolling, pollSession]);
 
     const hasSegments = transcript && transcript.length > 0;
 
@@ -385,7 +396,7 @@ function TranscriptPanel({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => {
-                                        setPollTimeout(false);
+                                        onRetryTranscriptGeneration();
                                         refetchTranscript();
                                     }}
                                 >
@@ -946,21 +957,66 @@ export function MeetingDetail() {
     const { data: project, isLoading, error } = useProject(id);
     const { data: transcript } = useProjectTranscript(id);
     const updateMutation = useUpdateProject(id);
+    const { mutateAsync: triggerProjectTranscript } =
+        useTriggerProjectTranscript(id);
 
     // Split workspace state
     const [activeReferences, setActiveReferences] = useState<string[]>([]);
     const [isTranscriptPolling, setIsTranscriptPolling] = useState(false);
+    const [transcriptPollSession, setTranscriptPollSession] = useState(0);
     const segmentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+    const triggeredTranscriptForAudioUrlRef = useRef<string | null>(null);
+    const currentProjectId = project?.id ?? id;
+    const currentAudioUrl = project?.audio_url ?? null;
+    const transcriptLength = transcript?.length;
 
-    // Auto-poll transcript if audio exists but segments don't
-    useEffect(() => {
-        if (project?.audio_url && transcript && transcript.length === 0) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+    const startTranscriptGeneration = useCallback(
+        async ({ force = false }: { force?: boolean } = {}) => {
+            if (!currentAudioUrl || transcriptLength === undefined) return;
+            if (transcriptLength > 0) return;
+
+            const transcriptAudioKey = `${currentProjectId}:${currentAudioUrl}`;
+            if (
+                !force &&
+                triggeredTranscriptForAudioUrlRef.current === transcriptAudioKey
+            ) {
+                setIsTranscriptPolling(true);
+                return;
+            }
+
+            triggeredTranscriptForAudioUrlRef.current = transcriptAudioKey;
             setIsTranscriptPolling(true);
-        } else if (transcript && transcript.length > 0) {
-            setIsTranscriptPolling(false);
+            setTranscriptPollSession((current) => current + 1);
+
+            try {
+                await triggerProjectTranscript();
+            } catch (err) {
+                const message =
+                    err instanceof Error
+                        ? err.message
+                        : t('meeting.transcript.error');
+                toast.error(message);
+            }
+        },
+        [
+            currentAudioUrl,
+            currentProjectId,
+            transcriptLength,
+            triggerProjectTranscript,
+            t,
+        ],
+    );
+
+    // Trigger transcript once after audio is saved, then poll for generated segments.
+    useEffect(() => {
+        if (currentAudioUrl && transcriptLength === 0) {
+            void startTranscriptGeneration();
         }
-    }, [project?.audio_url, transcript]);
+    }, [currentAudioUrl, transcriptLength, startTranscriptGeneration]);
+
+    const handleRetryTranscriptGeneration = useCallback(() => {
+        void startTranscriptGeneration({ force: true });
+    }, [startTranscriptGeneration]);
 
     // Dialog & Edit States
     const [isEditing, setIsEditing] = useState(false);
@@ -1181,9 +1237,13 @@ export function MeetingDetail() {
                                 projectId={id}
                                 hasAudioUrl={!!project.audio_url}
                                 activeReferences={activeReferences}
-                                isPolling={isTranscriptPolling}
+                                isPolling={isTranscriptPolling && !hasSegments}
+                                pollSession={transcriptPollSession}
                                 onPollingStarted={() =>
                                     setIsTranscriptPolling(true)
+                                }
+                                onRetryTranscriptGeneration={
+                                    handleRetryTranscriptGeneration
                                 }
                                 segmentRefs={segmentRefs}
                             />
@@ -1379,9 +1439,15 @@ export function MeetingDetail() {
                                         projectId={id}
                                         hasAudioUrl={!!project.audio_url}
                                         activeReferences={activeReferences}
-                                        isPolling={isTranscriptPolling}
+                                        isPolling={
+                                            isTranscriptPolling && !hasSegments
+                                        }
+                                        pollSession={transcriptPollSession}
                                         onPollingStarted={() =>
                                             setIsTranscriptPolling(true)
+                                        }
+                                        onRetryTranscriptGeneration={
+                                            handleRetryTranscriptGeneration
                                         }
                                         segmentRefs={segmentRefs}
                                     />

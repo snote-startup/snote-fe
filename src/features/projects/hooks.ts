@@ -7,6 +7,7 @@ import {
     getProjectTranscript,
     getProjectChatMessages,
     uploadProjectAudio,
+    triggerProjectTranscript,
 } from './api';
 import { CreateProjectRequest, UpdateProjectRequest } from './types';
 
@@ -73,6 +74,18 @@ export function useProjectTranscript(
         enabled:
             options?.enabled !== undefined ? options.enabled && !!id : !!id,
         refetchInterval: options?.refetchInterval,
+    });
+}
+
+export function useTriggerProjectTranscript(id: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => triggerProjectTranscript(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: projectKeys.transcript(id),
+            });
+        },
     });
 }
 
