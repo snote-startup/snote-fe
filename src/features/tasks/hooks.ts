@@ -42,7 +42,7 @@ export function useAllProjectTasks() {
 
 /**
  * Generate tasks from project content/transcript.
- * On success: invalidates the tasks query and shows a toast.
+ * On success: invalidates project and aggregate task queries.
  */
 export function useGenerateProjectTasks(projectId: string) {
     const queryClient = useQueryClient();
@@ -52,10 +52,8 @@ export function useGenerateProjectTasks(projectId: string) {
             queryClient.invalidateQueries({
                 queryKey: taskKeys.byProject(projectId),
             });
+            queryClient.invalidateQueries({ queryKey: taskKeys.all });
             queryClient.invalidateQueries({ queryKey: taskKeys.aggregate() });
-        },
-        onError: (err: Error) => {
-            toast.error(err.message || 'Không thể tạo công việc.');
         },
     });
 }

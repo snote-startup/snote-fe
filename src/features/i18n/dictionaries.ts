@@ -1045,12 +1045,16 @@ export const dictionaries = {
         en: 'Regenerate tasks',
     },
     'projectTasks.generateTimeout': {
-        vi: 'Quá thời gian tạo công việc. Vui lòng kiểm tra lại sau.',
-        en: 'Generating tasks timed out. Please check again later.',
+        vi: 'Task chưa sẵn sàng. Vui lòng thử lại sau ít phút.',
+        en: 'Tasks are not ready yet. Please try again in a few minutes.',
     },
     'projectTasks.generateNotReady': {
         vi: 'Task chưa sẵn sàng. Vui lòng thử lại sau ít phút.',
         en: 'Tasks are not ready yet. Please try again in a few minutes.',
+    },
+    'projectTasks.generateFailed': {
+        vi: 'Không thể tạo task lúc này. Vui lòng thử lại.',
+        en: 'Could not generate tasks right now. Please try again.',
     },
     'billing.title': {
         vi: 'Gói dịch vụ',
