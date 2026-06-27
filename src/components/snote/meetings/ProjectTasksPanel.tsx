@@ -1,18 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
     useProjectTasks,
+    useGenerateProjectTasks,
     useUpdateTask,
     useDeleteTask,
 } from '@/features/tasks/hooks';
 import { ProjectTask, TaskStatus, TaskPriority } from '@/features/tasks/types';
-import {
-    DemoTask,
-    generateDemoTasksFromTranscript,
-    getDemoTasks,
-    setDemoTasks,
-} from '@/features/tasks/demo-task-store';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -61,8 +56,17 @@ interface ProjectTasksPanelProps {
     transcriptText: string;
 }
 
-const ENABLE_LOCAL_TASK_DEMO_FALLBACK = true;
-const TASK_GENERATION_DELAY_MS = 1400;
+const TASK_POLL_INTERVAL_MS = 2000;
+const TASK_POLL_TIMEOUT_MS = 90000;
+
+function wait(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getUniqueTaskCount(tasks: ProjectTask[] | undefined) {
+    if (!tasks) return 0;
+    return new Set(tasks.map((task) => task.id)).size;
+}
 
 export function ProjectTasksPanel({
     projectId,
@@ -70,31 +74,21 @@ export function ProjectTasksPanel({
     transcriptText,
 }: ProjectTasksPanelProps) {
     const { t } = useI18n();
-    const { data: tasks, isLoading: isTasksLoading } =
-        useProjectTasks(projectId);
+    const {
+        data: tasks,
+        isLoading: isTasksLoading,
+        refetch: refetchProjectTasks,
+    } = useProjectTasks(projectId);
+    const generateMutation = useGenerateProjectTasks(projectId);
     const updateMutation = useUpdateTask(projectId);
     const deleteMutation = useDeleteTask(projectId);
 
     const [editingTask, setEditingTask] = useState<ProjectTask | null>(null);
     const [editContent, setEditContent] = useState('');
     const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
-    const [demoTasks, setLocalDemoTasks] = useState<DemoTask[]>([]);
 
     const [isGenerating, setIsGenerating] = useState(false);
-
-    useEffect(() => {
-        let isActive = true;
-        const timer = window.setTimeout(() => {
-            if (isActive) {
-                setLocalDemoTasks(getDemoTasks(projectId));
-            }
-        }, 0);
-
-        return () => {
-            isActive = false;
-            window.clearTimeout(timer);
-        };
-    }, [projectId]);
+    const isGeneratingRef = useRef(false);
 
     const statusConfig: Record<
         TaskStatus,
@@ -138,13 +132,8 @@ export function ProjectTasksPanel({
         },
     };
 
-    const persistDemoTasks = (nextTasks: DemoTask[]) => {
-        setLocalDemoTasks(nextTasks);
-        setDemoTasks(projectId, nextTasks);
-    };
-
     const handleGenerate = async () => {
-        if (isGenerating) return;
+        if (isGeneratingRef.current) return;
 
         const normalizedTranscript = transcriptText.trim();
         if (!hasSegments || !normalizedTranscript) {
@@ -152,70 +141,43 @@ export function ProjectTasksPanel({
             return;
         }
 
+        isGeneratingRef.current = true;
         setIsGenerating(true);
+        const initialTaskCount = getUniqueTaskCount(tasks);
 
         try {
-            await new Promise((resolve) =>
-                setTimeout(resolve, TASK_GENERATION_DELAY_MS),
-            );
+            await generateMutation.mutateAsync();
 
-            // Temporary frontend fallback for demo while backend task generation is unstable.
-            const generatedTasks = ENABLE_LOCAL_TASK_DEMO_FALLBACK
-                ? generateDemoTasksFromTranscript(
-                      projectId,
-                      normalizedTranscript,
-                  )
-                : [];
-            persistDemoTasks(generatedTasks);
-            toast.success(t('projectTasks.generatedSuccess'));
+            const deadline = Date.now() + TASK_POLL_TIMEOUT_MS;
+            while (Date.now() < deadline) {
+                await wait(TASK_POLL_INTERVAL_MS);
+                const result = await refetchProjectTasks();
+                const nextTaskCount = getUniqueTaskCount(result.data);
+
+                if (nextTaskCount > initialTaskCount || nextTaskCount > 0) {
+                    return;
+                }
+            }
+
+            toast.error(t('projectTasks.generateNotReady'));
+        } catch {
+            toast.error(t('projectTasks.generateFailed'));
         } finally {
+            isGeneratingRef.current = false;
             setIsGenerating(false);
         }
     };
 
     const handleStatusChange = (taskId: string, status: TaskStatus) => {
-        if (demoTasks.some((task) => task.id === taskId)) {
-            persistDemoTasks(
-                demoTasks.map((task) =>
-                    task.id === taskId ? { ...task, status } : task,
-                ),
-            );
-            return;
-        }
-
         updateMutation.mutate({ taskId, body: { status } });
     };
 
     const handlePriorityChange = (taskId: string, priority: TaskPriority) => {
-        if (demoTasks.some((task) => task.id === taskId)) {
-            persistDemoTasks(
-                demoTasks.map((task) =>
-                    task.id === taskId ? { ...task, priority } : task,
-                ),
-            );
-            return;
-        }
-
         updateMutation.mutate({ taskId, body: { priority } });
     };
 
     const handleEditSave = () => {
         if (!editingTask || !editContent.trim()) return;
-        if (demoTasks.some((task) => task.id === editingTask.id)) {
-            persistDemoTasks(
-                demoTasks.map((task) =>
-                    task.id === editingTask.id
-                        ? {
-                              ...task,
-                              title: editContent.trim(),
-                              content: editContent.trim(),
-                          }
-                        : task,
-                ),
-            );
-            setEditingTask(null);
-            return;
-        }
 
         updateMutation.mutate(
             { taskId: editingTask.id, body: { content: editContent.trim() } },
@@ -229,13 +191,6 @@ export function ProjectTasksPanel({
 
     const handleDelete = () => {
         if (!deletingTaskId) return;
-        if (demoTasks.some((task) => task.id === deletingTaskId)) {
-            persistDemoTasks(
-                demoTasks.filter((task) => task.id !== deletingTaskId),
-            );
-            setDeletingTaskId(null);
-            return;
-        }
 
         deleteMutation.mutate(deletingTaskId, {
             onSuccess: () => {
@@ -255,8 +210,7 @@ export function ProjectTasksPanel({
         });
     }, [tasks]);
 
-    const displayTasks: Array<ProjectTask | DemoTask> =
-        demoTasks.length > 0 ? demoTasks : uniqueTasks;
+    const displayTasks = uniqueTasks;
 
     const sortedTasks = [...displayTasks].sort((a, b) => {
         // Sort by status first (todo -> in_progress -> done), then by creation date
@@ -284,15 +238,14 @@ export function ProjectTasksPanel({
                         )}
                     </h2>
                 </div>
-                {((isTasksLoading && demoTasks.length === 0) ||
-                    isGenerating) && (
+                {(isTasksLoading || isGenerating) && (
                     <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
                 )}
             </div>
 
             {/* Panel Body */}
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                {(isTasksLoading && demoTasks.length === 0) || isGenerating ? (
+                {isTasksLoading || isGenerating ? (
                     <div className="flex flex-1 flex-col items-center justify-center py-10">
                         <Loader2 className="text-primary mb-3 h-7 w-7 animate-spin" />
                         <p className="text-muted-foreground text-sm">
@@ -510,13 +463,6 @@ export function ProjectTasksPanel({
                                             >
                                                 {task.content}
                                             </p>
-                                            {'description' in task &&
-                                                task.description && (
-                                                    <p className="text-muted-foreground mt-1.5 text-xs leading-relaxed">
-                                                        {task.description}
-                                                    </p>
-                                                )}
-
                                             <div className="text-muted-foreground mt-3 flex items-center gap-1.5 text-xs">
                                                 <Clock3 className="h-3 w-3" />
                                                 {format(
