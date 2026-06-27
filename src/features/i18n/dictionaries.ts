@@ -1019,7 +1019,7 @@ export const dictionaries = {
         en: 'Click generate tasks to let AI extract action items from the meeting.',
     },
     'projectTasks.emptyDescNotReady': {
-        vi: 'Cần có transcript để tạo danh sách công việc tự động.',
+        vi: 'Cần transcript trước khi tạo công việc.',
         en: 'Transcript is needed to automatically generate tasks.',
     },
     'projectTasks.generating': {
@@ -1029,6 +1029,10 @@ export const dictionaries = {
     'projectTasks.generateBtn': {
         vi: 'Tạo danh sách công việc',
         en: 'Generate tasks',
+    },
+    'projectTasks.generatedSuccess': {
+        vi: 'Đã tạo công việc từ transcript.',
+        en: 'Tasks created from transcript.',
     },
     'projectTasks.action': { vi: 'Hành động', en: 'Action' },
     'projectTasks.changeStatus': { vi: 'Đổi trạng thái', en: 'Change status' },

@@ -1029,6 +1029,10 @@ export function MeetingDetail() {
 
     const hasSegments = !!(transcript && transcript.length > 0);
     const transcriptSegmentIds = new Set((transcript ?? []).map((s) => s.id));
+    const transcriptText = useMemo(
+        () => (transcript ?? []).map((segment) => segment.text).join('\n'),
+        [transcript],
+    );
 
     const handleReferenceClick = useCallback(
         (segmentId: string) => {
@@ -1288,6 +1292,7 @@ export function MeetingDetail() {
                                     <ProjectTasksPanel
                                         projectId={id}
                                         hasSegments={hasSegments}
+                                        transcriptText={transcriptText}
                                     />
                                 </TabsContent>
                             </Tabs>
@@ -1478,6 +1483,7 @@ export function MeetingDetail() {
                                     <ProjectTasksPanel
                                         projectId={id}
                                         hasSegments={hasSegments}
+                                        transcriptText={transcriptText}
                                     />
                                 </div>
                             </TabsContent>
