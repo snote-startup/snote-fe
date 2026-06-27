@@ -59,6 +59,10 @@ export async function getProjectTranscript(
     return apiClient.get(`/project/${id}/transcript`);
 }
 
+export async function triggerProjectTranscript(id: string): Promise<void> {
+    await apiClient.post(`/project/${id}/transcript`);
+}
+
 export async function getProjectChatMessages(
     id: string,
     params?: { limit?: number; cursor?: string | null },
