@@ -5,13 +5,13 @@ import { AccountDeletionForm } from './AccountDeletionForm';
 
 const supportEmail = 'namdangcoder@gmail.com';
 
-const deletedData = [
-    'Account information such as email address and display name',
-    'Projects and project metadata',
-    'Uploaded or recorded audio files',
-    'Transcripts',
-    'AI chat messages and generated answers',
-    'Generated tasks and related app data',
+const requestOptions = [
+    'Delete your Snote account and associated data',
+    'Delete specific projects',
+    'Delete transcripts',
+    'Delete uploaded audio files',
+    'Delete notes or other user-generated content',
+    'Delete AI chat messages or related app data',
 ];
 
 export const metadata: Metadata = {
@@ -54,49 +54,77 @@ export default function AccountDeletionPage() {
                         Snote Account and Data Deletion
                     </h1>
                     <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 dark:text-zinc-300">
-                        Use this public page to request deletion of your Snote
-                        account and associated data.
+                        Use this page to request deletion of your Snote account
+                        or specific data associated with your account.
                     </p>
                 </header>
 
                 <div className="space-y-9 px-5 py-7 sm:px-8 sm:py-10">
-                    <section>
+                    <section className="rounded-lg border border-slate-200 bg-slate-50 p-4 sm:p-5 dark:border-zinc-800 dark:bg-zinc-950/50">
                         <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
-                            Request account or data deletion
+                            What you can request
                         </h2>
-                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
-                            Use this page to request deletion of your Snote
-                            account and associated data. You do not need to sign
-                            in, and Snote will never ask for your password to
-                            process this request.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
-                            How to submit a request
-                        </h2>
-                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
-                            For security, please send the request from the email
-                            address associated with your Snote account. We may
-                            reply to confirm ownership before deleting data.
-                        </p>
-                        <div className="mt-5">
-                            <AccountDeletionForm supportEmail={supportEmail} />
-                        </div>
-                    </section>
-
-                    <section>
-                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
-                            What data may be deleted
-                        </h2>
-                        <ul className="mt-4 space-y-3 pl-5 text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
-                            {deletedData.map((item) => (
+                        <ul className="space-y-3 pl-5 text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            {requestOptions.map((item) => (
                                 <li key={item} className="list-disc">
                                     {item}
                                 </li>
                             ))}
                         </ul>
+                    </section>
+
+                    <section id="delete-account" className="scroll-mt-8">
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            Delete your Snote account
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            If you request deletion of your Snote account, we
+                            will review your request and delete or anonymize
+                            account-associated data unless limited retention is
+                            required for security, fraud prevention, abuse
+                            prevention, legal compliance, backups, or record
+                            keeping.
+                        </p>
+                    </section>
+
+                    <section id="delete-data" className="scroll-mt-8">
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            Delete specific data
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            You may request deletion of specific data only
+                            without deleting your Snote account. This may
+                            include projects, transcripts, uploaded audio files,
+                            notes, AI chat messages, or other user-generated
+                            content.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            Submit a request
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            Deletion requests are manually reviewed and
+                            processed by the Snote team. You do not need to sign
+                            in, and Snote will never ask for your password to
+                            process this request.
+                        </p>
+                        <div className="mt-5">
+                            <AccountDeletionForm />
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            How we verify requests
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            For security, please submit the request using the
+                            email address associated with your Snote account. We
+                            may contact you to confirm ownership before deleting
+                            data.
+                        </p>
                     </section>
 
                     <section>
@@ -105,9 +133,30 @@ export default function AccountDeletionPage() {
                         </h2>
                         <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
                             We aim to process deletion requests within 30 days.
-                            Some data may be retained temporarily if required
-                            for security, fraud prevention, legal compliance,
-                            backups, or legitimate business operations.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            Data that may be deleted
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            Account profile, email-linked account data,
+                            projects, transcripts, uploaded audio files, notes,
+                            AI chat messages, generated tasks, and other
+                            user-generated content associated with your Snote
+                            account.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="mb-3 text-xl font-semibold text-slate-950 dark:text-white">
+                            Data we may retain
+                        </h2>
+                        <p className="text-sm leading-7 text-slate-700 sm:text-base dark:text-zinc-300">
+                            We may retain limited data when required for
+                            security, fraud prevention, abuse prevention, legal
+                            compliance, backups, or record keeping.
                         </p>
                     </section>
 
@@ -132,7 +181,7 @@ export default function AccountDeletionPage() {
                         href="/policy"
                         className="font-medium text-violet-700 hover:text-violet-900 dark:text-violet-300 dark:hover:text-violet-200"
                     >
-                        View Snote Privacy Policy
+                        Privacy Policy
                     </Link>
                 </footer>
             </article>
