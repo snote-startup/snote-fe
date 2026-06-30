@@ -44,11 +44,15 @@ export function useAllProjectTasks() {
  * Generate tasks from project content/transcript.
  * On success: invalidates project and aggregate task queries.
  */
-export function useGenerateProjectTasks(projectId: string) {
+export function useGenerateProjectTasks(
+    projectId: string,
+    options?: { invalidateOnSuccess?: boolean },
+) {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: () => generateProjectTasks(projectId),
         onSuccess: () => {
+            if (options?.invalidateOnSuccess === false) return;
             queryClient.invalidateQueries({
                 queryKey: taskKeys.byProject(projectId),
             });
