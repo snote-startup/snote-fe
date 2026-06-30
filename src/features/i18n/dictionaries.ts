@@ -224,6 +224,10 @@ export const dictionaries = {
     'footer.link.workflow': { vi: 'Quy trình', en: 'Workflow' },
     'footer.link.references': { vi: 'Nguồn tham chiếu', en: 'References' },
     'footer.link.pricing': { vi: 'Gói dịch vụ', en: 'Pricing' },
+    'footer.link.privacy': {
+        vi: 'Chính sách quyền riêng tư',
+        en: 'Privacy Policy',
+    },
     'footer.link.dashboard': { vi: 'Tổng quan', en: 'Dashboard' },
     'footer.link.meetings': { vi: 'Cuộc họp', en: 'Meetings' },
     'footer.link.login': { vi: 'Đăng nhập', en: 'Log in' },

@@ -19,6 +19,7 @@ export function LandingFooter() {
                 { label: t('footer.link.workflow'), href: '#workflow' },
                 { label: t('footer.link.references'), href: '#references' },
                 { label: t('footer.link.pricing'), href: '/pricing' },
+                { label: t('footer.link.privacy'), href: '/policy' },
             ],
         },
         {
