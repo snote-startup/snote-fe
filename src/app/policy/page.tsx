@@ -61,6 +61,7 @@ const policySections = [
             'Users can request deletion of their account and associated data by contacting the privacy contact listed below.',
             'Some data may be retained temporarily for security, backup, legal, billing, dispute resolution, or abuse-prevention purposes.',
         ],
+        deletionLink: true,
     },
     {
         title: '7. Security',
@@ -169,6 +170,16 @@ export default function PolicyPage() {
                             {section.footer ? (
                                 <p className="mt-4 text-sm leading-7 font-medium text-slate-800 sm:text-base dark:text-zinc-200">
                                     {section.footer}
+                                </p>
+                            ) : null}
+                            {section.deletionLink ? (
+                                <p className="mt-4 text-sm leading-7 sm:text-base">
+                                    <Link
+                                        href="/snote/account-deletion"
+                                        className="font-medium text-violet-700 hover:text-violet-900 dark:text-violet-300 dark:hover:text-violet-200"
+                                    >
+                                        Request account or data deletion
+                                    </Link>
                                 </p>
                             ) : null}
                         </section>
