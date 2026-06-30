@@ -53,6 +53,7 @@ import {
     useUploadProjectAudio,
     useTriggerProjectTranscript,
 } from '@/features/projects/hooks';
+import type { TranscriptSegment } from '@/features/projects/types';
 import { sendProjectChatMessage } from '@/features/projects/api';
 import { parseChatResponse } from '@/features/projects/chat-parser';
 import { toast } from 'sonner';
@@ -61,6 +62,19 @@ import { AppErrorState } from '@/components/snote/shared/AppErrorState';
 import { ProjectTasksPanel } from './ProjectTasksPanel';
 import { ProjectAudioStreamDebugPanel } from '@/components/snote/dev/ProjectAudioStreamDebugPanel';
 import { useI18n } from '@/features/i18n/use-i18n';
+
+const TRANSCRIPT_RETRY_DELAYS_MS = [20_000, 45_000, 75_000, 120_000];
+
+type TranscriptGenerationState = {
+    cycle: number;
+    status: 'pending' | 'exhausted' | 'complete';
+};
+
+const transcriptGenerationRegistry = new Map<
+    string,
+    TranscriptGenerationState
+>();
+let transcriptGenerationCycleCounter = 0;
 
 // ─── Timestamp formatter ──────────────────────────────────────────────────────
 
@@ -247,7 +261,12 @@ interface TranscriptPanelProps {
     hasAudioUrl: boolean;
     activeReferences: string[];
     isPolling: boolean;
-    pollSession: number;
+    hasPollTimedOut: boolean;
+    isRetryDisabled: boolean;
+    transcript: TranscriptSegment[] | undefined;
+    isTranscriptLoading: boolean;
+    transcriptError: Error | null;
+    onRefetchTranscript: () => void;
     onPollingStarted: () => void;
     onRetryTranscriptGeneration: () => void;
     segmentRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
@@ -258,35 +277,18 @@ function TranscriptPanel({
     hasAudioUrl,
     activeReferences,
     isPolling,
-    pollSession,
+    hasPollTimedOut,
+    isRetryDisabled,
+    transcript,
+    isTranscriptLoading,
+    transcriptError,
+    onRefetchTranscript,
     onPollingStarted,
     onRetryTranscriptGeneration,
     segmentRefs,
 }: TranscriptPanelProps) {
     const { t } = useI18n();
     const [searchQuery, setSearchQuery] = useState('');
-    const [timedOutPollSession, setTimedOutPollSession] = useState<
-        number | null
-    >(null);
-    const pollTimeout = isPolling && timedOutPollSession === pollSession;
-
-    const {
-        data: transcript,
-        isLoading: isTranscriptLoading,
-        error: transcriptError,
-        refetch: refetchTranscript,
-    } = useProjectTranscript(projectId, {
-        refetchInterval: isPolling && !pollTimeout ? 3000 : false,
-    });
-
-    useEffect(() => {
-        if (!isPolling) return;
-        const timer = setTimeout(
-            () => setTimedOutPollSession(pollSession),
-            90_000,
-        );
-        return () => clearTimeout(timer);
-    }, [isPolling, pollSession]);
 
     const hasSegments = transcript && transcript.length > 0;
 
@@ -366,14 +368,14 @@ function TranscriptPanel({
                             variant="outline"
                             size="sm"
                             className="mt-3"
-                            onClick={() => refetchTranscript()}
+                            onClick={onRefetchTranscript}
                         >
                             {t('common.retry')}
                         </Button>
                     </div>
                 ) : !hasSegments ? (
                     <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
-                        {isPolling && !pollTimeout ? (
+                        {isPolling && !hasPollTimedOut ? (
                             <>
                                 <Loader2 className="text-primary mb-3 h-8 w-8 animate-spin" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
@@ -383,7 +385,7 @@ function TranscriptPanel({
                                     {t('meeting.transcript.generatingDesc')}
                                 </p>
                             </>
-                        ) : isPolling && pollTimeout ? (
+                        ) : hasPollTimedOut ? (
                             <>
                                 <FileText className="text-muted-foreground mb-3 h-10 w-10 opacity-50" />
                                 <p className="text-foreground mb-1 text-sm font-medium">
@@ -395,10 +397,8 @@ function TranscriptPanel({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                        onRetryTranscriptGeneration();
-                                        refetchTranscript();
-                                    }}
+                                    onClick={onRetryTranscriptGeneration}
+                                    disabled={isRetryDisabled}
                                 >
                                     {t('meeting.transcript.checkAgain')}
                                 </Button>
@@ -955,52 +955,189 @@ export function MeetingDetail() {
 
     // API Hooks
     const { data: project, isLoading, error } = useProject(id);
-    const { data: transcript } = useProjectTranscript(id);
+    const {
+        data: transcript,
+        isLoading: isTranscriptLoading,
+        error: transcriptError,
+        refetch: refetchTranscript,
+    } = useProjectTranscript(id);
     const updateMutation = useUpdateProject(id);
     const { mutateAsync: triggerProjectTranscript } =
-        useTriggerProjectTranscript(id);
+        useTriggerProjectTranscript(id, { invalidateOnSuccess: false });
 
     // Split workspace state
     const [activeReferences, setActiveReferences] = useState<string[]>([]);
     const [isTranscriptPolling, setIsTranscriptPolling] = useState(false);
-    const [transcriptPollSession, setTranscriptPollSession] = useState(0);
+    const [isTranscriptPollExhausted, setIsTranscriptPollExhausted] =
+        useState(false);
+    const [isTranscriptPosting, setIsTranscriptPosting] = useState(false);
     const segmentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-    const triggeredTranscriptForAudioUrlRef = useRef<string | null>(null);
+    const transcriptPollTimeoutRef = useRef<ReturnType<
+        typeof setTimeout
+    > | null>(null);
+    const activeTranscriptCycleRef = useRef<number | null>(null);
+    const isTranscriptMountedRef = useRef(false);
+    const isTranscriptPostingRef = useRef(false);
     const currentProjectId = project?.id ?? id;
     const currentAudioUrl = project?.audio_url ?? null;
     const transcriptLength = transcript?.length;
+
+    const clearTranscriptPollTimeout = useCallback(() => {
+        if (!transcriptPollTimeoutRef.current) return;
+        clearTimeout(transcriptPollTimeoutRef.current);
+        transcriptPollTimeoutRef.current = null;
+    }, []);
+
+    const getTranscriptAudioKey = useCallback(() => {
+        if (!currentAudioUrl) return null;
+        return `${currentProjectId}:${currentAudioUrl}`;
+    }, [currentAudioUrl, currentProjectId]);
+
+    const finishTranscriptCycle = useCallback(
+        (
+            cycle: number,
+            audioKey: string,
+            status: TranscriptGenerationState['status'],
+        ) => {
+            if (activeTranscriptCycleRef.current !== cycle) return;
+
+            const currentState = transcriptGenerationRegistry.get(audioKey);
+            if (currentState?.cycle === cycle) {
+                transcriptGenerationRegistry.set(audioKey, {
+                    cycle,
+                    status,
+                });
+            }
+
+            clearTranscriptPollTimeout();
+            setIsTranscriptPolling(false);
+            setIsTranscriptPollExhausted(status === 'exhausted');
+        },
+        [clearTranscriptPollTimeout],
+    );
+
+    const scheduleTranscriptPoll = useCallback(
+        (cycle: number, audioKey: string, attemptIndex = 0) => {
+            clearTranscriptPollTimeout();
+
+            const scheduleAttempt = (nextAttemptIndex: number) => {
+                const delay = TRANSCRIPT_RETRY_DELAYS_MS[nextAttemptIndex];
+                if (delay === undefined) {
+                    finishTranscriptCycle(cycle, audioKey, 'exhausted');
+                    return;
+                }
+
+                transcriptPollTimeoutRef.current = setTimeout(() => {
+                    void (async () => {
+                        if (!isTranscriptMountedRef.current) return;
+
+                        const result = await refetchTranscript();
+                        if (activeTranscriptCycleRef.current !== cycle) return;
+
+                        if ((result.data?.length ?? 0) > 0) {
+                            finishTranscriptCycle(cycle, audioKey, 'complete');
+                            return;
+                        }
+
+                        scheduleAttempt(nextAttemptIndex + 1);
+                    })();
+                }, delay);
+            };
+
+            scheduleAttempt(attemptIndex);
+        },
+        [clearTranscriptPollTimeout, finishTranscriptCycle, refetchTranscript],
+    );
 
     const startTranscriptGeneration = useCallback(
         async ({ force = false }: { force?: boolean } = {}) => {
             if (!currentAudioUrl || transcriptLength === undefined) return;
             if (transcriptLength > 0) return;
 
-            const transcriptAudioKey = `${currentProjectId}:${currentAudioUrl}`;
-            if (
-                !force &&
-                triggeredTranscriptForAudioUrlRef.current === transcriptAudioKey
-            ) {
-                setIsTranscriptPolling(true);
+            const transcriptAudioKey = getTranscriptAudioKey();
+            if (!transcriptAudioKey) return;
+
+            const existingCycle =
+                transcriptGenerationRegistry.get(transcriptAudioKey);
+            if (!force && existingCycle) {
+                if (existingCycle.status === 'pending') {
+                    if (
+                        activeTranscriptCycleRef.current !== existingCycle.cycle
+                    ) {
+                        activeTranscriptCycleRef.current = existingCycle.cycle;
+                        setIsTranscriptPolling(true);
+                        setIsTranscriptPollExhausted(false);
+                        scheduleTranscriptPoll(
+                            existingCycle.cycle,
+                            transcriptAudioKey,
+                        );
+                    }
+                    return;
+                }
+
+                setIsTranscriptPolling(false);
+                setIsTranscriptPollExhausted(
+                    existingCycle.status === 'exhausted',
+                );
                 return;
             }
 
-            triggeredTranscriptForAudioUrlRef.current = transcriptAudioKey;
+            if (isTranscriptPostingRef.current) return;
+
+            const cycle = transcriptGenerationCycleCounter + 1;
+            transcriptGenerationCycleCounter = cycle;
+            transcriptGenerationRegistry.set(transcriptAudioKey, {
+                cycle,
+                status: 'pending',
+            });
+            activeTranscriptCycleRef.current = cycle;
+            isTranscriptPostingRef.current = true;
+            setIsTranscriptPosting(true);
+            clearTranscriptPollTimeout();
             setIsTranscriptPolling(true);
-            setTranscriptPollSession((current) => current + 1);
+            setIsTranscriptPollExhausted(false);
 
             try {
                 await triggerProjectTranscript();
+                if (
+                    isTranscriptMountedRef.current &&
+                    activeTranscriptCycleRef.current === cycle
+                ) {
+                    scheduleTranscriptPoll(cycle, transcriptAudioKey);
+                }
             } catch (err) {
+                const currentState =
+                    transcriptGenerationRegistry.get(transcriptAudioKey);
+                if (currentState?.cycle === cycle) {
+                    transcriptGenerationRegistry.delete(transcriptAudioKey);
+                }
+                if (
+                    isTranscriptMountedRef.current &&
+                    activeTranscriptCycleRef.current === cycle
+                ) {
+                    clearTranscriptPollTimeout();
+                    setIsTranscriptPolling(false);
+                    setIsTranscriptPollExhausted(false);
+                }
                 const message =
                     err instanceof Error
                         ? err.message
                         : t('meeting.transcript.error');
                 toast.error(message);
+            } finally {
+                if (activeTranscriptCycleRef.current === cycle) {
+                    isTranscriptPostingRef.current = false;
+                    if (isTranscriptMountedRef.current) {
+                        setIsTranscriptPosting(false);
+                    }
+                }
             }
         },
         [
+            clearTranscriptPollTimeout,
             currentAudioUrl,
-            currentProjectId,
+            getTranscriptAudioKey,
+            scheduleTranscriptPoll,
             transcriptLength,
             triggerProjectTranscript,
             t,
@@ -1010,9 +1147,41 @@ export function MeetingDetail() {
     // Trigger transcript once after audio is saved, then poll for generated segments.
     useEffect(() => {
         if (currentAudioUrl && transcriptLength === 0) {
-            void startTranscriptGeneration();
+            const timer = setTimeout(() => {
+                void startTranscriptGeneration();
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [currentAudioUrl, transcriptLength, startTranscriptGeneration]);
+
+    useEffect(() => {
+        isTranscriptMountedRef.current = true;
+        return () => {
+            isTranscriptMountedRef.current = false;
+            clearTranscriptPollTimeout();
+        };
+    }, [clearTranscriptPollTimeout]);
+
+    useEffect(() => {
+        if (!transcriptLength || transcriptLength <= 0) return;
+
+        const transcriptAudioKey = getTranscriptAudioKey();
+        const activeCycle = activeTranscriptCycleRef.current;
+        if (transcriptAudioKey && activeCycle !== null) {
+            transcriptGenerationRegistry.set(transcriptAudioKey, {
+                cycle: activeCycle,
+                status: 'complete',
+            });
+        }
+
+        const timer = setTimeout(() => {
+            clearTranscriptPollTimeout();
+            setIsTranscriptPolling(false);
+            setIsTranscriptPollExhausted(false);
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, [clearTranscriptPollTimeout, getTranscriptAudioKey, transcriptLength]);
 
     const handleRetryTranscriptGeneration = useCallback(() => {
         void startTranscriptGeneration({ force: true });
@@ -1242,7 +1411,16 @@ export function MeetingDetail() {
                                 hasAudioUrl={!!project.audio_url}
                                 activeReferences={activeReferences}
                                 isPolling={isTranscriptPolling && !hasSegments}
-                                pollSession={transcriptPollSession}
+                                hasPollTimedOut={isTranscriptPollExhausted}
+                                isRetryDisabled={
+                                    isTranscriptPolling || isTranscriptPosting
+                                }
+                                transcript={transcript}
+                                isTranscriptLoading={isTranscriptLoading}
+                                transcriptError={transcriptError}
+                                onRefetchTranscript={() => {
+                                    void refetchTranscript();
+                                }}
                                 onPollingStarted={() =>
                                     setIsTranscriptPolling(true)
                                 }
@@ -1447,7 +1625,21 @@ export function MeetingDetail() {
                                         isPolling={
                                             isTranscriptPolling && !hasSegments
                                         }
-                                        pollSession={transcriptPollSession}
+                                        hasPollTimedOut={
+                                            isTranscriptPollExhausted
+                                        }
+                                        isRetryDisabled={
+                                            isTranscriptPolling ||
+                                            isTranscriptPosting
+                                        }
+                                        transcript={transcript}
+                                        isTranscriptLoading={
+                                            isTranscriptLoading
+                                        }
+                                        transcriptError={transcriptError}
+                                        onRefetchTranscript={() => {
+                                            void refetchTranscript();
+                                        }}
                                         onPollingStarted={() =>
                                             setIsTranscriptPolling(true)
                                         }

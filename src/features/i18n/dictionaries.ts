@@ -224,6 +224,10 @@ export const dictionaries = {
     'footer.link.workflow': { vi: 'Quy trình', en: 'Workflow' },
     'footer.link.references': { vi: 'Nguồn tham chiếu', en: 'References' },
     'footer.link.pricing': { vi: 'Gói dịch vụ', en: 'Pricing' },
+    'footer.link.privacy': {
+        vi: 'Chính sách quyền riêng tư',
+        en: 'Privacy Policy',
+    },
     'footer.link.dashboard': { vi: 'Tổng quan', en: 'Dashboard' },
     'footer.link.meetings': { vi: 'Cuộc họp', en: 'Meetings' },
     'footer.link.login': { vi: 'Đăng nhập', en: 'Log in' },
@@ -867,16 +871,16 @@ export const dictionaries = {
         en: 'Generating transcript from audio...',
     },
     'meeting.transcript.generatingDesc': {
-        vi: 'Vui lòng đợi vài phút trong khi hệ thống xử lý audio.',
-        en: 'Please wait a few minutes while the system processes the audio.',
+        vi: 'Quá trình này có thể mất khoảng 1–2 phút.',
+        en: 'This may take around 1–2 minutes.',
     },
     'meeting.transcript.processing': {
-        vi: 'Transcript chưa sẵn sàng.',
-        en: 'Transcript is not ready yet.',
+        vi: 'Transcript chưa sẵn sàng. Vui lòng kiểm tra lại sau.',
+        en: 'Transcript is not ready yet. Please check again later.',
     },
     'meeting.transcript.processingDesc': {
-        vi: 'Vui lòng thử lại sau ít phút.',
-        en: 'Please try again in a few minutes.',
+        vi: 'Quá trình này có thể mất khoảng 1–2 phút.',
+        en: 'This may take around 1–2 minutes.',
     },
     'meeting.transcript.checkAgain': { vi: 'Kiểm tra lại', en: 'Check again' },
     'meeting.transcript.empty': {
@@ -1023,8 +1027,12 @@ export const dictionaries = {
         en: 'Transcript is needed to automatically generate tasks.',
     },
     'projectTasks.generating': {
-        vi: 'Đang tạo task từ transcript...',
+        vi: 'Đang tạo công việc từ transcript...',
         en: 'Generating tasks from transcript...',
+    },
+    'projectTasks.generatingDesc': {
+        vi: 'AI đang xử lý, vui lòng chờ trong giây lát.',
+        en: 'AI is processing. Please wait a moment.',
     },
     'projectTasks.generateBtn': {
         vi: 'Tạo danh sách công việc',
@@ -1045,12 +1053,12 @@ export const dictionaries = {
         en: 'Regenerate tasks',
     },
     'projectTasks.generateTimeout': {
-        vi: 'Task chưa sẵn sàng. Vui lòng thử lại sau ít phút.',
-        en: 'Tasks are not ready yet. Please try again in a few minutes.',
+        vi: 'Công việc chưa sẵn sàng. Vui lòng thử lại sau.',
+        en: 'Tasks are not ready yet. Please try again later.',
     },
     'projectTasks.generateNotReady': {
-        vi: 'Task chưa sẵn sàng. Vui lòng thử lại sau ít phút.',
-        en: 'Tasks are not ready yet. Please try again in a few minutes.',
+        vi: 'Công việc chưa sẵn sàng. Vui lòng thử lại sau.',
+        en: 'Tasks are not ready yet. Please try again later.',
     },
     'projectTasks.generateFailed': {
         vi: 'Không thể tạo task lúc này. Vui lòng thử lại.',

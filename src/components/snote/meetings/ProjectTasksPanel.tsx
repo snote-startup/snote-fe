@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
     useProjectTasks,
     useGenerateProjectTasks,
@@ -56,12 +56,7 @@ interface ProjectTasksPanelProps {
     transcriptText: string;
 }
 
-const TASK_POLL_INTERVAL_MS = 2000;
-const TASK_POLL_TIMEOUT_MS = 90000;
-
-function wait(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const TASK_RETRY_DELAYS_MS = [15_000, 35_000, 60_000, 90_000];
 
 function getUniqueTaskCount(tasks: ProjectTask[] | undefined) {
     if (!tasks) return 0;
@@ -79,7 +74,9 @@ export function ProjectTasksPanel({
         isLoading: isTasksLoading,
         refetch: refetchProjectTasks,
     } = useProjectTasks(projectId);
-    const generateMutation = useGenerateProjectTasks(projectId);
+    const generateMutation = useGenerateProjectTasks(projectId, {
+        invalidateOnSuccess: false,
+    });
     const updateMutation = useUpdateTask(projectId);
     const deleteMutation = useDeleteTask(projectId);
 
@@ -89,6 +86,71 @@ export function ProjectTasksPanel({
 
     const [isGenerating, setIsGenerating] = useState(false);
     const isGeneratingRef = useRef(false);
+    const generationCycleRef = useRef(0);
+    const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isMountedRef = useRef(false);
+
+    const clearPollTimeout = useCallback(() => {
+        if (!pollTimeoutRef.current) return;
+        clearTimeout(pollTimeoutRef.current);
+        pollTimeoutRef.current = null;
+    }, []);
+
+    const finishGeneration = useCallback(
+        (cycle: number) => {
+            if (generationCycleRef.current !== cycle) return;
+            clearPollTimeout();
+            isGeneratingRef.current = false;
+            if (isMountedRef.current) {
+                setIsGenerating(false);
+            }
+        },
+        [clearPollTimeout],
+    );
+
+    function scheduleTaskPoll(
+        cycle: number,
+        initialTaskCount: number,
+        attemptIndex = 0,
+    ) {
+        clearPollTimeout();
+
+        const delay = TASK_RETRY_DELAYS_MS[attemptIndex];
+        if (delay === undefined) {
+            toast.error(t('projectTasks.generateNotReady'));
+            finishGeneration(cycle);
+            return;
+        }
+
+        pollTimeoutRef.current = setTimeout(() => {
+            void (async () => {
+                try {
+                    const result = await refetchProjectTasks();
+                    if (generationCycleRef.current !== cycle) return;
+
+                    const nextTaskCount = getUniqueTaskCount(result.data);
+                    if (nextTaskCount > initialTaskCount || nextTaskCount > 0) {
+                        finishGeneration(cycle);
+                        return;
+                    }
+
+                    scheduleTaskPoll(cycle, initialTaskCount, attemptIndex + 1);
+                } catch {
+                    toast.error(t('projectTasks.generateFailed'));
+                    finishGeneration(cycle);
+                }
+            })();
+        }, delay);
+    }
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+            generationCycleRef.current += 1;
+            clearPollTimeout();
+        };
+    }, [clearPollTimeout]);
 
     const statusConfig: Record<
         TaskStatus,
@@ -144,27 +206,17 @@ export function ProjectTasksPanel({
         isGeneratingRef.current = true;
         setIsGenerating(true);
         const initialTaskCount = getUniqueTaskCount(tasks);
+        const cycle = generationCycleRef.current + 1;
+        generationCycleRef.current = cycle;
+        clearPollTimeout();
 
         try {
             await generateMutation.mutateAsync();
-
-            const deadline = Date.now() + TASK_POLL_TIMEOUT_MS;
-            while (Date.now() < deadline) {
-                await wait(TASK_POLL_INTERVAL_MS);
-                const result = await refetchProjectTasks();
-                const nextTaskCount = getUniqueTaskCount(result.data);
-
-                if (nextTaskCount > initialTaskCount || nextTaskCount > 0) {
-                    return;
-                }
-            }
-
-            toast.error(t('projectTasks.generateNotReady'));
+            if (generationCycleRef.current !== cycle) return;
+            scheduleTaskPoll(cycle, initialTaskCount);
         } catch {
             toast.error(t('projectTasks.generateFailed'));
-        } finally {
-            isGeneratingRef.current = false;
-            setIsGenerating(false);
+            finishGeneration(cycle);
         }
     };
 
@@ -253,6 +305,11 @@ export function ProjectTasksPanel({
                                 ? t('projectTasks.generating') || 'Đang tạo...'
                                 : t('projectTasks.loading')}
                         </p>
+                        {isGenerating && (
+                            <p className="text-muted-foreground mt-1 text-xs">
+                                {t('projectTasks.generatingDesc')}
+                            </p>
+                        )}
                     </div>
                 ) : displayTasks.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">

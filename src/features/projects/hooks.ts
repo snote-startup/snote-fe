@@ -77,11 +77,15 @@ export function useProjectTranscript(
     });
 }
 
-export function useTriggerProjectTranscript(id: string) {
+export function useTriggerProjectTranscript(
+    id: string,
+    options?: { invalidateOnSuccess?: boolean },
+) {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: () => triggerProjectTranscript(id),
         onSuccess: () => {
+            if (options?.invalidateOnSuccess === false) return;
             queryClient.invalidateQueries({
                 queryKey: projectKeys.transcript(id),
             });
